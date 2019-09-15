@@ -20,10 +20,6 @@ public class TokenList {
         this.tokens.add(tokenIndex, newToken);
     }
     
-    public void deleteToken(Token removeToken) {
-        this.tokens.remove(removeToken);
-    }
-    
     public ArrayList getTokensList(){
         return this.tokens;
     }
