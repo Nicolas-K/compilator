@@ -6,6 +6,12 @@ public class Token {
     private String symbol;
     private String lexeme;
 
+    public Token(){
+        line = null;
+        symbol = null;
+        lexeme = null;
+    }
+    
     public void setLine(String line) {
         this.line = line;
     }

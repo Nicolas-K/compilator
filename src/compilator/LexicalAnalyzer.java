@@ -17,8 +17,12 @@ public class LexicalAnalyzer {
         }
         return instance;
     }
+    
+    public LexicalAnalyzer(){
+        // CONSTRUCTOR  
+    }
 
-    public void openCodeFile(String codePath) {
+    public void analyzeFile(String codePath) {
         int fileLine = 0;
         String nextLine;
 
