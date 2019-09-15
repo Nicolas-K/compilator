@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class LexicalAnalyzer {
 
     private static LexicalAnalyzer instance;
-    TokenList tokensList = TokenList.getInstance();
+    TokenList list = TokenList.getInstance();
 
     public static LexicalAnalyzer getInstance() {
         if (instance == null) {
@@ -48,7 +48,7 @@ public class LexicalAnalyzer {
                  } else ERROR
                  
                  */
-                tokensList.insertNewToken(fileLine, newToken);
+                list.insertNewToken(fileLine, newToken);
 
                 fileLine++;
             }
