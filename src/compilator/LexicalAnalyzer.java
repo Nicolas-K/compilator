@@ -4,12 +4,13 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class LexicalAnalyzer {
 
     private static LexicalAnalyzer instance;
     TokenList list = TokenList.getInstance();
+    private BufferedReader reader;
+    private char currentChar;
 
     public static LexicalAnalyzer getInstance() {
         if (instance == null) {
@@ -17,47 +18,16 @@ public class LexicalAnalyzer {
         }
         return instance;
     }
-    
-    public LexicalAnalyzer(){
-        // CONSTRUCTOR  
-    }
 
-    public void analyzeFile(String codePath) {
-        int fileLine = 0;
-        String nextLine;
-
-        BufferedReader reader = null;
-        Token newToken = null;
-
+    public void openFile(String codePath) {
         try {
             reader = new BufferedReader(new FileReader(codePath));
-
-            while ((nextLine = reader.readLine()) != null) {
-                /*  if(caracter == digito) {
-                 newToken = isDigit(fileLine);
-                 } else if (caracter == letra) {
-                 newToken = isLetter(fileLine);
-                 } else if (caracter == ":") {
-                 newToken = isAttribution(fileLine);
-                 } else if (caracter == "+" || caracter == "-" || caracter == "*") {
-                 newToken = isAritmetic(fileLine);
-                 } else if (caracter == ">" || caracter == "<" || caracter == "=" || caracter == "!") {
-                 newToken = isRelational(fileLine);
-                 } else if (caracter == ";" || caracter == "," || caracter == "(" || caracter == ")" || caracter == ".") {
-                 newToken = isPunctuation(fileLine);
-                 } else ERROR
-                 
-                 */
-                list.insertNewToken(fileLine, newToken);
-
-                fileLine++;
-            }
         } catch (FileNotFoundException fileException) {
             System.out.println("Error! Arquivo não encontrado\n");
-        } catch (IOException ioException) {
-            System.out.println("Error! Leitura/Escrita do arquivo\n");
         }
+    }
 
+    public void closeFile() {
         try {
             if (reader != null) {
                 reader.close();
@@ -67,151 +37,289 @@ public class LexicalAnalyzer {
         }
     }
 
-    public Token isDigit(String fileLine) {
+    public void analyzeFile(String codePath) {
+        int indexFile;
+        Token newToken;
+        try {
+            indexFile = 0;
+            while ((currentChar = (char) reader.read()) != -1) {
+
+                newToken = getToken(indexFile);
+
+                if (newToken != null) {
+                    list.insertToken(getToken(indexFile));
+                }
+
+            }
+        } catch (IOException ioException) {
+            System.out.println("Error! Leitura/Escrita do arquivo\n");
+        }
+    }
+
+    public Token getToken(int indexFile) {
+        Token newToken = new Token();
+
+        try {
+            if (Character.isDigit(currentChar)) {
+                newToken = isDigit(currentChar, indexFile);
+            } else if (Character.isLetter(currentChar)) {
+                newToken = isLetter(currentChar, indexFile);
+            } else if (currentChar == ':') {
+                newToken = isAttribution(currentChar, indexFile);
+            } else if (currentChar == '+' || currentChar == '-' || currentChar == '*') {
+                newToken = isAritmetic(currentChar, indexFile);
+            } else if (currentChar == '>' || currentChar == '<' || currentChar == '=' || currentChar == '!') {
+                newToken = isRelational(currentChar, indexFile);
+            } else if (currentChar == ';' || currentChar == ',' || currentChar == '(' || currentChar == ')' || currentChar == '.') {
+                newToken = isPunctuation(currentChar, indexFile);
+            } else {
+                throw new LexicalException();
+            }
+
+            return newToken;
+        } catch (LexicalException lexical) {
+            lexical.characterInvalid();
+        }
+
+        return null;
+    }
+
+    public Token isDigit(char character, int lineIndex) {
         Token digit = new Token();
         String number = null;
 
-        // TODO logica do isDigit
-        
-        digit.setLine(fileLine);
-        digit.setSymbol("snumero");
-        digit.setLexeme(number);
-        return digit;
+        number += character;
+
+        try {
+            currentChar = (char) reader.read();
+
+            while (Character.isDigit(currentChar)) {
+                number += currentChar;
+                currentChar = (char) reader.read();
+            }
+
+            digit.setLine(Integer.toString(lineIndex));
+            digit.setSymbol("snumero");
+            digit.setLexeme(number);
+            return digit;
+        } catch (IOException exception) {
+            // TODO
+        }
+
+        return null;
     }
 
-    public Token isLetter(String fileLine) {
+    public Token isLetter(char character, int lineIndex) {
         Token letter = new Token();
         String word = null;
 
-        // TODO logica do isLetter
-       
-        letter.setLine(fileLine);
+        word += character;
 
-        switch (word) {
-            case "programa":
-                letter.setSymbol("sprograma");
-                break;
-            case "se":
-                letter.setSymbol("sse");
-                break;
-            case "entao":
-                letter.setSymbol("sentao");
-                break;
-            case "senao":
-                letter.setSymbol("ssenao");
-                break;
-            case "enquanto":
-                letter.setSymbol("senquanto");
-                break;
-            case "faca":
-                letter.setSymbol("sfaca");
-            case "inicio":
-                letter.setSymbol("sinício");
-                break;
-            case "fim":
-                letter.setSymbol("sfim");
-                break;
-            case "escreva":
-                letter.setSymbol("sescreva");
-                break;
-            case "leia":
-                letter.setSymbol("sleia");
-                break;
-            case "var":
-                letter.setSymbol("svar");
-                break;
-            case "inteiro":
-                letter.setSymbol("sinteiro");
-                break;
-            case "booleano":
-                letter.setSymbol("sbooleano");
-                break;
-            case "verdadeiro":
-                letter.setSymbol("sverdadeiro");
-                break;
-            case "falso":
-                letter.setSymbol("sfalso");
-                break;
-            case "procedimento":
-                letter.setSymbol("sprocedimento");
-                break;
-            case "funcao":
-                letter.setSymbol("sfuncao");
-                break;
-            case "div":
-                letter.setSymbol("sdiv");
-                break;
-            case "e":
-                letter.setSymbol("se");
-                break;
-            case "ou":
-                letter.setSymbol("sou");
-                break;
-            case "nao":
-                letter.setSymbol("snao");
-                break;
-            default:
-                letter.setSymbol("sidentificador");
-                break;
+        try {
+            currentChar = (char) reader.read();
+
+            while (Character.isLetter(currentChar)) {
+                word += currentChar;
+                currentChar = (char) reader.read();
+            }
+
+            letter.setLine(Integer.toString(lineIndex));
+
+            switch (word) {
+                case "programa":
+                    letter.setSymbol("sprograma");
+                    break;
+                case "se":
+                    letter.setSymbol("sse");
+                    break;
+                case "entao":
+                    letter.setSymbol("sentao");
+                    break;
+                case "senao":
+                    letter.setSymbol("ssenao");
+                    break;
+                case "enquanto":
+                    letter.setSymbol("senquanto");
+                    break;
+                case "faca":
+                    letter.setSymbol("sfaca");
+                case "inicio":
+                    letter.setSymbol("sinício");
+                    break;
+                case "fim":
+                    letter.setSymbol("sfim");
+                    break;
+                case "escreva":
+                    letter.setSymbol("sescreva");
+                    break;
+                case "leia":
+                    letter.setSymbol("sleia");
+                    break;
+                case "var":
+                    letter.setSymbol("svar");
+                    break;
+                case "inteiro":
+                    letter.setSymbol("sinteiro");
+                    break;
+                case "booleano":
+                    letter.setSymbol("sbooleano");
+                    break;
+                case "verdadeiro":
+                    letter.setSymbol("sverdadeiro");
+                    break;
+                case "falso":
+                    letter.setSymbol("sfalso");
+                    break;
+                case "procedimento":
+                    letter.setSymbol("sprocedimento");
+                    break;
+                case "funcao":
+                    letter.setSymbol("sfuncao");
+                    break;
+                case "div":
+                    letter.setSymbol("sdiv");
+                    break;
+                case "e":
+                    letter.setSymbol("se");
+                    break;
+                case "ou":
+                    letter.setSymbol("sou");
+                    break;
+                case "nao":
+                    letter.setSymbol("snao");
+                    break;
+                default:
+                    letter.setSymbol("sidentificador");
+                    break;
+            }
+
+            letter.setLexeme(word);
+            return letter;
+
+        } catch (IOException exception) {
+            //TODO
         }
 
-        letter.setLexeme(word);
-        return letter;
+        return null;
     }
 
-    public Token isAttribution(String fileLine) {
+    public Token isAttribution(char character, int lineIndex) {
         Token attribution = new Token();
+        String attr = null;
+        attr += character;
+        
+        attribution.setLine(Integer.toString(lineIndex));
 
-        attribution.setLine(fileLine);
+        try {
+            currentChar = (char) reader.read();
 
-        return attribution;
+            if(currentChar == '='){
+                attr += currentChar;
+                attribution.setSymbol("satribuição");
+            } else{
+                attribution.setSymbol("sdoispontos");
+            }
+            
+            attribution.setLexeme(attr);
+            return attribution;
+            
+        } catch (IOException exception) {
+            //TODO
+        }
+
+        return null;
     }
 
-    public Token isAritmetic(String fileLine, char operation) {
+    public Token isAritmetic(char character, int lineIndex) {
         Token aritmetic = new Token();
 
-        aritmetic.setLine(fileLine);
+        aritmetic.setLine(Integer.toString(lineIndex));
 
-        if (operation == '+') {
+        if (character == '+') {
             aritmetic.setSymbol("smais");
-        } else if (operation == '-') {
+        } else if (character == '-') {
             aritmetic.setSymbol("smenos");
-        } else if (operation == '*') {
+        } else if (character == '*') {
             aritmetic.setSymbol("smult");
         }
 
-        aritmetic.setLexeme(Character.toString(operation));
+        aritmetic.setLexeme(Character.toString(character));
         return aritmetic;
     }
 
-    public Token isRelational(String fileLine) {
+    public Token isRelational(char character, int lineIndex) {
         Token relational = new Token();
-        
-        relational.setLine(fileLine);
-        
-        // TODO logica do Relacional
-            
-        return relational;
+        String operation = null;
+        operation += character;
+
+        relational.setLine(Integer.toString(lineIndex));
+
+        try {
+            if (character == '>') {
+                currentChar = (char) reader.read();
+
+                if (currentChar == '=') {
+                    operation += currentChar;
+                    relational.setSymbol("smaiorig");
+                } else {
+                    relational.setSymbol("maior");
+                }
+            } else if (character == '<') {
+                currentChar = (char) reader.read();
+
+                if (currentChar == '=') {
+                    operation += currentChar;
+                    relational.setSymbol("smenorig");
+                } else {
+                    relational.setSymbol("menor");
+                }
+            } else if (character == '=') {
+                relational.setSymbol("sig");
+
+            } else if (character == '!') {
+                currentChar = (char) reader.read();
+
+                if (currentChar == '=') {
+                    operation += currentChar;
+                    relational.setSymbol("Sdif");
+                } else {
+                    throw new LexicalException();
+                }
+            }
+
+            relational.setLexeme(operation);
+
+            return relational;
+        } catch (IOException exception) {
+            //TODO
+        } catch (LexicalException lexical) {
+            lexical.relationalError();
+        }
+        return null;
     }
 
-    public Token isPunctuation(String fileLine, char punctuationChar) {
+    public Token isPunctuation(char character, int lineIndex) {
         Token punctuation = new Token();
 
-        punctuation.setLine(fileLine);
+        punctuation.setLine(Integer.toString(lineIndex));
 
-        if (punctuationChar == ';') {
+        if (character == ';') {
             punctuation.setSymbol("sponto_vírgula");
-        } else if (punctuationChar == ',') {
+        } else if (character == ',') {
             punctuation.setSymbol("svirgula");
-        } else if (punctuationChar == '(') {
+        } else if (character == '(') {
             punctuation.setSymbol("sabre_parênteses");
-        } else if (punctuationChar == ')') {
+        } else if (character == ')') {
             punctuation.setSymbol("sfecha_parênteses");
-        } else if (punctuationChar == '.') {
+        } else if (character == '.') {
             punctuation.setSymbol("sponto");
         }
 
-        punctuation.setLexeme(Character.toString(punctuationChar));
+        punctuation.setLexeme(Character.toString(character));
         return punctuation;
+    }
+
+    public Token requestToken(int index) {
+        return list.requestToken(index);
     }
 }
