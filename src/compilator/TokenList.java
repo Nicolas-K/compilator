@@ -16,11 +16,15 @@ public class TokenList {
         tokens = new ArrayList<>();
     }
     
-    public void insertNewToken(int tokenIndex, Token newToken){
-        this.tokens.add(tokenIndex, newToken);
+    public void insertToken(Token newToken){
+        this.tokens.add(newToken);
     }
     
-    public ArrayList getTokensList(){
+    public Token requestToken(int index){
+        return this.tokens.get(index);
+    }
+    
+    public ArrayList requestList(){
         return this.tokens;
     }
 }
