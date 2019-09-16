@@ -37,7 +37,7 @@ public class LexicalAnalyzer {
         }
     }
 
-    public void analyzeFile(String codePath) {
+    public void analyzeFile() {
         int indexFile;
         Token newToken;
         try {
