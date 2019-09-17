@@ -22,8 +22,9 @@ public class LexicalAnalyzer {
     public void openFile(String codePath) {
         try {
             reader = new BufferedReader(new FileReader(codePath));
-        } catch (FileNotFoundException fileException) {
+        } catch (FileNotFoundException exception) {
             System.out.println("Error! Arquivo não encontrado\n");
+            exception.getMessage();
         }
     }
 
@@ -32,8 +33,9 @@ public class LexicalAnalyzer {
             if (reader != null) {
                 reader.close();
             }
-        } catch (IOException ioException) {
+        } catch (IOException exception) {
             System.out.println("Error! Não foi possível fechar o arquivo\n");
+            exception.getMessage();
         }
     }
 
@@ -42,7 +44,9 @@ public class LexicalAnalyzer {
         Token newToken;
         try {
             indexFile = 0;
-            while ((currentChar = (char) reader.read()) != -1) {
+            
+            currentChar = (char) reader.read();
+            while (currentChar != -1) {
 
                 newToken = getToken(indexFile);
 
@@ -77,11 +81,11 @@ public class LexicalAnalyzer {
             }
 
             return newToken;
+            
         } catch (LexicalException lexical) {
             lexical.characterInvalid();
+            return null;
         }
-
-        return null;
     }
 
     public Token isDigit(char character, int lineIndex) {
@@ -101,12 +105,13 @@ public class LexicalAnalyzer {
             digit.setLine(Integer.toString(lineIndex));
             digit.setSymbol("snumero");
             digit.setLexeme(number);
+            
             return digit;
+            
         } catch (IOException exception) {
-            // TODO
+            exception.getMessage();
+            return null;
         }
-
-        return null;
     }
 
     public Token isLetter(char character, int lineIndex) {
@@ -118,7 +123,7 @@ public class LexicalAnalyzer {
         try {
             currentChar = (char) reader.read();
 
-            while (Character.isLetter(currentChar)) {
+            while (Character.isLetter(currentChar) || Character.isDigit(currentChar) || currentChar == '_') {
                 word += currentChar;
                 currentChar = (char) reader.read();
             }
@@ -197,10 +202,9 @@ public class LexicalAnalyzer {
             return letter;
 
         } catch (IOException exception) {
-            //TODO
+            exception.getMessage();
+            return null;
         }
-
-        return null;
     }
 
     public Token isAttribution(char character, int lineIndex) {
@@ -216,6 +220,7 @@ public class LexicalAnalyzer {
             if(currentChar == '='){
                 attr += currentChar;
                 attribution.setSymbol("satribuição");
+                currentChar = (char) reader.read();
             } else{
                 attribution.setSymbol("sdoispontos");
             }
@@ -224,10 +229,9 @@ public class LexicalAnalyzer {
             return attribution;
             
         } catch (IOException exception) {
-            //TODO
+            exception.getMessage();
+            return null;
         }
-
-        return null;
     }
 
     public Token isAritmetic(char character, int lineIndex) {
@@ -244,7 +248,15 @@ public class LexicalAnalyzer {
         }
 
         aritmetic.setLexeme(Character.toString(character));
-        return aritmetic;
+        
+        try{
+            currentChar = (char) reader.read();
+            return aritmetic;
+            
+        } catch (IOException exception){
+            exception.getMessage();
+            return null;
+        }
     }
 
     public Token isRelational(char character, int lineIndex) {
@@ -261,6 +273,7 @@ public class LexicalAnalyzer {
                 if (currentChar == '=') {
                     operation += currentChar;
                     relational.setSymbol("smaiorig");
+                    currentChar = (char) reader.read();
                 } else {
                     relational.setSymbol("maior");
                 }
@@ -270,11 +283,13 @@ public class LexicalAnalyzer {
                 if (currentChar == '=') {
                     operation += currentChar;
                     relational.setSymbol("smenorig");
+                    currentChar = (char) reader.read();
                 } else {
                     relational.setSymbol("menor");
                 }
             } else if (character == '=') {
                 relational.setSymbol("sig");
+                currentChar = (char) reader.read();
 
             } else if (character == '!') {
                 currentChar = (char) reader.read();
@@ -282,20 +297,23 @@ public class LexicalAnalyzer {
                 if (currentChar == '=') {
                     operation += currentChar;
                     relational.setSymbol("Sdif");
+                    currentChar = (char) reader.read();
                 } else {
                     throw new LexicalException();
                 }
             }
 
             relational.setLexeme(operation);
-
             return relational;
+            
         } catch (IOException exception) {
-            //TODO
+            exception.getMessage();
+            return null;
+            
         } catch (LexicalException lexical) {
             lexical.relationalError();
+            return null;
         }
-        return null;
     }
 
     public Token isPunctuation(char character, int lineIndex) {
@@ -316,7 +334,15 @@ public class LexicalAnalyzer {
         }
 
         punctuation.setLexeme(Character.toString(character));
-        return punctuation;
+        
+        try{
+            currentChar = (char) reader.read();
+            return punctuation;
+            
+        } catch (IOException exception){
+            exception.getMessage();
+            return null;
+        }
     }
 
     public Token requestToken(int index) {
