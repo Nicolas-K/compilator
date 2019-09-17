@@ -44,19 +44,42 @@ public class LexicalAnalyzer {
         Token newToken;
         try {
             indexFile = 0;
-            
+
             currentChar = (char) reader.read();
             while (currentChar != -1) {
 
-                newToken = getToken(indexFile);
+                while ((currentChar == ' ' || currentChar == '{' || currentChar == '\n') && currentChar != -1) {
+                    if (currentChar == '{') {
+                        while (currentChar != '}' && currentChar != -1) {
+                            currentChar = (char) reader.read();
+                        }
+                        
+                    } else if (currentChar == '\n') {
+                        indexFile++;
+                        currentChar = (char) reader.read();
+                        
+                    } else {
+                        currentChar = (char) reader.read();
 
-                if (newToken != null) {
-                    list.insertToken(getToken(indexFile));
+                        while (currentChar == ' ' && currentChar != -1) {
+                            currentChar = (char) reader.read();
+                        }
+                    }
+                }
+
+                if (currentChar != -1) {
+                    newToken = getToken(indexFile);
+
+                    if (newToken != null) {
+                        list.insertToken(newToken);
+                    }
                 }
 
             }
-        } catch (IOException ioException) {
+
+        } catch (IOException exception) {
             System.out.println("Error! Leitura/Escrita do arquivo\n");
+            exception.getMessage();
         }
     }
 
@@ -81,7 +104,7 @@ public class LexicalAnalyzer {
             }
 
             return newToken;
-            
+
         } catch (LexicalException lexical) {
             lexical.characterInvalid();
             return null;
@@ -105,9 +128,9 @@ public class LexicalAnalyzer {
             digit.setLine(Integer.toString(lineIndex));
             digit.setSymbol("snumero");
             digit.setLexeme(number);
-            
+
             return digit;
-            
+
         } catch (IOException exception) {
             exception.getMessage();
             return null;
@@ -211,23 +234,23 @@ public class LexicalAnalyzer {
         Token attribution = new Token();
         String attr = null;
         attr += character;
-        
+
         attribution.setLine(Integer.toString(lineIndex));
 
         try {
             currentChar = (char) reader.read();
 
-            if(currentChar == '='){
+            if (currentChar == '=') {
                 attr += currentChar;
                 attribution.setSymbol("satribuição");
                 currentChar = (char) reader.read();
-            } else{
+            } else {
                 attribution.setSymbol("sdoispontos");
             }
-            
+
             attribution.setLexeme(attr);
             return attribution;
-            
+
         } catch (IOException exception) {
             exception.getMessage();
             return null;
@@ -248,12 +271,12 @@ public class LexicalAnalyzer {
         }
 
         aritmetic.setLexeme(Character.toString(character));
-        
-        try{
+
+        try {
             currentChar = (char) reader.read();
             return aritmetic;
-            
-        } catch (IOException exception){
+
+        } catch (IOException exception) {
             exception.getMessage();
             return null;
         }
@@ -305,11 +328,11 @@ public class LexicalAnalyzer {
 
             relational.setLexeme(operation);
             return relational;
-            
+
         } catch (IOException exception) {
             exception.getMessage();
             return null;
-            
+
         } catch (LexicalException lexical) {
             lexical.relationalError();
             return null;
@@ -334,12 +357,12 @@ public class LexicalAnalyzer {
         }
 
         punctuation.setLexeme(Character.toString(character));
-        
-        try{
+
+        try {
             currentChar = (char) reader.read();
             return punctuation;
-            
-        } catch (IOException exception){
+
+        } catch (IOException exception) {
             exception.getMessage();
             return null;
         }
