@@ -106,7 +106,7 @@ public class LexicalAnalyzer {
             return newToken;
 
         } catch (LexicalException lexical) {
-            lexical.characterInvalid();
+            lexical.characterInvalid(Integer.toString(indexFile));
             return null;
         }
     }
@@ -334,7 +334,7 @@ public class LexicalAnalyzer {
             return null;
 
         } catch (LexicalException lexical) {
-            lexical.relationalError();
+            lexical.relationalError(Integer.toString(lineIndex));
             return null;
         }
     }
