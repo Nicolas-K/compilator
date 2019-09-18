@@ -35,4 +35,10 @@ public class Token {
     public String getLexeme() {
         return this.lexeme;
     }
+    
+    public void print(){
+        System.out.printf("[Token] | Linha: %s\n", getLine());
+        System.out.printf("[Token] | Simbolo: %s\n", getSymbol());
+        System.out.printf("[Token] | Lexema: %s\n", getLexeme());
+    }
 }
