@@ -16,15 +16,15 @@ public class TokenList {
         tokens = new ArrayList<>();
     }
     
-    public void insertToken(Token newToken){
+    public synchronized void insertToken(Token newToken){
         this.tokens.add(newToken);
     }
     
-    public Token requestToken(int index){
+    public synchronized Token requestToken(int index){
         return this.tokens.get(index);
     }
     
-    public ArrayList requestList(){
+    public synchronized ArrayList<Token> requestList(){
         return this.tokens;
     }
 }
