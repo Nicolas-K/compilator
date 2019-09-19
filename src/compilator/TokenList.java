@@ -27,4 +27,10 @@ public class TokenList {
     public synchronized ArrayList<Token> requestList(){
         return this.tokens;
     }
+
+    public synchronized void printAllTokens() {
+        for(Token aux : this.tokens){
+            aux.print();
+        }
+    }
 }

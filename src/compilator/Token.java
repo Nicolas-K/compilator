@@ -37,8 +37,8 @@ public class Token {
     }
     
     public void print(){
-        System.out.printf("[Token] | Linha: %s\n", getLine());
-        System.out.printf("[Token] | Simbolo: %s\n", getSymbol());
-        System.out.printf("[Token] | Lexema: %s\n", getLexeme());
+        System.out.printf("[Token] | Line: %s\n", getLine());
+        System.out.printf("[Token] | Symbol: %s\n", getSymbol());
+        System.out.printf("[Token] | Lexeme: %s\n", getLexeme());
     }
 }

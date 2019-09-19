@@ -54,8 +54,10 @@ public class LexicalAnalyzer {
         
         try {
             reader = new BufferedReader(new FileReader(codePath));
+            System.out.println("[OpenFile] | File opened\n");
+            
         } catch (FileNotFoundException exception) {
-            System.out.println("[OpenFile] | Erro, arquivo não encontrado\n");
+            System.out.println("[OpenFile] | Error, file not found\n");
             exception.getMessage();
         }
     }
@@ -66,16 +68,17 @@ public class LexicalAnalyzer {
         try {
             if (reader != null) {
                 reader.close();
+                System.out.println("[CloseFile] | File closed\n");
             }
         } catch (IOException exception) {
-            System.out.println("[CloseFile] | Erro, não foi possível fechar o arquivo\n");
+            System.out.println("[CloseFile] | Error, file not closed\n");
             exception.getMessage();
         }
     }
     
-    public void debug(){
+    public void debug(String path){
         System.out.println("[LexicalAnalyzer] | Init\n");
-        openFile(null);
+        openFile(path);
         analyzeFile();
         closeFile();
     }
@@ -112,20 +115,23 @@ public class LexicalAnalyzer {
                 }
 
                 if (currentChar != -1) {
-                    System.out.printf("[analyzeFile] | Linha: %d\n", indexFile);
-                    System.out.printf("[analyzeFile] | Caracter: %c\n", currentChar);
+                    System.out.printf("[analyzeFile] | Line: %d\n", indexFile);
+                    System.out.printf("[analyzeFile] | Character: %c\n", currentChar);
                     
                     newToken = getToken(indexFile);
 
                     if (newToken != null) {
                         list.insertToken(newToken);
+                    } else {
+                        System.out.println("\n[analyzeFile] | All Tokens: ");
+                        list.printAllTokens();
+                        break;
                     }
                 }
-
             }
 
         } catch (IOException exception) {
-            System.out.println("[analyzeFile] | Erro, leitura/escrita do arquivo\n");
+            System.out.println("[analyzeFile] | Error, write/read file\n");
             exception.getMessage();
         }
     }

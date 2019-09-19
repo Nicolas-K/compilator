@@ -1,9 +1,14 @@
 package compilator;
 
+import java.util.Scanner;
+
 public class Compilator {
 
+    static Scanner scanf = new Scanner(System.in);
+    
     public static void main(String[] args) {
         LexicalAnalyzer lexical = LexicalAnalyzer.getInstance();
-        lexical.debug();
+        System.out.println("Insert file's path: ");
+        lexical.debug(scanf.nextLine());
     }
 }
