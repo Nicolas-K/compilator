@@ -9,6 +9,5 @@ public class Compilator {
     public static void main(String[] args) {
         LexicalAnalyzer lexical = LexicalAnalyzer.getInstance();
         System.out.println("Insert file's path: ");
-        lexical.debug(scanf.nextLine());
     }
 }

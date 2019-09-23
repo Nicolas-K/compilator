@@ -5,6 +5,7 @@ public class SyntacticAnalyzer {
     private static SyntacticAnalyzer instance = null;
     private LexicalAnalyzer lexicalAnalyzer = LexicalAnalyzer.getInstance();
     private Token token;
+    private String path;
 
     public static SyntacticAnalyzer getInstance() {
         if (instance == null) {
@@ -14,20 +15,20 @@ public class SyntacticAnalyzer {
     }
 
     public void syntaticAnalyze() {
-        token = lexicalAnalyzer.getNewToken();
+        token = lexicalAnalyzer.newToken(path);
 
         //try {
-        if (token.symbol.equals("sprograma")) {
-            token = lexicalAnalyzer.getNewToken();
+        if (token.getSymbol().equals("sprograma")) {
+            token = lexicalAnalyzer.newToken(path);
 
-            if (token.symbol.equals("sidentificador")) {
+            if (token.getSymbol().equals("sidentificador")) {
                 // insere_tabela(token.lexema, "nomedeprograma","","")
-                token = lexicalAnalyzer.getNewToken();
+                token = lexicalAnalyzer.newToken(path);
 
-                if (token.symbol.equals("sponto_vírgula")) {
+                if (token.getSymbol().equals("sponto_vírgula")) {
                     analyzeBlock();
 
-                    if (token.symbol.equals("sponto")) {
+                    if (token.getSymbol().equals("sponto")) {
                         // se acabou arquivo ou é comentario
                         //sucesso
                         //senao ERRO
@@ -49,7 +50,7 @@ public class SyntacticAnalyzer {
     }
 
     public void analyzeBlock() {
-        token = lexicalAnalyzer.getNewToken();
+        token = lexicalAnalyzer.newToken(path);
         analyzeVariablesDeclaration();
         analyzeSubRoutineDeclaration();
         analyzeCommands();
@@ -57,15 +58,15 @@ public class SyntacticAnalyzer {
 
     public void analyzeVariablesDeclaration() {
         // try {
-        if (token.symbol.equals("svar")) {
-            token = lexicalAnalyzer.getNewToken();
-            if (token.symbol.equals("sidentificador")) {
+        if (token.getSymbol().equals("svar")) {
+            token = lexicalAnalyzer.newToken(path);
+            if (token.getSymbol().equals("sidentificador")) {
 
-                while (token.symbol.equals("sidentificador")) {
+                while (token.getSymbol().equals("sidentificador")) {
                     analyzeVariables();
 
-                    if (token.symbol.equals("sponto_vírgula")) {
-                        token = lexicalAnalyzer.getNewToken();
+                    if (token.getSymbol().equals("sponto_vírgula")) {
+                        token = lexicalAnalyzer.newToken(path);
                     } else {
                         // ERRO
                     }
@@ -81,40 +82,40 @@ public class SyntacticAnalyzer {
 
     public void analyzeVariables() {
         do {
-            if (token.symbol.equals("sidentificador")) {
-                token = lexicalAnalyzer.getNewToken();
+            if (token.getSymbol().equals("sidentificador")) {
+                token = lexicalAnalyzer.newToken(path);
 
-                if (token.symbol.equals("svirgula") || token.symbol.equals("sdoispontos")) {
-                    if (token.symbol.equals("svirgula")) {
-                        token = lexicalAnalyzer.getNewToken();
+                if (token.getSymbol().equals("svirgula") || token.getSymbol().equals("sdoispontos")) {
+                    if (token.getSymbol().equals("svirgula")) {
+                        token = lexicalAnalyzer.newToken(path);
 
-                        if (token.symbol.equals("sdoispontos")) {
+                        if (token.getSymbol().equals("sdoispontos")) {
                             // ERRO
                         }
                     }
                 }
 
             }
-        } while (!token.symbol.equals("sdoispontos"));
+        } while (!token.getSymbol().equals("sdoispontos"));
     }
 
     public void analyzeSubRoutineDeclaration() {
         int flag = 0;
 
         //try {
-        if (token.symbol.equals("sprocedimento") || token.symbol.equals("sfuncao")) {
+        if (token.getSymbol().equals("sprocedimento") || token.getSymbol().equals("sfuncao")) {
             flag = 1;
         }
 
-        while (token.symbol.equals("sprocedimento") || token.symbol.equals("sfuncao")) {
-            if (token.symbol.equals("sprocedimento")) {
+        while (token.getSymbol().equals("sprocedimento") || token.getSymbol().equals("sfuncao")) {
+            if (token.getSymbol().equals("sprocedimento")) {
                 analyzeProcedureDeclaration();
             } else {
                 analyzeFunctionDeclaration();
             }
 
-            if (token.symbol.equals("sponto_vírgula")) {
-                token = lexicalAnalyzer.getNewToken();
+            if (token.getSymbol().equals("sponto_vírgula")) {
+                token = lexicalAnalyzer.newToken(path);
             } else {
                 // ERRO
             }
