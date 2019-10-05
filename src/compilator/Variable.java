@@ -6,6 +6,7 @@ public class Variable extends Symbol {
     private String memory;
 
     public Variable() {
+        super();
         type = null;
         memory = null;
     }
