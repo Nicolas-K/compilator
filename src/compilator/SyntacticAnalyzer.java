@@ -13,6 +13,10 @@ public class SyntacticAnalyzer {
         }
         return instance;
     }
+    
+    public void receiveFilePath(String path){
+        this.path = path;
+    }
 
     public void syntaticAnalyze() {
         token = lexicalAnalyzer.newToken(path);

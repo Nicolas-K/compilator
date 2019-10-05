@@ -18,7 +18,7 @@ public class LexicalAnalyzer {
     private int indexFileLine;
     private int charRead;
     private char currentChar;
-    private TokenList list = TokenList.getInstance();
+    private TokenList listTokens = TokenList.getInstance();
 
     public static LexicalAnalyzer getInstance() {
         if (instance == null) {
@@ -73,7 +73,7 @@ public class LexicalAnalyzer {
         return false;
     }
 
-    public void closeFile() {
+    public boolean closeFile() {
         System.out.println("[CloseFile] | Init\n");
 
         try {
@@ -82,15 +82,17 @@ public class LexicalAnalyzer {
                 System.out.println("[CloseFile] | File closed\n");
             }
 
+            return true;
         } catch (IOException exception) {
             System.out.println("[CloseFile] | Error, file not closed\n");
         }
-
+        
+        return false;
     }
 
     public Token newToken(String path) {
         Token createToken;
-        
+
         if (reader == null) {
             if (!openFile(path)) {
                 return null;
@@ -106,7 +108,7 @@ public class LexicalAnalyzer {
 
                 while ((toIgnore.contains(currentChar)) && charRead != -1) {
                     if (currentChar == '{') {
-                        
+
                         while (currentChar != '}' && charRead != -1) {
                             charRead = reader.read();
                             currentChar = (char) charRead;
@@ -136,21 +138,21 @@ public class LexicalAnalyzer {
                     System.out.printf("[newToken] | Line: %d\n", indexFileLine);
                     System.out.printf("[newToken] | Character: %c\n", currentChar);
                     createToken = getToken(indexFileLine);
+                    listTokens.insertToken(createToken);
                     return createToken;
-                    
+
                 } else {
                     closeFile();
                 }
-
+                
             } else {
                 closeFile();
             }
-            return null;
-            
+
         } catch (IOException exception) {
             System.out.println("[newToken] | Error, read file\n");
         }
-        
+
         return null;
     }
 
@@ -187,7 +189,7 @@ public class LexicalAnalyzer {
         } catch (LexicalException lexical) {
             lexical.characterInvalid(Integer.toString(indexFile), currentChar);
         }
-        
+
         return null;
     }
 
@@ -422,7 +424,7 @@ public class LexicalAnalyzer {
                 }
             } else if (character == '=') {
                 relational.setSymbol("sig");
-                
+
                 charRead = reader.read();
                 currentChar = (char) charRead;
 
@@ -433,7 +435,7 @@ public class LexicalAnalyzer {
                 if (currentChar == '=') {
                     operation += currentChar;
                     relational.setSymbol("Sdif");
-                    
+
                     charRead = reader.read();
                     currentChar = (char) charRead;
 
