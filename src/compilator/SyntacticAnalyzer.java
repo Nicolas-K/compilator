@@ -6,6 +6,7 @@ public class SyntacticAnalyzer {
     private LexicalAnalyzer lexicalAnalyzer = LexicalAnalyzer.getInstance();
     private Token token;
     private String path;
+    private SymbolTable table = SymbolTable.getInstance();
 
     public static SyntacticAnalyzer getInstance() {
         if (instance == null) {
@@ -18,7 +19,7 @@ public class SyntacticAnalyzer {
         this.path = path;
     }
 
-    public void syntaticAnalyze() {
+    public void syntaticAnalyze(String path) {
         token = lexicalAnalyzer.newToken(path);
 
         try {
