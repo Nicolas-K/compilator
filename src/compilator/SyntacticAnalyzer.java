@@ -14,12 +14,12 @@ public class SyntacticAnalyzer {
         }
         return instance;
     }
-    
-    public void receiveFilePath(String path){
+
+    public void receiveFilePath(String path) {
         this.path = path;
     }
 
-    public void syntaticAnalyze(String path) {
+    public void syntaticAnalyze() {
         token = lexicalAnalyzer.newToken(path);
 
         try {
@@ -38,13 +38,13 @@ public class SyntacticAnalyzer {
                             //sucesso
                             //senao ERRO
                         } else {
-                            // ERRO
+                            throw new SyntacticException();
                         }
                     } else {
-                        //ERRO
+                        throw new SyntacticException();
                     }
                 } else {
-                    // ERRO
+                    throw new SyntacticException();
                 }
             } else {
                 throw new SyntacticException();
@@ -60,6 +60,9 @@ public class SyntacticAnalyzer {
         analyzeCommands();
     }
 
+    /*
+     *  Analise Relacionada a Variaveis
+     */
     public void analyzeVariablesDeclaration() {
         try {
             if (token.getSymbol().equals("svar")) {
@@ -103,6 +106,9 @@ public class SyntacticAnalyzer {
         } while (!token.getSymbol().equals("sdoispontos"));
     }
 
+    /*
+     *  Analise Relacionada a SubRotinas
+     */
     public void analyzeSubRoutineDeclaration() {
         int flag = 0;
 
@@ -137,11 +143,69 @@ public class SyntacticAnalyzer {
 
     }
 
+    public void analyzeProcedureCall() {
+
+    }
+
     public void analyzeFunctionDeclaration() {
 
     }
 
+    public void analyzeFunctionCall() {
+
+    }
+
+    /*
+     *  Analisa de Comandos
+     */
     public void analyzeCommands() {
+
+    }
+
+    public void analyzeCommand() {
+
+    }
+
+    public void analyzeRead() {
+
+    }
+
+    public void analyzeWrite() {
+
+    }
+
+    public void analyzeWhile() {
+
+    }
+
+    public void analyzeIf() {
+
+    }
+
+    public void analyzeAttribution() {
+
+    }
+
+    /*
+     *  Analise Relacionado a Tipo, Termos e Expressões
+     */
+    public void analyzeType() {
+
+    }
+
+    public void analyzeExpressions() {
+
+    }
+
+    public void analyzeExpression() {
+
+    }
+
+    public void analyzeTerm() {
+
+    }
+
+    public void analyzeFactor() {
 
     }
 }
