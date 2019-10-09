@@ -90,7 +90,7 @@ public class LexicalAnalyzer {
         return false;
     }
 
-    public Token newToken(String path) {
+    public Token lexicalAnalyze(String path) {
         Token createToken;
 
         if (reader == null) {
