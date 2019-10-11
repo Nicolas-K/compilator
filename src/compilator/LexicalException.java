@@ -1,6 +1,6 @@
 package compilator;
 
-public class LexicalException extends Exception{
+public class LexicalException {
 
     public void digitError(String line, char character){
         System.out.printf("[DigitError] ´Line: %s Character: %c  | Invalid Digit Format\n", line, character);
