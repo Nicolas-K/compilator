@@ -20,7 +20,7 @@ public class LexicalAnalyzer {
     private char currentChar;
     
     private TokenList listTokens = TokenList.getInstance();
-    private static LexicalException errorMessage;
+    private static LexicalException message;
 
     public static LexicalAnalyzer getInstance() {
         if (instance == null) {
@@ -60,7 +60,7 @@ public class LexicalAnalyzer {
         punctuations.add('.');
     }
 
-    public boolean openFile(String codePath) {
+    private boolean openFile(String codePath) {
         System.out.println("[OpenFile] | Init\n");
 
         try {
@@ -75,15 +75,7 @@ public class LexicalAnalyzer {
         return false;
     }
     
-    public boolean hasFileEnd(){
-        if(charRead == -1){
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean closeFile() {
+    private boolean closeFile() {
         System.out.println("[CloseFile] | Init\n");
 
         try {
@@ -99,12 +91,20 @@ public class LexicalAnalyzer {
 
         return false;
     }
+    
+    protected boolean hasFileEnd(){
+        if(charRead == -1){
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     public Token lexicalAnalyze(String path) {
         Token createToken;
 
         if (reader == null) {
-            if (!openFile(path)) {
+            if (!this.openFile(path)) {
                 return null;
             }
         }
@@ -145,16 +145,16 @@ public class LexicalAnalyzer {
                 if (!hasFileEnd()) {
                     System.out.printf("[newToken] | Line: %d\n", indexFileLine);
                     System.out.printf("[newToken] | Character: %c\n", currentChar);
-                    createToken = getToken(indexFileLine);
+                    createToken = this.getToken(indexFileLine);
                     listTokens.insertToken(createToken);
                     return createToken;
 
                 } else {
-                    closeFile();
+                    this.closeFile();
                 }
 
             } else {
-                closeFile();
+                this.closeFile();
             }
 
         } catch (Exception e) {
@@ -165,7 +165,7 @@ public class LexicalAnalyzer {
         return null;
     }
 
-    public Token getToken(int indexFile) throws Exception {
+    private Token getToken(int indexFile) throws Exception {
         Token newToken = new Token();
 
         System.out.println("[getToken] | Init");
@@ -189,14 +189,14 @@ public class LexicalAnalyzer {
             newToken = isPunctuation(currentChar, indexFile);
 
         } else {
-            errorMessage.characterInvalid(Integer.toString(indexFile), currentChar);
+            message.characterInvalid(Integer.toString(indexFile), currentChar);
             throw new Exception();
         }
 
         return newToken;
     }
 
-    public Token isDigit(char character, int lineIndex) throws Exception {
+    private Token isDigit(char character, int lineIndex) throws Exception {
         Token digit = new Token();
         String number = "";
 
@@ -218,7 +218,7 @@ public class LexicalAnalyzer {
         return digit;
     }
 
-    public Token isLetter(char character, int lineIndex) throws Exception {
+    private Token isLetter(char character, int lineIndex) throws Exception {
         Token letter = new Token();
         String word = "";
 
@@ -308,7 +308,7 @@ public class LexicalAnalyzer {
         return letter;
     }
 
-    public Token isAttribution(char character, int lineIndex) throws Exception {
+    private Token isAttribution(char character, int lineIndex) throws Exception {
         Token attribution = new Token();
         String attr = "";
 
@@ -333,7 +333,7 @@ public class LexicalAnalyzer {
         return attribution;
     }
 
-    public Token isAritmetic(char character, int lineIndex) throws Exception {
+    private Token isAritmetic(char character, int lineIndex) throws Exception {
         Token aritmetic = new Token();
 
         System.out.printf("[isAritmetic] | Aritmetic: %c\n", character);
@@ -353,7 +353,7 @@ public class LexicalAnalyzer {
         return aritmetic;
     }
 
-    public Token isRelational(char character, int lineIndex) throws Exception {
+    private Token isRelational(char character, int lineIndex) throws Exception {
         Token relational = new Token();
         String operation = "";
 
@@ -404,7 +404,7 @@ public class LexicalAnalyzer {
                 currentChar = (char) charRead;
 
             } else {
-                errorMessage.relationalError(operation, character);
+                message.relationalError(operation, character);
                 throw new Exception();
             }
         }
@@ -414,7 +414,7 @@ public class LexicalAnalyzer {
         return relational;
     }
 
-    public Token isPunctuation(char character, int lineIndex) throws Exception {
+    private Token isPunctuation(char character, int lineIndex) throws Exception {
         Token punctuation = new Token();
 
         System.out.printf("[isPunctuation] | Punctuation: %c\n", character);

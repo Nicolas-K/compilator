@@ -8,7 +8,7 @@ public class SyntacticAnalyzer {
     private Token token;
     private String path;
 
-    private static SyntacticException errorMessage;
+    private static SyntacticException message;
     private SymbolTable table = SymbolTable.getInstance();
 
     public static SyntacticAnalyzer getInstance() {
@@ -18,8 +18,18 @@ public class SyntacticAnalyzer {
         return instance;
     }
 
-    public void receiveFilePath(String path) {
+    protected void receiveFilePath(String path) {
         this.path = path;
+    }
+
+    /*
+     *  Ocorrencia de erro no analisador léxico
+     */
+    private boolean isEmpty(Token receivedToken) {
+        if (receivedToken == null) {
+            return true;
+        }
+        return false;
     }
 
     public void syntaticAnalyze() {
@@ -28,42 +38,55 @@ public class SyntacticAnalyzer {
         token = lexicalAnalyzer.lexicalAnalyze(path);
 
         try {
-            if (token.getSymbol().equals("sprograma")) {
-                token = lexicalAnalyzer.lexicalAnalyze(path);
-
-                if (token.getSymbol().equals("sidentificador")) {
-                    symbolProgram.setLexemeName(token.getLexeme());
-                    symbolProgram.setScope("");
-                    table.insertSymbol(symbolProgram);
+            if (!isEmpty(token)) {
+                if (token.getSymbol().equals("sprograma")) {
                     token = lexicalAnalyzer.lexicalAnalyze(path);
 
-                    if (token.getSymbol().equals("sponto_vírgula")) {
-                        analyzeBlock();
+                    if (!isEmpty(token)) {
+                        if (token.getSymbol().equals("sidentificador")) {
+                            symbolProgram.setLexemeName(token.getLexeme());
+                            symbolProgram.setScope("");
+                            table.insertSymbol(symbolProgram);
+                            token = lexicalAnalyzer.lexicalAnalyze(path);
 
-                        if (token.getSymbol().equals("sponto")) {
+                            if (!isEmpty(token)) {
+                                if (token.getSymbol().equals("sponto_vírgula")) {
+                                    analyzeBlock();
 
-                            if (!lexicalAnalyzer.hasFileEnd()) {
-                                errorMessage.endoffileError(token);
+                                    if (token.getSymbol().equals("sponto")) {
+                                        if (!lexicalAnalyzer.hasFileEnd()) {
+                                            message.endoffileError(token);
+                                            throw new Exception();
+                                        }
+                                    } else {
+                                        message.dotError(token);
+                                        throw new Exception();
+                                    }
+
+                                } else {
+                                    message.semicolonError(token);
+                                    throw new Exception();
+                                }
+
+                            } else {
                                 throw new Exception();
                             }
 
                         } else {
-                            errorMessage.dotError(token);
+                            message.identifierError(token);
                             throw new Exception();
                         }
 
                     } else {
-                        errorMessage.semicolonError(token);
                         throw new Exception();
                     }
 
                 } else {
-                    errorMessage.identifierError(token);
+                    message.programError(token);
                     throw new Exception();
                 }
 
             } else {
-                errorMessage.programError(token);
                 throw new Exception();
             }
 
@@ -71,43 +94,59 @@ public class SyntacticAnalyzer {
             System.out.println("[syntaticAnalyze] | Error has ocurred\n");
             System.out.println("[syntaticAnalyze] | Ending compilation process");
         }
+
+        symbolProgram = null;
     }
 
-    public void analyzeBlock() throws Exception {
+    private void analyzeBlock() throws Exception {
         token = lexicalAnalyzer.lexicalAnalyze(path);
-        analyzeVariablesDeclaration();
-        analyzeSubRoutineDeclaration();
-        analyzeCommands();
+
+        if (!isEmpty(token)) {
+            analyzeVariablesDeclaration();
+            analyzeSubRoutineDeclaration();
+            analyzeCommands();
+        } else {
+            throw new Exception();
+        }
     }
 
     /*
      *  Analise Relacionada a Variaveis
      */
-    public void analyzeVariablesDeclaration() throws Exception {
+    private void analyzeVariablesDeclaration() throws Exception {
         if (token.getSymbol().equals("svar")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
 
-            if (token.getSymbol().equals("sidentificador")) {
-                while (token.getSymbol().equals("sidentificador")) {
-                    analyzeVariables();
+            if (!isEmpty(token)) {
+                if (token.getSymbol().equals("sidentificador")) {
+                    while (token.getSymbol().equals("sidentificador")) {
+                        analyzeVariables();
 
-                    if (token.getSymbol().equals("sponto_vírgula")) {
-                        token = lexicalAnalyzer.lexicalAnalyze(path);
-                    } else {
-                        errorMessage.semicolonError(token);
-                        throw new Exception();
+                        if (token.getSymbol().equals("sponto_vírgula")) {
+                            token = lexicalAnalyzer.lexicalAnalyze(path);
+
+                            if (isEmpty(token)) {
+                                throw new Exception();
+                            }
+
+                        } else {
+                            message.semicolonError(token);
+                            throw new Exception();
+                        }
                     }
-                }
 
+                } else {
+                    message.identifierError(token);
+                    throw new Exception();
+                }
             } else {
-                errorMessage.identifierError(token);
                 throw new Exception();
             }
         }
     }
 
-    public void analyzeVariables() throws Exception {
-        do {
+    private void analyzeVariables() throws Exception {
+        while (!token.getSymbol().equals("sdoispontos")) {
             Variable symbolVariable = new Variable();
 
             if (token.getSymbol().equals("sidentificador")) {
@@ -116,30 +155,44 @@ public class SyntacticAnalyzer {
                 symbolVariable.setLexemeName(token.getLexeme());
                 symbolVariable.setScope("");
                 table.insertSymbol(symbolVariable);
+
                 token = lexicalAnalyzer.lexicalAnalyze(path);
 
-                if (token.getSymbol().equals("svirgula") || token.getSymbol().equals("sdoispontos")) {
-                    if (token.getSymbol().equals("svirgula")) {
-                        token = lexicalAnalyzer.lexicalAnalyze(path);
+                if (!isEmpty(token)) {
+                    if (token.getSymbol().equals("svirgula") || token.getSymbol().equals("sdoispontos")) {
+                        if (token.getSymbol().equals("svirgula")) {
 
-                        if (token.getSymbol().equals("sdoispontos")) {
-                            errorMessage.colonError(token);
-                            throw new Exception();
+                            token = lexicalAnalyzer.lexicalAnalyze(path);
+
+                            if (!isEmpty(token)) {
+                                if (token.getSymbol().equals("sdoispontos")) {
+                                    message.colonError(token);
+                                    throw new Exception();
+                                }
+
+                            } else {
+                                throw new Exception();
+                            }
                         }
                     }
+                } else {
+                    throw new Exception();
                 }
-
             }
-        } while (!token.getSymbol().equals("sdoispontos"));
+            symbolVariable = null;
+        }
     }
 
     /*
      *  Analise Relacionada a SubRotinas
      */
-    public void analyzeSubRoutineDeclaration() throws Exception {
+    private void analyzeSubRoutineDeclaration() throws Exception {
         int flag = 0;
 
         if (token.getSymbol().equals("sprocedimento") || token.getSymbol().equals("sfuncao")) {
+            //auxrot:= rotulo
+            //GERA(´ ´,JMP,rotulo,´ ´) {Salta sub-rotinas}
+            // rotulo:= rotulo + 1 
             flag = 1;
         }
 
@@ -152,71 +205,42 @@ public class SyntacticAnalyzer {
 
             if (token.getSymbol().equals("sponto_vírgula")) {
                 token = lexicalAnalyzer.lexicalAnalyze(path);
+
+                if (isEmpty(token)) {
+                    throw new Exception();
+                }
+
             } else {
-                errorMessage.semicolonError(token);
+                message.semicolonError(token);
                 throw new Exception();
             }
         }
 
         if (flag == 1) {
-
+            //Gera(auxrot,NULL,´ ´,´ ´) {início do principal} 
         }
     }
 
-    public void analyzeProcedureDeclaration() throws Exception {
+    private void analyzeProcedureDeclaration() throws Exception {
         ProcedureProgram symbolProcedure = new ProcedureProgram();
-
+        
         token = lexicalAnalyzer.lexicalAnalyze(path);
 
-        if (token.getSymbol().equals("sidentificador")) {
-            //Pesquisa
-            //Inserir tabela de símbolos
-            //Gera rótulo
-            token = lexicalAnalyzer.lexicalAnalyze(path);
-            if (token.getSymbol().equals("sponto_vírgula")) {
-                analyzeBlock();
-            } else {
-                errorMessage.semicolonError(token);
-                throw new Exception();
-            }
-        } else {
-            errorMessage.identifierError(token);
-            throw new Exception();
-        }
-        //Desempilha e volta nível
-    }
-
-    public void analyzeProcedureCall() throws Exception {
-        //TODO
-    }
-
-    public void analyzeFunctionDeclaration() throws Exception {
-        Function symbolFunction = new Function();
-
-        token = lexicalAnalyzer.lexicalAnalyze(path);
-
-        //Label
-        if (token.getSymbol().equals("sidentificador")) {
-            //pesquisa
-            //insere tabela
-            token = lexicalAnalyzer.lexicalAnalyze(path);
-
-            if (token.getSymbol().equals("sdoispontos")) {
+        if (!isEmpty(token)) {
+            if (token.getSymbol().equals("sidentificador")) {
+                //Pesquisa
+                //Inserir tabela de símbolos
+                symbolProcedure.setLexemeName(token.getLexeme());
+                symbolProcedure.setScope("");
+                table.insertSymbol(symbolProcedure);
+                //Gera rótulo
                 token = lexicalAnalyzer.lexicalAnalyze(path);
 
-                if (token.getSymbol().equals("sinteiro") || token.getSymbol().equals("sbooleano")) {
-                    if (token.getSymbol().equals("sinteiro")) {
-                        //tabela de símbolo tipo = função inteiro
-                    } else {
-                        //função boolean
-                    }
-
-                    token = lexicalAnalyzer.lexicalAnalyze(path);
-
+                if (!isEmpty(token)) {
                     if (token.getSymbol().equals("sponto_vírgula")) {
                         analyzeBlock();
                     } else {
-                        errorMessage.semicolonError(token);
+                        message.semicolonError(token);
                         throw new Exception();
                     }
 
@@ -225,50 +249,132 @@ public class SyntacticAnalyzer {
                 }
 
             } else {
-                errorMessage.colonError(token);
+                message.identifierError(token);
                 throw new Exception();
             }
 
         } else {
-            errorMessage.identifierError(token);
             throw new Exception();
         }
 
+        symbolProcedure = null;
+        //Desempilha e volta nível
+    }
+
+    private void analyzeProcedureCall() throws Exception {
+        //TODO
+    }
+
+    private void analyzeFunctionDeclaration() throws Exception {
+        Function symbolFunction = new Function();
+
+        token = lexicalAnalyzer.lexicalAnalyze(path);
+
+        if (!isEmpty(token)) {
+            //Label
+            if (token.getSymbol().equals("sidentificador")) {
+                //pesquisa
+                //insere tabela
+                token = lexicalAnalyzer.lexicalAnalyze(path);
+
+                if (!isEmpty(token)) {
+                    if (token.getSymbol().equals("sdoispontos")) {
+                        token = lexicalAnalyzer.lexicalAnalyze(path);
+
+                        if (!isEmpty(token)) {
+                            if (token.getSymbol().equals("sinteiro") || token.getSymbol().equals("sbooleano")) {
+                                if (token.getSymbol().equals("sinteiro")) {
+                                    //tabela de símbolo tipo = função inteiro
+                                } else {
+                                    //função boolean
+                                }
+
+                                token = lexicalAnalyzer.lexicalAnalyze(path);
+
+                                if (!isEmpty(token)) {
+                                    if (token.getSymbol().equals("sponto_vírgula")) {
+                                        analyzeBlock();
+                                    } else {
+                                        message.semicolonError(token);
+                                        throw new Exception();
+                                    }
+                                } else {
+                                    throw new Exception();
+                                }
+
+                            } else {
+                                message.typeError(token);
+                                throw new Exception();
+                            }
+                        } else {
+                            throw new Exception();
+                        }
+
+                    } else {
+                        message.colonError(token);
+                        throw new Exception();
+                    }
+
+                } else {
+                    throw new Exception();
+                }
+
+            } else {
+                message.identifierError(token);
+                throw new Exception();
+            }
+
+        } else {
+            throw new Exception();
+        }
+
+        symbolFunction = null;
         //Desempilha u volta nível
     }
 
-    public void analyzeFunctionCall() throws Exception {
+    private void analyzeFunctionCall() throws Exception {
         //TODO
     }
 
     /*
      *  Analisa de Comandos
      */
-    public void analyzeCommands() throws Exception {
+    private void analyzeCommands() throws Exception {
         if (token.getSymbol().equals("sinício")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
-            analyzeCommand();
 
-            while (!token.getSymbol().equals("sfim")) {
-                if (token.getSymbol().equals("sponto_vírgula")) {
-                    token = lexicalAnalyzer.lexicalAnalyze(path);
+            if (!isEmpty(token)) {
+                analyzeCommand();
 
-                    if (!token.getSymbol().equals("sfim")) {
-                        analyzeCommand();
+                while (!token.getSymbol().equals("sfim")) {
+                    if (token.getSymbol().equals("sponto_vírgula")) {
+                        token = lexicalAnalyzer.lexicalAnalyze(path);
+
+                        if (!isEmpty(token)) {
+                            if (!token.getSymbol().equals("sfim")) {
+                                analyzeCommand();
+                            }
+                        } else {
+                            throw new Exception();
+                        }
+
+                    } else {
+                        message.semicolonError(token);
+                        throw new Exception();
                     }
-                } else {
-                    errorMessage.semicolonError(token);
-                    throw new Exception();
+                    token = lexicalAnalyzer.lexicalAnalyze(path);
                 }
-                token = lexicalAnalyzer.lexicalAnalyze(path);
+            } else {
+                throw new Exception();
             }
+
         } else {
-            errorMessage.beginError(token);
+            message.beginError(token);
             throw new Exception();
         }
     }
 
-    public void analyzeCommand() throws Exception {
+    private void analyzeCommand() throws Exception {
         if (token.getSymbol().equals("sidentificador")) {
             analyzeAttrProcedure();
         } else if (token.getSymbol().equals("sse")) {
@@ -284,44 +390,68 @@ public class SyntacticAnalyzer {
         }
     }
 
-    public void analyzeAttrProcedure() throws Exception {
+    private void analyzeAttrProcedure() throws Exception {
         token = lexicalAnalyzer.lexicalAnalyze(path);
 
-        if (token.getSymbol().equals("satribuição")) {
-            analyzeAttribution();
-        } else {
-            analyzeProcedureCall();
-        }
-    }
+        if (!isEmpty(token)) {
 
-    public void analyzeRead() throws Exception {
-        token = lexicalAnalyzer.lexicalAnalyze(path);
-
-        if (token.getSymbol().equals("sabre_parênteses")) {
-            token = lexicalAnalyzer.lexicalAnalyze(path);
-
-            if (token.getSymbol().equals("sidentificador")) {
-                // se pesquisa tabela simbolos var
-                token = lexicalAnalyzer.lexicalAnalyze(path);
-
-                if (token.getSymbol().equals("sfecha_parênteses")) {
-                    token = lexicalAnalyzer.lexicalAnalyze(path);
-                } else {
-                    errorMessage.closeparenthesesError(token);
-                    throw new Exception();
-                }
-                // senao throw new SyntacticException();
+            if (token.getSymbol().equals("satribuição")) {
+                analyzeAttribution();
             } else {
-                errorMessage.identifierError(token);
-                throw new Exception();
+                analyzeProcedureCall();
             }
+
         } else {
-            errorMessage.openparenthesesError(token);
             throw new Exception();
         }
     }
 
-    public void analyzeWrite() throws Exception {
+    private void analyzeRead() throws Exception {
+        token = lexicalAnalyzer.lexicalAnalyze(path);
+
+        if (!isEmpty(token)) {
+            if (token.getSymbol().equals("sabre_parênteses")) {
+                token = lexicalAnalyzer.lexicalAnalyze(path);
+
+                if (!isEmpty(token)) {
+                    if (token.getSymbol().equals("sidentificador")) {
+                        // se pesquisa tabela simbolos var
+                        token = lexicalAnalyzer.lexicalAnalyze(path);
+
+                        if (!isEmpty(token)) {
+                            if (token.getSymbol().equals("sfecha_parênteses")) {
+                                token = lexicalAnalyzer.lexicalAnalyze(path);
+
+                                if (isEmpty(token)) {
+                                    throw new Exception();
+                                }
+
+                            } else {
+                                message.closeparenthesesError(token);
+                                throw new Exception();
+                            }
+                        }
+                        // senao throw new SyntacticException();
+                    } else {
+                        message.identifierError(token);
+                        throw new Exception();
+                    }
+
+                } else {
+                    throw new Exception();
+                }
+
+            } else {
+                message.openparenthesesError(token);
+                throw new Exception();
+            }
+
+        } else {
+            throw new Exception();
+        }
+    }
+
+    private void analyzeWrite() throws Exception {
         token = lexicalAnalyzer.lexicalAnalyze(path);
 
         if (token.getSymbol().equals("sabre_parênteses")) {
@@ -333,108 +463,167 @@ public class SyntacticAnalyzer {
 
                 if (token.getSymbol().equals("sfecha_parênteses")) {
                     token = lexicalAnalyzer.lexicalAnalyze(path);
+
+                    if (isEmpty(token)) {
+                        throw new Exception();
+                    }
+
                 } else {
-                    errorMessage.closeparenthesesError(token);
+                    message.closeparenthesesError(token);
                     throw new Exception();
                 }
                 // senao throw new SyntacticException();
             } else {
-                errorMessage.identifierError(token);
+                message.identifierError(token);
                 throw new Exception();
             }
         } else {
-            errorMessage.openparenthesesError(token);
+            message.openparenthesesError(token);
             throw new Exception();
         }
     }
 
-    public void analyzeWhile() throws Exception {
+    private void analyzeWhile() throws Exception {
         //Rotulos definição
         //Gera
         // rotulo = rotulo + 1
         token = lexicalAnalyzer.lexicalAnalyze(path);
-        analyzeExpressions();
 
-        if (token.getSymbol().equals("sfaca")) {
-            //rot2 = rotulo
-            // gera
-            // rotulo = rotulo + 1
-            token = lexicalAnalyzer.lexicalAnalyze(path);
-            analyzeCommand();
-            //Gera
-            //Gera
+        if (!isEmpty(token)) {
+            analyzeExpressions();
+
+            if (token.getSymbol().equals("sfaca")) {
+                //rot2 = rotulo
+                // gera
+                // rotulo = rotulo + 1
+                token = lexicalAnalyzer.lexicalAnalyze(path);
+
+                if (!isEmpty(token)) {
+                    analyzeCommand();
+                    //Gera
+                    //Gera
+                } else {
+                    throw new Exception();
+                }
+
+            } else {
+                message.doError(token);
+                throw new Exception();
+            }
         } else {
-            errorMessage.doError(token);
             throw new Exception();
         }
-
     }
 
-    public void analyzeIf() throws Exception {
+    private void analyzeIf() throws Exception {
         token = lexicalAnalyzer.lexicalAnalyze(path);
-        analyzeExpression();
 
-        if (token.getSymbol().equals("sentao")) {
-            token = lexicalAnalyzer.lexicalAnalyze(path);
-            analyzeCommand();
+        if (!isEmpty(token)) {
+            analyzeExpression();
 
-            if (token.getSymbol().equals("ssenao")) {
+            if (token.getSymbol().equals("sentao")) {
                 token = lexicalAnalyzer.lexicalAnalyze(path);
-                analyzeCommand();
+
+                if (!isEmpty(token)) {
+                    analyzeCommand();
+
+                    if (token.getSymbol().equals("ssenao")) {
+                        token = lexicalAnalyzer.lexicalAnalyze(path);
+
+                        if (!isEmpty(token)) {
+                            analyzeCommand();
+                        } else {
+                            throw new Exception();
+                        }
+                    }
+
+                } else {
+                    throw new Exception();
+                }
+
+            } else {
+                message.thenError(token);
+                throw new Exception();
             }
 
         } else {
-            errorMessage.thenError(token);
             throw new Exception();
         }
     }
 
-    public void analyzeAttribution() throws Exception {
+    private void analyzeAttribution() throws Exception {
         //TODO
     }
 
     /*
      *  Analise Relacionado a Tipo, Termos e Expressões
      */
-    public void analyzeType() throws Exception {
+    private void analyzeType() throws Exception {
         if (token.getSymbol().equals("sinteiro") || token.getSymbol().equals("sbooleano")) {
             table.setTypeSymbols(token.getSymbol());
         } else {
-            errorMessage.typeError(token);
+            message.typeError(token);
             throw new Exception();
         }
 
         token = lexicalAnalyzer.lexicalAnalyze(path);
+
+        if (isEmpty(token)) {
+            throw new Exception();
+        }
     }
 
-    public void analyzeExpressions() throws Exception {
+    private void analyzeExpressions() throws Exception {
         analyzeExpression();
+
         if ((token.getSymbol().equals("smaior")) || (token.getSymbol().equals("smaiorig")) || (token.getSymbol().equals("sig")) || (token.getSymbol().equals("smenor")) || (token.getSymbol().equals("smenorig")) || (token.getSymbol().equals("sdif"))) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
-            analyzeExpression();
+
+            if (!isEmpty(token)) {
+                analyzeExpression();
+            } else {
+                throw new Exception();
+            }
         }
     }
 
-    public void analyzeExpression() throws Exception {
+    private void analyzeExpression() throws Exception {
         if (token.getSymbol().equals("smais") || token.getSymbol().equals("smenos")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
+
+            if (isEmpty(token)) {
+                throw new Exception();
+            }
         }
+
         analyzeTerm();
+
         while (token.getSymbol().equals("smais") || token.getSymbol().equals("smenos") || token.getSymbol().equals("sou")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
-            analyzeTerm();
+
+            if (!isEmpty(token)) {
+                analyzeTerm();
+            } else {
+                throw new Exception();
+            }
         }
     }
 
-    public void analyzeTerm() throws Exception {
+    private void analyzeTerm() throws Exception {
         analyzeFactor();
+
         while ((token.getSymbol().equals("smult")) || (token.getSymbol().equals("sdiv")) || (token.getSymbol().equals("se"))) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
-            analyzeFactor();
+
+            if (!isEmpty(token)) {
+                analyzeFactor();
+            } else {
+                throw new Exception();
+            }
         }
     }
 
-    public void analyzeFactor() throws Exception {
+    private void analyzeFactor() throws Exception {
         if (token.getSymbol().equals("sidentificador")) {
             //Se pesquisa_tabela(token.lexema,nível,ind)
             //Então Se (TabSimb[ind].tipo = “função inteiro”) ou (TabSimb[ind].tipo = “função booleano”)
@@ -444,24 +633,50 @@ public class SyntacticAnalyzer {
 
         } else if (token.getSymbol().equals("snumero")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
+
+            if (isEmpty(token)) {
+                throw new Exception();
+            }
+
         } else if (token.getSymbol().equals("snao")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
-            analyzeFactor();
+
+            if (!isEmpty(token)) {
+                analyzeFactor();
+            } else {
+                throw new Exception();
+            }
+
         } else if (token.getSymbol().equals("sabre_parênteses")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
-            analyzeExpressions();
 
-            if (token.getSymbol().equals("sfecha_parênteses")) {
-                token = lexicalAnalyzer.lexicalAnalyze(path);
+            if (!isEmpty(token)) {
+                analyzeExpressions();
+
+                if (token.getSymbol().equals("sfecha_parênteses")) {
+                    token = lexicalAnalyzer.lexicalAnalyze(path);
+
+                    if (isEmpty(token)) {
+                        throw new Exception();
+                    }
+
+                } else {
+                    message.closeparenthesesError(token);
+                    throw new Exception();
+                }
             } else {
-                errorMessage.closeparenthesesError(token);
                 throw new Exception();
             }
 
         } else if (token.getSymbol().equals("sverdadeiro") || token.getSymbol().equals("sfalso")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
+
+            if (isEmpty(token)) {
+                throw new Exception();
+            }
+
         } else {
-            errorMessage.booleanError(token);
+            message.booleanError(token);
             throw new Exception();
         }
     }
