@@ -171,22 +171,22 @@ public class LexicalAnalyzer {
         System.out.println("[getToken] | Init");
 
         if (Character.isDigit(currentChar)) {
-            newToken = isDigit(currentChar, indexFile);
+            newToken = this.isDigit(currentChar, indexFile);
 
         } else if (Character.isLetter(currentChar)) {
-            newToken = isLetter(currentChar, indexFile);
+            newToken = this.isLetter(currentChar, indexFile);
 
         } else if (currentChar == ':') {
-            newToken = isAttribution(currentChar, indexFile);
+            newToken = this.isAttribution(currentChar, indexFile);
 
         } else if (aritmetics.contains(currentChar)) {
-            newToken = isAritmetic(currentChar, indexFile);
+            newToken = this.isAritmetic(currentChar, indexFile);
 
         } else if (relationals.contains(currentChar)) {
-            newToken = isRelational(currentChar, indexFile);
+            newToken = this.isRelational(currentChar, indexFile);
 
         } else if (punctuations.contains(currentChar)) {
-            newToken = isPunctuation(currentChar, indexFile);
+            newToken = this.isPunctuation(currentChar, indexFile);
 
         } else {
             message.characterInvalid(Integer.toString(indexFile), currentChar);
