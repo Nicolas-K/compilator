@@ -3,7 +3,7 @@ package compilator;
 public class SyntacticException {
 
     public void programError(Token wrongToken) {
-        System.out.println("[programError] | Expected token symbol sprogram");
+        System.out.println("[programError] | Expected token symbol sprograma");
         System.out.printf("[programError] | Token Symbol Received: %s\n", wrongToken.getSymbol());
         System.out.printf("[programError] | Line of File of Token: %s\n", wrongToken.getLine());
     }

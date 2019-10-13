@@ -8,7 +8,7 @@ public class SyntacticAnalyzer {
     private Token token;
     private String path;
 
-    private static SyntacticException message;
+    private SyntacticException message;
     private SymbolTable table = SymbolTable.getInstance();
 
     public static SyntacticAnalyzer getInstance() {
@@ -36,18 +36,22 @@ public class SyntacticAnalyzer {
         ProcedureProgram symbolProgram = new ProcedureProgram();
 
         token = lexicalAnalyzer.lexicalAnalyze(path);
-
+        token.print();
+        
         try {
             if (!isEmpty(token)) {
                 if (token.getSymbol().equals("sprograma")) {
                     token = lexicalAnalyzer.lexicalAnalyze(path);
-
+                    token.print();
+                    
                     if (!isEmpty(token)) {
                         if (token.getSymbol().equals("sidentificador")) {
                             symbolProgram.setLexemeName(token.getLexeme());
                             symbolProgram.setScope("");
                             table.insertSymbol(symbolProgram);
+                            
                             token = lexicalAnalyzer.lexicalAnalyze(path);
+                            token.print();
 
                             if (!isEmpty(token)) {
                                 if (token.getSymbol().equals("sponto_vírgula")) {
@@ -91,7 +95,7 @@ public class SyntacticAnalyzer {
             }
 
         } catch (Exception e) {
-            System.out.println("[syntaticAnalyze] | Error has ocurred\n");
+            System.out.println("[syntaticAnalyze] | Error has ocurred");
             System.out.println("[syntaticAnalyze] | Ending compilation process");
         }
 
@@ -100,6 +104,7 @@ public class SyntacticAnalyzer {
 
     private void analyzeBlock() throws Exception {
         token = lexicalAnalyzer.lexicalAnalyze(path);
+        token.print();
 
         if (!isEmpty(token)) {
             analyzeVariablesDeclaration();
@@ -113,9 +118,10 @@ public class SyntacticAnalyzer {
     /*
      *  Analise Relacionada a Variaveis
      */
-    private void analyzeVariablesDeclaration() throws Exception {
+    private void analyzeVariablesDeclaration() throws Exception {       
         if (token.getSymbol().equals("svar")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
+            token.print();
 
             if (!isEmpty(token)) {
                 if (token.getSymbol().equals("sidentificador")) {
@@ -124,6 +130,7 @@ public class SyntacticAnalyzer {
 
                         if (token.getSymbol().equals("sponto_vírgula")) {
                             token = lexicalAnalyzer.lexicalAnalyze(path);
+                            token.print();
 
                             if (isEmpty(token)) {
                                 throw new Exception();
@@ -145,7 +152,7 @@ public class SyntacticAnalyzer {
         }
     }
 
-    private void analyzeVariables() throws Exception {
+    private void analyzeVariables() throws Exception {        
         while (!token.getSymbol().equals("sdoispontos")) {
             Variable symbolVariable = new Variable();
 
@@ -157,13 +164,15 @@ public class SyntacticAnalyzer {
                 table.insertSymbol(symbolVariable);
 
                 token = lexicalAnalyzer.lexicalAnalyze(path);
+                token.print();
 
                 if (!isEmpty(token)) {
                     if (token.getSymbol().equals("svirgula") || token.getSymbol().equals("sdoispontos")) {
                         if (token.getSymbol().equals("svirgula")) {
 
                             token = lexicalAnalyzer.lexicalAnalyze(path);
-
+                            token.print();
+                            
                             if (!isEmpty(token)) {
                                 if (token.getSymbol().equals("sdoispontos")) {
                                     message.colonError(token);
@@ -186,7 +195,7 @@ public class SyntacticAnalyzer {
     /*
      *  Analise Relacionada a SubRotinas
      */
-    private void analyzeSubRoutineDeclaration() throws Exception {
+    private void analyzeSubRoutineDeclaration() throws Exception {       
         int flag = 0;
 
         if (token.getSymbol().equals("sprocedimento") || token.getSymbol().equals("sfuncao")) {
@@ -205,6 +214,7 @@ public class SyntacticAnalyzer {
 
             if (token.getSymbol().equals("sponto_vírgula")) {
                 token = lexicalAnalyzer.lexicalAnalyze(path);
+                token.print();
 
                 if (isEmpty(token)) {
                     throw new Exception();
@@ -221,10 +231,11 @@ public class SyntacticAnalyzer {
         }
     }
 
-    private void analyzeProcedureDeclaration() throws Exception {
+    private void analyzeProcedureDeclaration() throws Exception {        
         ProcedureProgram symbolProcedure = new ProcedureProgram();
         
         token = lexicalAnalyzer.lexicalAnalyze(path);
+        token.print();
 
         if (!isEmpty(token)) {
             if (token.getSymbol().equals("sidentificador")) {
@@ -235,6 +246,7 @@ public class SyntacticAnalyzer {
                 table.insertSymbol(symbolProcedure);
                 //Gera rótulo
                 token = lexicalAnalyzer.lexicalAnalyze(path);
+                token.print();
 
                 if (!isEmpty(token)) {
                     if (token.getSymbol().equals("sponto_vírgula")) {
@@ -265,10 +277,11 @@ public class SyntacticAnalyzer {
         //TODO
     }
 
-    private void analyzeFunctionDeclaration() throws Exception {
+    private void analyzeFunctionDeclaration() throws Exception {       
         Function symbolFunction = new Function();
 
         token = lexicalAnalyzer.lexicalAnalyze(path);
+        token.print();
 
         if (!isEmpty(token)) {
             //Label
@@ -276,10 +289,12 @@ public class SyntacticAnalyzer {
                 //pesquisa
                 //insere tabela
                 token = lexicalAnalyzer.lexicalAnalyze(path);
+                token.print();
 
                 if (!isEmpty(token)) {
                     if (token.getSymbol().equals("sdoispontos")) {
                         token = lexicalAnalyzer.lexicalAnalyze(path);
+                        token.print();
 
                         if (!isEmpty(token)) {
                             if (token.getSymbol().equals("sinteiro") || token.getSymbol().equals("sbooleano")) {
@@ -290,6 +305,7 @@ public class SyntacticAnalyzer {
                                 }
 
                                 token = lexicalAnalyzer.lexicalAnalyze(path);
+                                token.print();
 
                                 if (!isEmpty(token)) {
                                     if (token.getSymbol().equals("sponto_vírgula")) {
@@ -342,6 +358,7 @@ public class SyntacticAnalyzer {
     private void analyzeCommands() throws Exception {
         if (token.getSymbol().equals("sinício")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
+            token.print();
 
             if (!isEmpty(token)) {
                 analyzeCommand();
@@ -349,6 +366,7 @@ public class SyntacticAnalyzer {
                 while (!token.getSymbol().equals("sfim")) {
                     if (token.getSymbol().equals("sponto_vírgula")) {
                         token = lexicalAnalyzer.lexicalAnalyze(path);
+                        token.print();
 
                         if (!isEmpty(token)) {
                             if (!token.getSymbol().equals("sfim")) {
@@ -392,6 +410,7 @@ public class SyntacticAnalyzer {
 
     private void analyzeAttrProcedure() throws Exception {
         token = lexicalAnalyzer.lexicalAnalyze(path);
+        token.print();
 
         if (!isEmpty(token)) {
 
@@ -408,19 +427,23 @@ public class SyntacticAnalyzer {
 
     private void analyzeRead() throws Exception {
         token = lexicalAnalyzer.lexicalAnalyze(path);
+        token.print();
 
         if (!isEmpty(token)) {
             if (token.getSymbol().equals("sabre_parênteses")) {
                 token = lexicalAnalyzer.lexicalAnalyze(path);
+                token.print();
 
                 if (!isEmpty(token)) {
                     if (token.getSymbol().equals("sidentificador")) {
                         // se pesquisa tabela simbolos var
                         token = lexicalAnalyzer.lexicalAnalyze(path);
+                        token.print();
 
                         if (!isEmpty(token)) {
                             if (token.getSymbol().equals("sfecha_parênteses")) {
                                 token = lexicalAnalyzer.lexicalAnalyze(path);
+                                token.print();
 
                                 if (isEmpty(token)) {
                                     throw new Exception();
@@ -453,16 +476,20 @@ public class SyntacticAnalyzer {
 
     private void analyzeWrite() throws Exception {
         token = lexicalAnalyzer.lexicalAnalyze(path);
+        token.print();
 
         if (token.getSymbol().equals("sabre_parênteses")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
+            token.print();
 
             if (token.getSymbol().equals("sidentificador")) {
                 // se pesquisa tabela simbolos function
                 token = lexicalAnalyzer.lexicalAnalyze(path);
+                token.print();
 
                 if (token.getSymbol().equals("sfecha_parênteses")) {
                     token = lexicalAnalyzer.lexicalAnalyze(path);
+                    token.print();
 
                     if (isEmpty(token)) {
                         throw new Exception();
@@ -488,6 +515,7 @@ public class SyntacticAnalyzer {
         //Gera
         // rotulo = rotulo + 1
         token = lexicalAnalyzer.lexicalAnalyze(path);
+        token.print();
 
         if (!isEmpty(token)) {
             analyzeExpressions();
@@ -497,6 +525,7 @@ public class SyntacticAnalyzer {
                 // gera
                 // rotulo = rotulo + 1
                 token = lexicalAnalyzer.lexicalAnalyze(path);
+                token.print();
 
                 if (!isEmpty(token)) {
                     analyzeCommand();
@@ -517,18 +546,21 @@ public class SyntacticAnalyzer {
 
     private void analyzeIf() throws Exception {
         token = lexicalAnalyzer.lexicalAnalyze(path);
+        token.print();
 
         if (!isEmpty(token)) {
             analyzeExpression();
 
             if (token.getSymbol().equals("sentao")) {
                 token = lexicalAnalyzer.lexicalAnalyze(path);
+                token.print();
 
                 if (!isEmpty(token)) {
                     analyzeCommand();
 
                     if (token.getSymbol().equals("ssenao")) {
                         token = lexicalAnalyzer.lexicalAnalyze(path);
+                        token.print();
 
                         if (!isEmpty(token)) {
                             analyzeCommand();
@@ -567,6 +599,7 @@ public class SyntacticAnalyzer {
         }
 
         token = lexicalAnalyzer.lexicalAnalyze(path);
+        token.print();
 
         if (isEmpty(token)) {
             throw new Exception();
@@ -578,6 +611,7 @@ public class SyntacticAnalyzer {
 
         if ((token.getSymbol().equals("smaior")) || (token.getSymbol().equals("smaiorig")) || (token.getSymbol().equals("sig")) || (token.getSymbol().equals("smenor")) || (token.getSymbol().equals("smenorig")) || (token.getSymbol().equals("sdif"))) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
+            token.print();
 
             if (!isEmpty(token)) {
                 analyzeExpression();
@@ -590,6 +624,7 @@ public class SyntacticAnalyzer {
     private void analyzeExpression() throws Exception {
         if (token.getSymbol().equals("smais") || token.getSymbol().equals("smenos")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
+            token.print();
 
             if (isEmpty(token)) {
                 throw new Exception();
@@ -600,6 +635,7 @@ public class SyntacticAnalyzer {
 
         while (token.getSymbol().equals("smais") || token.getSymbol().equals("smenos") || token.getSymbol().equals("sou")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
+            token.print();
 
             if (!isEmpty(token)) {
                 analyzeTerm();
@@ -614,6 +650,7 @@ public class SyntacticAnalyzer {
 
         while ((token.getSymbol().equals("smult")) || (token.getSymbol().equals("sdiv")) || (token.getSymbol().equals("se"))) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
+            token.print();
 
             if (!isEmpty(token)) {
                 analyzeFactor();
@@ -633,6 +670,7 @@ public class SyntacticAnalyzer {
 
         } else if (token.getSymbol().equals("snumero")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
+            token.print();
 
             if (isEmpty(token)) {
                 throw new Exception();
@@ -640,6 +678,7 @@ public class SyntacticAnalyzer {
 
         } else if (token.getSymbol().equals("snao")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
+            token.print();
 
             if (!isEmpty(token)) {
                 analyzeFactor();
@@ -649,12 +688,14 @@ public class SyntacticAnalyzer {
 
         } else if (token.getSymbol().equals("sabre_parênteses")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
+            token.print();
 
             if (!isEmpty(token)) {
                 analyzeExpressions();
 
                 if (token.getSymbol().equals("sfecha_parênteses")) {
                     token = lexicalAnalyzer.lexicalAnalyze(path);
+                    token.print();
 
                     if (isEmpty(token)) {
                         throw new Exception();
@@ -670,6 +711,7 @@ public class SyntacticAnalyzer {
 
         } else if (token.getSymbol().equals("sverdadeiro") || token.getSymbol().equals("sfalso")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
+            token.print();
 
             if (isEmpty(token)) {
                 throw new Exception();

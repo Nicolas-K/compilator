@@ -20,7 +20,7 @@ public class LexicalAnalyzer {
     private char currentChar;
     
     private TokenList listTokens = TokenList.getInstance();
-    private static LexicalException message;
+    private LexicalException message;
 
     public static LexicalAnalyzer getInstance() {
         if (instance == null) {
@@ -158,7 +158,7 @@ public class LexicalAnalyzer {
             }
 
         } catch (Exception e) {
-            System.out.println("[lexicalAnalyze] | Error has ocurred\n");
+            System.out.println("[lexicalAnalyze] | Error has ocurred");
             System.out.println("[lexicalAnalyze] | Ending compilation process");
         }
 
