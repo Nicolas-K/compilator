@@ -19,7 +19,7 @@ public class LexicalAnalyzer {
     private int charRead;
     private char currentChar;
     
-    private TokenList listTokens = TokenList.getInstance();
+    private final TokenList listTokens = TokenList.getInstance();
     private LexicalException message;
 
     public static LexicalAnalyzer getInstance() {
