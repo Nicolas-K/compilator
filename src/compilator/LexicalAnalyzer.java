@@ -18,7 +18,7 @@ public class LexicalAnalyzer {
     private int indexFileLine;
     private int charRead;
     private char currentChar;
-    
+
     private final TokenList listTokens = TokenList.getInstance();
     private LexicalException message;
 
@@ -74,7 +74,7 @@ public class LexicalAnalyzer {
 
         return false;
     }
-    
+
     private boolean closeFile() {
         System.out.println("[CloseFile] | Init\n");
 
@@ -91,28 +91,28 @@ public class LexicalAnalyzer {
 
         return false;
     }
-    
-    protected boolean hasFileEnd(){
-        if(charRead == -1){
+
+    protected boolean hasFileEnd() {
+        if (charRead == -1) {
             return true;
         } else {
             return false;
         }
     }
 
-    public Token lexicalAnalyze(String path) {
+    public Token lexicalAnalyze(String path) throws IOException {
         Token createToken;
 
         if (reader == null) {
             if (!this.openFile(path)) {
                 return null;
+            } else {
+                charRead = reader.read();
+                currentChar = (char) charRead;
             }
         }
 
         try {
-            charRead = reader.read();
-            currentChar = (char) charRead;
-
             if (!hasFileEnd()) {
                 while ((toIgnore.contains(currentChar)) && charRead != -1) {
                     if (currentChar == '{') {

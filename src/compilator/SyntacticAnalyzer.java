@@ -17,8 +17,8 @@ public class SyntacticAnalyzer {
         }
         return instance;
     }
-    
-    public SyntacticAnalyzer(){
+
+    public SyntacticAnalyzer() {
         this.lexicalAnalyzer = LexicalAnalyzer.getInstance();
         this.token = null;
         this.path = null;
@@ -42,21 +42,21 @@ public class SyntacticAnalyzer {
     public void syntaticAnalyze() {
         ProcedureProgram symbolProgram = new ProcedureProgram();
 
-        token = lexicalAnalyzer.lexicalAnalyze(path);
-        token.print();
-        
         try {
+            token = lexicalAnalyzer.lexicalAnalyze(path);
+            token.print();
+            
             if (!isEmpty(token)) {
                 if (token.getSymbol().equals("sprograma")) {
                     token = lexicalAnalyzer.lexicalAnalyze(path);
                     token.print();
-                    
+
                     if (!isEmpty(token)) {
                         if (token.getSymbol().equals("sidentificador")) {
                             symbolProgram.setLexemeName(token.getLexeme());
                             symbolProgram.setScope("");
                             table.insertSymbol(symbolProgram);
-                            
+
                             token = lexicalAnalyzer.lexicalAnalyze(path);
                             token.print();
 
@@ -125,7 +125,7 @@ public class SyntacticAnalyzer {
     /*
      *  Analise Relacionada a Variaveis
      */
-    private void analyzeVariablesDeclaration() throws Exception {       
+    private void analyzeVariablesDeclaration() throws Exception {
         if (token.getSymbol().equals("svar")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
             token.print();
@@ -159,7 +159,7 @@ public class SyntacticAnalyzer {
         }
     }
 
-    private void analyzeVariables() throws Exception {        
+    private void analyzeVariables() throws Exception {
         while (!token.getSymbol().equals("sdoispontos")) {
             Variable symbolVariable = new Variable();
 
@@ -179,7 +179,7 @@ public class SyntacticAnalyzer {
 
                             token = lexicalAnalyzer.lexicalAnalyze(path);
                             token.print();
-                            
+
                             if (!isEmpty(token)) {
                                 if (token.getSymbol().equals("sdoispontos")) {
                                     this.message.colonError(token);
@@ -202,7 +202,7 @@ public class SyntacticAnalyzer {
     /*
      *  Analise Relacionada a SubRotinas
      */
-    private void analyzeSubRoutineDeclaration() throws Exception {       
+    private void analyzeSubRoutineDeclaration() throws Exception {
         int flag = 0;
 
         if (token.getSymbol().equals("sprocedimento") || token.getSymbol().equals("sfuncao")) {
@@ -238,9 +238,9 @@ public class SyntacticAnalyzer {
         }
     }
 
-    private void analyzeProcedureDeclaration() throws Exception {        
+    private void analyzeProcedureDeclaration() throws Exception {
         ProcedureProgram symbolProcedure = new ProcedureProgram();
-        
+
         token = lexicalAnalyzer.lexicalAnalyze(path);
         token.print();
 
@@ -284,7 +284,7 @@ public class SyntacticAnalyzer {
         //TODO
     }
 
-    private void analyzeFunctionDeclaration() throws Exception {       
+    private void analyzeFunctionDeclaration() throws Exception {
         Function symbolFunction = new Function();
 
         token = lexicalAnalyzer.lexicalAnalyze(path);
