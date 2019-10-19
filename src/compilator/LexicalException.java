@@ -1,32 +1,40 @@
 package compilator;
 
 public class LexicalException {
-
-    public void digitError(String line, char character){
-        System.out.printf("[DigitError] ´Line: %s Character: %c  | Invalid Digit Format\n", line, character);
+    private String messageError;
+    
+    public String digitError(String line, char character){
+        messageError = "[DigitError] Line: " + line + " Character: " + character + " | Invalid Digit Format\n";
+        return messageError;
     }
     
-    public void letterError(String line, char character){
-        System.out.printf("[LetterError] Line: %s Character: %c | Invalid Word Format\n", line, character);
+    public String letterError(String line, char character){
+        messageError = "[LetterError] Line: " + line + " Character: " + character + " | Invalid Word Format\n";
+        return messageError;
     }
     
-    public void attributionError(String line, char character){
-        System.out.printf("[AttributionError] Line: %s Character: %c | Invalid Attribution Format\n", line, character);
+    public String attributionError(String line, char character){
+        messageError = "[AttributionError] Line: " + line + " Character: " + character + " | Invalid Attribution Format\n";
+        return messageError;
     }
     
-    public void aritmeticError(String line, char character){
-        System.out.printf("[AritmeticError] Line: %s Character: %c | Invalid Aritmetic Format\n", line, character);
+    public String aritmeticError(String line, char character){
+        messageError = "[AritmeticError] Line: " + line + " Character: " + character + " | Invalid Aritmetic Format\n";
+        return messageError;
     }
     
-    public void relationalError(String line, char character){
-        System.out.printf("[RelationalError] Line: %s Character: %c | Invalid Relational Format\n", line, character);
+    public String relationalError(String line, String character){
+        messageError = "[RelationalError] Line: " + line + " Character: " + character + " | Invalid Relational Format\n";
+        return messageError;
     }
     
-    public void punctuationError(String line, char character){
-        System.out.printf("[PunctuationError] Line: %s Character: %c | Invalid Punctuation Format\n", line, character);
+    public String punctuationError(String line, char character){
+        messageError = "[PunctuationError] Line: " + line + " Character: " + character + " | Invalid Punctuation Format\n";
+        return messageError;
     }
     
-    public void characterInvalid(String line, char character){
-        System.out.printf("[CharacterError] Line: %s Character: %c | Invalid Character\n", line, character);
+    public String characterInvalid(String line, char character){
+        messageError = "[CharacterError] Line: " + line + " Character: " + character + " | Invalid Character\n";
+        return messageError;
     }
 }

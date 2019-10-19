@@ -66,17 +66,14 @@ public class SyntacticAnalyzer {
 
                                     if (token.getSymbol().equals("sponto")) {
                                         if (!lexicalAnalyzer.hasFileEnd()) {
-                                            this.message.endoffileError(token.getSymbol(), token.getLine());
-                                            throw new Exception();
+                                            throw new Exception(message.endoffileError(token));
                                         }
                                     } else {
-                                        this.message.dotError(token.getSymbol(), token.getLine());
-                                        throw new Exception();
+                                        throw new Exception(message.dotError(token));
                                     }
 
                                 } else {
-                                    this.message.semicolonError(token.getSymbol(), token.getLine());
-                                    throw new Exception();
+                                    throw new Exception(message.semicolonError(token));
                                 }
 
                             } else {
@@ -84,8 +81,7 @@ public class SyntacticAnalyzer {
                             }
 
                         } else {
-                            this.message.identifierError(token.getSymbol(), token.getLine());
-                            throw new Exception();
+                            throw new Exception(message.identifierError(token));
                         }
 
                     } else {
@@ -93,8 +89,7 @@ public class SyntacticAnalyzer {
                     }
 
                 } else {
-                    this.message.programError(token.getSymbol(), token.getLine());
-                    throw new Exception();
+                    throw new Exception(message.programError(token));
                 }
 
             } else {
@@ -102,6 +97,7 @@ public class SyntacticAnalyzer {
             }
 
         } catch (Exception e) {
+            e.getMessage();
             System.out.println("[syntaticAnalyze] | Error has ocurred");
             System.out.println("[syntaticAnalyze] | Ending compilation process");
         }
@@ -144,14 +140,12 @@ public class SyntacticAnalyzer {
                             }
 
                         } else {
-                            this.message.semicolonError(token.getSymbol(), token.getLine());
-                            throw new Exception();
+                            throw new Exception(message.semicolonError(token));
                         }
                     }
 
                 } else {
-                    this.message.identifierError(token.getSymbol(), token.getLine());
-                    throw new Exception();
+                    throw new Exception(message.identifierError(token));
                 }
             } else {
                 throw new Exception();
@@ -182,8 +176,7 @@ public class SyntacticAnalyzer {
 
                             if (!isEmpty(token)) {
                                 if (token.getSymbol().equals("sdoispontos")) {
-                                    this.message.colonError(token.getSymbol(), token.getLine());
-                                    throw new Exception();
+                                    throw new Exception(message.colonError(token));
                                 }
 
                             } else {
@@ -228,8 +221,7 @@ public class SyntacticAnalyzer {
                 }
 
             } else {
-                this.message.semicolonError(token.getSymbol(), token.getLine());
-                throw new Exception();
+                throw new Exception(message.semicolonError(token));
             }
         }
 
@@ -259,8 +251,7 @@ public class SyntacticAnalyzer {
                     if (token.getSymbol().equals("sponto_vírgula")) {
                         analyzeBlock();
                     } else {
-                        this.message.semicolonError(token.getSymbol(), token.getLine());
-                        throw new Exception();
+                        throw new Exception(message.semicolonError(token));
                     }
 
                 } else {
@@ -268,8 +259,7 @@ public class SyntacticAnalyzer {
                 }
 
             } else {
-                this.message.identifierError(token.getSymbol(), token.getLine());
-                throw new Exception();
+                throw new Exception(message.identifierError(token));
             }
 
         } else {
@@ -318,24 +308,21 @@ public class SyntacticAnalyzer {
                                     if (token.getSymbol().equals("sponto_vírgula")) {
                                         analyzeBlock();
                                     } else {
-                                        this.message.semicolonError(token.getSymbol(), token.getLine());
-                                        throw new Exception();
+                                        throw new Exception(message.semicolonError(token));
                                     }
                                 } else {
                                     throw new Exception();
                                 }
 
                             } else {
-                                this.message.typeError(token.getSymbol(), token.getLine());
-                                throw new Exception();
+                                throw new Exception(message.typeError(token));
                             }
                         } else {
                             throw new Exception();
                         }
 
                     } else {
-                        this.message.colonError(token.getSymbol(), token.getLine());
-                        throw new Exception();
+                        throw new Exception(message.colonError(token));
                     }
 
                 } else {
@@ -343,8 +330,7 @@ public class SyntacticAnalyzer {
                 }
 
             } else {
-                this.message.identifierError(token.getSymbol(), token.getLine());
-                throw new Exception();
+                throw new Exception(message.identifierError(token));
             }
 
         } else {
@@ -384,8 +370,7 @@ public class SyntacticAnalyzer {
                         }
 
                     } else {
-                        this.message.semicolonError(token.getSymbol(), token.getLine());
-                        throw new Exception();
+                        throw new Exception(message.semicolonError(token));
                     }
                     token = lexicalAnalyzer.lexicalAnalyze(path);
                 }
@@ -394,8 +379,7 @@ public class SyntacticAnalyzer {
             }
 
         } else {
-            this.message.beginError(token.getSymbol(), token.getLine());
-            throw new Exception();
+            throw new Exception(message.beginError(token));
         }
     }
 
@@ -457,14 +441,12 @@ public class SyntacticAnalyzer {
                                 }
 
                             } else {
-                                this.message.closeparenthesesError(token.getSymbol(), token.getLine());
-                                throw new Exception();
+                                throw new Exception(message.closeparenthesesError(token));
                             }
                         }
                         // senao throw new SyntacticException();
                     } else {
-                        this.message.identifierError(token.getSymbol(), token.getLine());
-                        throw new Exception();
+                        throw new Exception(message.identifierError(token));
                     }
 
                 } else {
@@ -472,8 +454,7 @@ public class SyntacticAnalyzer {
                 }
 
             } else {
-                this.message.openparenthesesError(token.getSymbol(), token.getLine());
-                throw new Exception();
+                throw new Exception(message.openparenthesesError(token));
             }
 
         } else {
@@ -503,17 +484,14 @@ public class SyntacticAnalyzer {
                     }
 
                 } else {
-                    this.message.closeparenthesesError(token.getSymbol(), token.getLine());
-                    throw new Exception();
+                    throw new Exception(message.closeparenthesesError(token));
                 }
                 // senao throw new SyntacticException();
             } else {
-                this.message.identifierError(token.getSymbol(), token.getLine());
-                throw new Exception();
+                throw new Exception(message.identifierError(token));
             }
         } else {
-            this.message.openparenthesesError(token.getSymbol(), token.getLine());
-            throw new Exception();
+            throw new Exception(message.openparenthesesError(token));
         }
     }
 
@@ -543,8 +521,7 @@ public class SyntacticAnalyzer {
                 }
 
             } else {
-                this.message.doError(token.getSymbol(), token.getLine());
-                throw new Exception();
+                throw new Exception(message.doError(token));
             }
         } else {
             throw new Exception();
@@ -581,8 +558,7 @@ public class SyntacticAnalyzer {
                 }
 
             } else {
-                this.message.thenError(token.getSymbol(), token.getLine());
-                throw new Exception();
+                throw new Exception(message.thenError(token));
             }
 
         } else {
@@ -601,8 +577,7 @@ public class SyntacticAnalyzer {
         if (token.getSymbol().equals("sinteiro") || token.getSymbol().equals("sbooleano")) {
             table.setTypeSymbols(token.getSymbol());
         } else {
-            message.typeError(token.getSymbol(), token.getLine());
-            throw new Exception();
+            throw new Exception(message.typeError(token));
         }
 
         token = lexicalAnalyzer.lexicalAnalyze(path);
@@ -709,8 +684,7 @@ public class SyntacticAnalyzer {
                     }
 
                 } else {
-                    this.message.closeparenthesesError(token.getSymbol(), token.getLine());
-                    throw new Exception();
+                    throw new Exception(message.closeparenthesesError(token));
                 }
             } else {
                 throw new Exception();
@@ -725,8 +699,7 @@ public class SyntacticAnalyzer {
             }
 
         } else {
-            this.message.booleanError(token.getSymbol(), token.getLine());
-            throw new Exception();
+            throw new Exception(message.booleanError(token));
         }
     }
 }
