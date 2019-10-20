@@ -54,7 +54,7 @@ public class SyntacticAnalyzer {
                     if (!isEmpty(token)) {
                         if (token.getSymbol().equals("sidentificador")) {
                             symbolProgram.setLexemeName(token.getLexeme());
-                            symbolProgram.setScope("");
+                            symbolProgram.setScope("nomedeprograma");
                             table.insertSymbol(symbolProgram);
 
                             token = lexicalAnalyzer.lexicalAnalyze(path);
@@ -161,7 +161,7 @@ public class SyntacticAnalyzer {
                 //Pesquisa_duplicvar_ tabela(token.lexema)
                 //se não encontrou duplicidade
                 symbolVariable.setLexemeName(token.getLexeme());
-                symbolVariable.setScope("");
+                symbolVariable.setScope("variavel");
                 table.insertSymbol(symbolVariable);
 
                 token = lexicalAnalyzer.lexicalAnalyze(path);
@@ -241,7 +241,7 @@ public class SyntacticAnalyzer {
                 //Pesquisa
                 //Inserir tabela de símbolos
                 symbolProcedure.setLexemeName(token.getLexeme());
-                symbolProcedure.setScope("");
+                symbolProcedure.setScope("procedimento");
                 table.insertSymbol(symbolProcedure);
                 //Gera rótulo
                 token = lexicalAnalyzer.lexicalAnalyze(path);
@@ -283,8 +283,11 @@ public class SyntacticAnalyzer {
         if (!isEmpty(token)) {
             //Label
             if (token.getSymbol().equals("sidentificador")) {
+                symbolFunction.setLexemeName(token.getLexeme());
+                symbolFunction.setScope("funcao");
                 //pesquisa
                 //insere tabela
+                table.insertSymbol(symbolFunction);
                 token = lexicalAnalyzer.lexicalAnalyze(path);
                 token.print();
 
