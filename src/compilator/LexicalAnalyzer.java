@@ -158,7 +158,6 @@ public class LexicalAnalyzer {
             }
 
         } catch (Exception e) {
-            e.getMessage();
             System.out.println("[lexicalAnalyze] | Error has ocurred");
             System.out.println("[lexicalAnalyze] | Ending compilation process");
         }
@@ -190,7 +189,8 @@ public class LexicalAnalyzer {
             newToken = this.isPunctuation(currentChar, indexFile);
 
         } else {
-            throw new Exception(message.characterInvalid(Integer.toString(indexFile), currentChar));
+            System.out.println(message.characterInvalid(Integer.toString(indexFile), currentChar));
+            throw new Exception();
         }
 
         return newToken;
@@ -404,7 +404,8 @@ public class LexicalAnalyzer {
                 currentChar = (char) charRead;
 
             } else {
-                throw new Exception(message.relationalError(Integer.toString(lineIndex), operation));
+                System.out.println(message.relationalError(Integer.toString(lineIndex), operation));
+                throw new Exception();
             }
         }
 
