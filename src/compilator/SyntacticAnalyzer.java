@@ -4,7 +4,7 @@ public class SyntacticAnalyzer {
 
     private static SyntacticAnalyzer instance = null;
     private String path;
-    
+
     private final LexicalAnalyzer lexicalAnalyzer;
     // private final SemanticAnalyzer semanticAnalyzer;
 
@@ -44,12 +44,13 @@ public class SyntacticAnalyzer {
     }
 
     public void syntaticAnalyze() {
+        String scopeProgram;
         ProcedureProgram symbolProgram = new ProcedureProgram();
 
         try {
             token = lexicalAnalyzer.lexicalAnalyze(path);
             token.print();
-            
+
             if (!isEmpty(token)) {
                 if (token.getSymbol().equals("sprograma")) {
                     token = lexicalAnalyzer.lexicalAnalyze(path);
@@ -58,15 +59,16 @@ public class SyntacticAnalyzer {
                     if (!isEmpty(token)) {
                         if (token.getSymbol().equals("sidentificador")) {
                             symbolProgram.setLexemeName(token.getLexeme());
-                            symbolProgram.setScope("nomedeprograma");
+                            symbolProgram.setScope("");
                             table.insertSymbol(symbolProgram);
 
+                            scopeProgram = token.getLexeme();
                             token = lexicalAnalyzer.lexicalAnalyze(path);
                             token.print();
 
                             if (!isEmpty(token)) {
                                 if (token.getSymbol().equals("sponto_vírgula")) {
-                                    analyzeBlock();
+                                    analyzeBlock(scopeProgram);
 
                                     if (token.getSymbol().equals("sponto")) {
                                         if (!lexicalAnalyzer.hasFileEnd()) {
@@ -75,36 +77,36 @@ public class SyntacticAnalyzer {
                                     } else {
                                         throw new Exception(message.dotError("syntaticAnalyze", token));
                                     }
-                                    
+
                                 } else {
                                     throw new Exception(message.semicolonError("syntaticAnalyze", token));
                                 }
-                                
+
                             } else {
                                 throw new Exception();
                             }
-                            
+
                         } else {
                             throw new Exception(message.identifierError("syntaticAnalyze", token));
                         }
-                        
+
                     } else {
                         throw new Exception();
                     }
-                    
+
                 } else {
                     throw new Exception(message.programError("syntaticAnalyze", token));
                 }
-                
+
             } else {
                 throw new Exception();
             }
 
         } catch (Exception e) {
-            if(e.getMessage() != null){
+            if (e.getMessage() != null) {
                 System.out.println(e.getMessage());
             }
-            
+
             System.out.println("[syntaticAnalyze] | Error has ocurred");
             System.out.println("[syntaticAnalyze] | Ending compilation process");
         }
@@ -112,13 +114,13 @@ public class SyntacticAnalyzer {
         symbolProgram = null;
     }
 
-    private void analyzeBlock() throws Exception {
+    private void analyzeBlock(String scope) throws Exception {
         token = lexicalAnalyzer.lexicalAnalyze(path);
         token.print();
 
         if (!isEmpty(token)) {
-            analyzeVariablesDeclaration();
-            analyzeSubRoutineDeclaration();
+            analyzeVariablesDeclaration(scope);
+            analyzeSubRoutineDeclaration(scope);
             analyzeCommands();
         } else {
             throw new Exception();
@@ -128,7 +130,7 @@ public class SyntacticAnalyzer {
     /*
      *  Analise Relacionada a Variaveis
      */
-    private void analyzeVariablesDeclaration() throws Exception {       
+    private void analyzeVariablesDeclaration(String scope) throws Exception {
         if (token.getSymbol().equals("svar")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
             token.print();
@@ -136,7 +138,7 @@ public class SyntacticAnalyzer {
             if (!isEmpty(token)) {
                 if (token.getSymbol().equals("sidentificador")) {
                     while (token.getSymbol().equals("sidentificador")) {
-                        analyzeVariables();
+                        analyzeVariables(scope);
 
                         if (token.getSymbol().equals("sponto_vírgula")) {
                             token = lexicalAnalyzer.lexicalAnalyze(path);
@@ -145,12 +147,12 @@ public class SyntacticAnalyzer {
                             if (isEmpty(token)) {
                                 throw new Exception();
                             }
-                            
+
                         } else {
                             throw new Exception(message.semicolonError("analyzeVariablesDeclaration", token));
                         }
                     }
-                    
+
                 } else {
                     throw new Exception(message.identifierError("analyzeVariablesDeclaration", token));
                 }
@@ -160,13 +162,13 @@ public class SyntacticAnalyzer {
         }
     }
 
-    private void analyzeVariables() throws Exception {       
+    private void analyzeVariables(String scope) throws Exception {
         while (!token.getSymbol().equals("sdoispontos")) {
             Variable symbolVariable = new Variable();
 
             if (token.getSymbol().equals("sidentificador")) {
                 symbolVariable.setLexemeName(token.getLexeme());
-                symbolVariable.setScope("");
+                symbolVariable.setScope(scope);
                 //Pesquisa_duplicvar_ tabela(token.lexema)
                     //se não encontrou duplicidade
                     table.insertSymbol(symbolVariable);
@@ -185,28 +187,33 @@ public class SyntacticAnalyzer {
                                 if (token.getSymbol().equals("sdoispontos")) {
                                     throw new Exception(message.colonError("analyzeVariables", token));
                                 }
-                                
+
                             } else {
                                 throw new Exception();
                             }
                         }
                     }
-                    
+
                 } else {
                     throw new Exception();
                 }
             }
             symbolVariable = null;
         }
-        
+
         token = lexicalAnalyzer.lexicalAnalyze(path);
-        analyzeType();
+
+        if (!isEmpty(token)) {
+            analyzeType();
+        } else {
+            throw new Exception();
+        }
     }
 
     /*
      *  Analise Relacionada a SubRotinas
      */
-    private void analyzeSubRoutineDeclaration() throws Exception {
+    private void analyzeSubRoutineDeclaration(String scope) throws Exception {
         int flag = 0;
 
         if (token.getSymbol().equals("sprocedimento") || token.getSymbol().equals("sfuncao")) {
@@ -218,9 +225,9 @@ public class SyntacticAnalyzer {
 
         while (token.getSymbol().equals("sprocedimento") || token.getSymbol().equals("sfuncao")) {
             if (token.getSymbol().equals("sprocedimento")) {
-                analyzeProcedureDeclaration();
+                analyzeProcedureDeclaration(scope);
             } else {
-                analyzeFunctionDeclaration();
+                analyzeFunctionDeclaration(scope);
             }
 
             if (token.getSymbol().equals("sponto_vírgula")) {
@@ -230,7 +237,7 @@ public class SyntacticAnalyzer {
                 if (isEmpty(token)) {
                     throw new Exception();
                 }
-                
+
             } else {
                 throw new Exception(message.semicolonError("analyzeSubRoutineDeclaration", token));
             }
@@ -241,7 +248,8 @@ public class SyntacticAnalyzer {
         }
     }
 
-    private void analyzeProcedureDeclaration() throws Exception {        
+    private void analyzeProcedureDeclaration(String scope) throws Exception {
+        String scopeProcedure;
         ProcedureProgram symbolProcedure = new ProcedureProgram();
 
         token = lexicalAnalyzer.lexicalAnalyze(path);
@@ -250,29 +258,31 @@ public class SyntacticAnalyzer {
         if (!isEmpty(token)) {
             if (token.getSymbol().equals("sidentificador")) {
                 symbolProcedure.setLexemeName(token.getLexeme());
-                symbolProcedure.setScope("procedimento");
+                symbolProcedure.setScope(scope);
                 //Pesquisa
-                //Inserir tabela de símbolos
-                table.insertSymbol(symbolProcedure);
+                    //Inserir tabela de símbolos
+                    table.insertSymbol(symbolProcedure);
                 //Gera rótulo
+                    
+                scopeProcedure = token.getLexeme();
                 token = lexicalAnalyzer.lexicalAnalyze(path);
                 token.print();
 
                 if (!isEmpty(token)) {
                     if (token.getSymbol().equals("sponto_vírgula")) {
-                        analyzeBlock();
+                        analyzeBlock(scopeProcedure);
                     } else {
                         throw new Exception(message.semicolonError("analyzeProcedureDeclaration", token));
                     }
-                    
+
                 } else {
                     throw new Exception();
                 }
-                
+
             } else {
                 throw new Exception(message.identifierError("analyzeProcedureDeclaration", token));
             }
-            
+
         } else {
             throw new Exception();
         }
@@ -285,7 +295,8 @@ public class SyntacticAnalyzer {
         //TODO
     }
 
-    private void analyzeFunctionDeclaration() throws Exception {        
+    private void analyzeFunctionDeclaration(String scope) throws Exception {
+        String scopeFunction;
         Function symbolFunction = new Function();
 
         token = lexicalAnalyzer.lexicalAnalyze(path);
@@ -295,10 +306,12 @@ public class SyntacticAnalyzer {
             //Label
             if (token.getSymbol().equals("sidentificador")) {
                 symbolFunction.setLexemeName(token.getLexeme());
-                symbolFunction.setScope("funcao");
+                symbolFunction.setScope(scope);
                 //pesquisa
                     //insere tabela
                     table.insertSymbol(symbolFunction);
+                    
+                scopeFunction = token.getLexeme();
                 token = lexicalAnalyzer.lexicalAnalyze(path);
                 token.print();
 
@@ -320,35 +333,35 @@ public class SyntacticAnalyzer {
 
                                 if (!isEmpty(token)) {
                                     if (token.getSymbol().equals("sponto_vírgula")) {
-                                        analyzeBlock();
+                                        analyzeBlock(scopeFunction);
                                     } else {
                                         throw new Exception(message.semicolonError("analyzeFunctionDeclaration", token));
                                     }
-                                    
+
                                 } else {
                                     throw new Exception();
                                 }
-                                
+
                             } else {
                                 throw new Exception(message.typeError("analyzeFunctionDeclaration", token));
                             }
-                            
+
                         } else {
                             throw new Exception();
                         }
-                        
+
                     } else {
                         throw new Exception(message.colonError("analyzeFunctionDeclaration", token));
                     }
-                    
+
                 } else {
                     throw new Exception();
                 }
-                
+
             } else {
                 throw new Exception(message.identifierError("analyzeFunctionDeclaration", token));
             }
-            
+
         } else {
             throw new Exception();
         }
@@ -364,7 +377,7 @@ public class SyntacticAnalyzer {
     /*
      *  Analisa de Comandos
      */
-    private void analyzeCommands() throws Exception {        
+    private void analyzeCommands() throws Exception {
         if (token.getSymbol().equals("sinício")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
             token.print();
@@ -381,21 +394,21 @@ public class SyntacticAnalyzer {
                             if (!token.getSymbol().equals("sfim")) {
                                 analyzeCommand();
                             }
-                            
+
                         } else {
                             throw new Exception();
                         }
-                        
+
                     } else {
                         throw new Exception(message.semicolonError("analyzeCommands", token));
                     }
                     token = lexicalAnalyzer.lexicalAnalyze(path);
                 }
-                
+
             } else {
                 throw new Exception();
             }
-            
+
         } else {
             throw new Exception(message.beginError("analyzeCommands", token));
         }
@@ -433,7 +446,7 @@ public class SyntacticAnalyzer {
         }
     }
 
-    private void analyzeRead() throws Exception {        
+    private void analyzeRead() throws Exception {
         token = lexicalAnalyzer.lexicalAnalyze(path);
         token.print();
 
@@ -456,7 +469,7 @@ public class SyntacticAnalyzer {
                                 if (isEmpty(token)) {
                                     throw new Exception();
                                 }
-                                
+
                             } else {
                                 throw new Exception(message.closeparenthesesError("analyzeRead", token));
                             }
@@ -465,21 +478,21 @@ public class SyntacticAnalyzer {
                     } else {
                         throw new Exception(message.identifierError("analyzeRead", token));
                     }
-                    
+
                 } else {
                     throw new Exception();
                 }
-                
+
             } else {
                 throw new Exception(message.openparenthesesError("analyzeRead", token));
             }
-            
+
         } else {
             throw new Exception();
         }
     }
 
-    private void analyzeWrite() throws Exception {        
+    private void analyzeWrite() throws Exception {
         token = lexicalAnalyzer.lexicalAnalyze(path);
         token.print();
 
@@ -499,21 +512,21 @@ public class SyntacticAnalyzer {
                     if (isEmpty(token)) {
                         throw new Exception();
                     }
-                    
+
                 } else {
-                     throw new Exception(message.closeparenthesesError("analyzeWrite", token));
+                    throw new Exception(message.closeparenthesesError("analyzeWrite", token));
                 }
                 // senao throw new SyntacticException();
             } else {
                 throw new Exception(message.identifierError("analyzeWrite", token));
             }
-            
+
         } else {
             throw new Exception(message.openparenthesesError("analyzeWrite", token));
         }
     }
 
-    private void analyzeWhile() throws Exception {        
+    private void analyzeWhile() throws Exception {
         //Rotulos definição
         //Gera
         // rotulo = rotulo + 1
@@ -537,17 +550,17 @@ public class SyntacticAnalyzer {
                 } else {
                     throw new Exception();
                 }
-                
+
             } else {
                 throw new Exception(message.doError("analyzeWhile", token));
             }
-            
+
         } else {
             throw new Exception();
         }
     }
 
-    private void analyzeIf() throws Exception {     
+    private void analyzeIf() throws Exception {
         token = lexicalAnalyzer.lexicalAnalyze(path);
         token.print();
 
@@ -571,15 +584,15 @@ public class SyntacticAnalyzer {
                             throw new Exception();
                         }
                     }
-                    
+
                 } else {
                     throw new Exception();
                 }
-                
+
             } else {
                 throw new Exception(message.thenError("analyzeIf", token));
             }
-            
+
         } else {
             throw new Exception();
         }
@@ -587,8 +600,8 @@ public class SyntacticAnalyzer {
 
     private void analyzeAttribution() throws Exception {
         token = lexicalAnalyzer.lexicalAnalyze(path);
-        
-        if(!isEmpty(token)){
+
+        if (!isEmpty(token)) {
             analyzeExpressions();
         } else {
             throw new Exception();
@@ -598,13 +611,13 @@ public class SyntacticAnalyzer {
     /*
      *  Analise Relacionado a Tipo, Termos e Expressões
      */
-    private void analyzeType() throws Exception {      
+    private void analyzeType() throws Exception {
         if (token.getSymbol().equals("sinteiro") || token.getSymbol().equals("sbooleano")) {
             table.setTypeSymbols(token.getSymbol());
         } else {
             throw new Exception(message.typeError("analyzeType", token));
         }
-        
+
         token = lexicalAnalyzer.lexicalAnalyze(path);
         token.print();
 
@@ -666,14 +679,14 @@ public class SyntacticAnalyzer {
         }
     }
 
-    private void analyzeFactor() throws Exception {       
+    private void analyzeFactor() throws Exception {
         if (token.getSymbol().equals("sidentificador")) {
             //Se pesquisa_tabela(token.lexema,nível,ind)
-                //Então Se (TabSimb[ind].tipo = “função inteiro”) ou (TabSimb[ind].tipo = “função booleano”)
-                    //Então analyzeFunctionCall();
-                //Senão token = lexicalAnalyzer.lexicalAnalyzer(path)
+            //Então Se (TabSimb[ind].tipo = “função inteiro”) ou (TabSimb[ind].tipo = “função booleano”)
+            //Então analyzeFunctionCall();
+            //Senão token = lexicalAnalyzer.lexicalAnalyzer(path)
             // else throw new SyntacticException();
-            
+
         } else if (token.getSymbol().equals("snumero")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
             token.print();
@@ -681,7 +694,7 @@ public class SyntacticAnalyzer {
             if (isEmpty(token)) {
                 throw new Exception();
             }
-            
+
         } else if (token.getSymbol().equals("snao")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
             token.print();
@@ -691,14 +704,14 @@ public class SyntacticAnalyzer {
             } else {
                 throw new Exception();
             }
-            
+
         } else if (token.getSymbol().equals("sabre_parênteses")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
             token.print();
 
             if (!isEmpty(token)) {
                 analyzeExpressions();
-                
+
                 if (token.getSymbol().equals("sfecha_parênteses")) {
                     token = lexicalAnalyzer.lexicalAnalyze(path);
                     token.print();
@@ -706,14 +719,14 @@ public class SyntacticAnalyzer {
                     if (isEmpty(token)) {
                         throw new Exception();
                     }
-                    
+
                 } else {
                     throw new Exception(message.closeparenthesesError("analyzeFactor", token));
                 }
             } else {
                 throw new Exception();
             }
-            
+
         } else if (token.getSymbol().equals("sverdadeiro") || token.getSymbol().equals("sfalso")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
             token.print();
@@ -721,7 +734,7 @@ public class SyntacticAnalyzer {
             if (isEmpty(token)) {
                 throw new Exception();
             }
-            
+
         } else {
             throw new Exception(message.booleanError("analyzeFactor", token));
         }
