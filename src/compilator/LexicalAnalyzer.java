@@ -20,7 +20,7 @@ public class LexicalAnalyzer {
     private char currentChar;
 
     private final TokenList listTokens = TokenList.getInstance();
-    private LexicalException message;
+    private final ErrorMessages message = ErrorMessages.getInstance();
 
     public static LexicalAnalyzer getInstance() {
         if (instance == null) {
@@ -32,7 +32,7 @@ public class LexicalAnalyzer {
     private LexicalAnalyzer() {
         reader = null;
         indexFileLine = 1;
-
+        
         toIgnore = new ArrayList<>();
         aritmetics = new ArrayList<>();
         relationals = new ArrayList<>();
@@ -116,21 +116,20 @@ public class LexicalAnalyzer {
             if (!hasFileEnd()) {
                 while ((toIgnore.contains(currentChar)) && charRead != -1) {
                     if (currentChar == '{') {
-
+                        
                         while (currentChar != '}' && charRead != -1) {
                             charRead = reader.read();
                             currentChar = (char) charRead;
                         }
-
+                        
                         charRead = reader.read();
                         currentChar = (char) charRead;
-
+                        
                     } else if (currentChar == '\n') {
                         indexFileLine++;
-
                         charRead = reader.read();
                         currentChar = (char) charRead;
-
+                        
                     } else {
                         charRead = reader.read();
                         currentChar = (char) charRead;
@@ -148,51 +147,52 @@ public class LexicalAnalyzer {
                     createToken = this.getToken(indexFileLine);
                     listTokens.insertToken(createToken);
                     return createToken;
-
+                    
                 } else {
                     this.closeFile();
                 }
-
+                
             } else {
                 this.closeFile();
             }
 
         } catch (Exception e) {
+            if(e.getMessage() != null){
+                System.out.println(e.getMessage());
+            }
+            
             System.out.println("[lexicalAnalyze] | Error has ocurred");
             System.out.println("[lexicalAnalyze] | Ending compilation process");
         }
-
         return null;
     }
 
     private Token getToken(int indexFile) throws Exception {
         Token newToken = new Token();
-
         System.out.println("[getToken] | Init");
 
         if (Character.isDigit(currentChar)) {
             newToken = this.isDigit(currentChar, indexFile);
-
+            
         } else if (Character.isLetter(currentChar)) {
             newToken = this.isLetter(currentChar, indexFile);
-
+            
         } else if (currentChar == ':') {
             newToken = this.isAttribution(currentChar, indexFile);
-
+            
         } else if (aritmetics.contains(currentChar)) {
             newToken = this.isAritmetic(currentChar, indexFile);
-
+            
         } else if (relationals.contains(currentChar)) {
             newToken = this.isRelational(currentChar, indexFile);
-
+            
         } else if (punctuations.contains(currentChar)) {
             newToken = this.isPunctuation(currentChar, indexFile);
-
+            
         } else {
-            System.out.println(message.characterInvalid(Integer.toString(indexFile), currentChar));
-            throw new Exception();
+            throw new Exception(message.characterInvalid(Integer.toString(indexFile), currentChar));
         }
-
+        
         return newToken;
     }
 
@@ -201,7 +201,6 @@ public class LexicalAnalyzer {
         String number = "";
 
         number += character;
-
         charRead = reader.read();
         currentChar = (char) charRead;
 
@@ -223,7 +222,6 @@ public class LexicalAnalyzer {
         String word = "";
 
         word += character;
-
         charRead = reader.read();
         currentChar = (char) charRead;
 
@@ -303,7 +301,7 @@ public class LexicalAnalyzer {
                 letter.setSymbol("sidentificador");
                 break;
         }
-
+        
         letter.setLexeme(word);
         return letter;
     }
@@ -314,7 +312,6 @@ public class LexicalAnalyzer {
 
         attr += character;
         attribution.setLine(Integer.toString(lineIndex));
-
         charRead = reader.read();
         currentChar = (char) charRead;
 
@@ -323,7 +320,7 @@ public class LexicalAnalyzer {
             attribution.setSymbol("satribuição");
             charRead = reader.read();
             currentChar = (char) charRead;
-
+            
         } else {
             attribution.setSymbol("sdoispontos");
         }
@@ -369,10 +366,11 @@ public class LexicalAnalyzer {
                 relational.setSymbol("smaiorig");
                 charRead = reader.read();
                 currentChar = (char) charRead;
-
+                
             } else {
                 relational.setSymbol("maior");
             }
+            
         } else if (character == '<') {
             charRead = reader.read();
             currentChar = (char) charRead;
@@ -382,16 +380,16 @@ public class LexicalAnalyzer {
                 relational.setSymbol("smenorig");
                 charRead = reader.read();
                 currentChar = (char) charRead;
-
+                
             } else {
                 relational.setSymbol("menor");
             }
+            
         } else if (character == '=') {
             relational.setSymbol("sig");
-
             charRead = reader.read();
             currentChar = (char) charRead;
-
+            
         } else if (character == '!') {
             charRead = reader.read();
             currentChar = (char) charRead;
@@ -399,16 +397,14 @@ public class LexicalAnalyzer {
             if (currentChar == '=') {
                 operation += currentChar;
                 relational.setSymbol("Sdif");
-
                 charRead = reader.read();
                 currentChar = (char) charRead;
-
+                
             } else {
-                System.out.println(message.relationalError(Integer.toString(lineIndex), operation));
-                throw new Exception();
+                throw new Exception(message.relationalError(Integer.toString(lineIndex), operation));
             }
         }
-
+        
         System.out.printf("[isRelational] | Relational: %s\n", operation);
         relational.setLexeme(operation);
         return relational;
