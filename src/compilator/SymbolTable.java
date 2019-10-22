@@ -33,7 +33,7 @@ public class SymbolTable {
     }
 
     public synchronized void setTypeSymbols(String type) {
-        for (int i = symbols.size(); i > 0; i++) {
+        for (int i = symbols.size(); i > 0; i--) {
             if (this.symbols.get(i) instanceof Variable) {
                 if (((Variable) this.symbols.get(i)).getType() == null) {
                     ((Variable) this.symbols.get(i)).setType(type);

@@ -368,7 +368,7 @@ public class LexicalAnalyzer {
                 currentChar = (char) charRead;
 
             } else {
-                relational.setSymbol("maior");
+                relational.setSymbol("smaior");
             }
 
         } else if (character == '<') {
@@ -382,7 +382,7 @@ public class LexicalAnalyzer {
                 currentChar = (char) charRead;
 
             } else {
-                relational.setSymbol("menor");
+                relational.setSymbol("smenor");
             }
 
         } else if (character == '=') {
@@ -396,7 +396,7 @@ public class LexicalAnalyzer {
 
             if (currentChar == '=') {
                 operation += currentChar;
-                relational.setSymbol("Sdif");
+                relational.setSymbol("sdif");
                 charRead = reader.read();
                 currentChar = (char) charRead;
 
