@@ -294,7 +294,13 @@ public class SyntacticAnalyzer {
     }
 
     private void analyzeProcedureCall() throws Exception {
-        //TODO
+        token = lexicalAnalyzer.lexicalAnalyze(path);
+
+        if (!isEmpty(token)) {
+
+        } else {
+            throw new Exception();
+        }
     }
 
     private void analyzeFunctionDeclaration(String scope) throws Exception {
@@ -373,7 +379,13 @@ public class SyntacticAnalyzer {
     }
 
     private void analyzeFunctionCall() throws Exception {
-        //TODO
+        token = lexicalAnalyzer.lexicalAnalyze(path);
+
+        if (!isEmpty(token)) {
+
+        } else {
+            throw new Exception();
+        }
     }
 
     /*
@@ -685,7 +697,7 @@ public class SyntacticAnalyzer {
         if (token.getSymbol().equals("sidentificador")) {
             //Se pesquisa_tabela(token.lexema,nível,ind)
             //Então Se (TabSimb[ind].tipo = “função inteiro”) ou (TabSimb[ind].tipo = “função booleano”)
-            //Então analyzeFunctionCall();
+            analyzeFunctionCall();
             //Senão token = lexicalAnalyzer.lexicalAnalyzer(path)
             // else throw new SyntacticException();
 
