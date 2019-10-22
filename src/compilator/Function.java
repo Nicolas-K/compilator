@@ -19,6 +19,6 @@ public class Function extends Symbol {
 
     public void printFunction() {
         super.printSymbol("Function");
-        System.out.printf("[Function] | Type: %s\n", getType());
+        //System.out.printf("[Function] | Type: %s\n", getType());
     }
 }

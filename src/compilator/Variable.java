@@ -29,7 +29,7 @@ public class Variable extends Symbol {
 
     public void printVariable() {
         super.printSymbol("Variable");
-        System.out.printf("[Variable] | Type: %s\n", getType());
-        System.out.printf("[Variable] | Memory: %s\n", getMemory());
+        //System.out.printf("[Variable] | Type: %s\n", getType());
+        //System.out.printf("[Variable] | Memory: %s\n", getMemory());
     }
 }

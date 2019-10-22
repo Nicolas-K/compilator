@@ -61,32 +61,32 @@ public class LexicalAnalyzer {
     }
 
     private boolean openFile(String codePath) {
-        System.out.println("[OpenFile] | Init\n");
+        System.out.println("[OpenFile] | Init");
 
         try {
             reader = new BufferedReader(new FileReader(codePath));
-            System.out.println("[OpenFile] | File opened\n");
+            System.out.println("[OpenFile] | File opened");
             return true;
 
         } catch (FileNotFoundException exception) {
-            System.out.println("[OpenFile] | Error, file not found\n");
+            System.out.println("[OpenFile] | Error, file not found");
         }
 
         return false;
     }
 
     private boolean closeFile() {
-        System.out.println("[CloseFile] | Init\n");
+        System.out.println("[CloseFile] | Init");
 
         try {
             if (reader != null) {
                 reader.close();
-                System.out.println("[CloseFile] | File closed\n");
+                System.out.println("[CloseFile] | File closed");
             }
 
             return true;
         } catch (IOException exception) {
-            System.out.println("[CloseFile] | Error, file not closed\n");
+            System.out.println("[CloseFile] | Error, file not closed");
         }
 
         return false;
@@ -252,6 +252,7 @@ public class LexicalAnalyzer {
                 break;
             case "faca":
                 letter.setSymbol("sfaca");
+                break;
             case "inicio":
                 letter.setSymbol("sinício");
                 break;
@@ -301,7 +302,7 @@ public class LexicalAnalyzer {
                 letter.setSymbol("sidentificador");
                 break;
         }
-
+       
         letter.setLexeme(word);
         return letter;
     }

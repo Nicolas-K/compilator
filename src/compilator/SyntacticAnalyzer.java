@@ -73,6 +73,9 @@ public class SyntacticAnalyzer {
                                     analyzeBlock(scopeProgram);
 
                                     if (token.getSymbol().equals("sponto")) {
+                                        
+                                        token = lexicalAnalyzer.lexicalAnalyze(path);
+                                        
                                         if (!lexicalAnalyzer.hasFileEnd()) {
                                             throw new Exception(message.endoffileError("syntaticAnalyze", token));
                                         }
@@ -113,7 +116,7 @@ public class SyntacticAnalyzer {
             System.out.println("[syntaticAnalyze] | Ending compilation process");
         }
 
-        System.out.println("\n\n[syntaticAnalyze] | Symbol Table:");
+        System.out.println("\n[syntaticAnalyze] | Symbol Table:");
         table.printTable();
         symbolProgram = null;
     }
@@ -471,7 +474,7 @@ public class SyntacticAnalyzer {
             if (token.getSymbol().equals("satribuição")) {
                 analyzeAttribution();
             } else {
-                analyzeProcedureCall();
+                //analyzeProcedureCall();
             }
         } else {
             throw new Exception();
