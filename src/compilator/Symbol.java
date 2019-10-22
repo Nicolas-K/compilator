@@ -22,7 +22,12 @@ public class Symbol {
         return this.lexemeName;
     }
 
-    public String getScope(){
+    public String getScope() {
         return this.scope;
+    }
+
+    public void printSymbol(String typeSymbol) {
+        System.out.printf("[" + typeSymbol + "] | Lexeme: %s\n", getLexemeName());
+        System.out.printf("[" + typeSymbol + "] | Scope: %s\n", getScope());
     }
 }

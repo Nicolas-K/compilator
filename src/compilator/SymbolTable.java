@@ -46,7 +46,23 @@ public class SymbolTable {
         }
     }
 
+    public synchronized void setSymbols(ArrayList<Symbol> symbols) {
+        this.symbols = symbols;
+    }
+
     public synchronized ArrayList<Symbol> requestSymbols() {
         return this.symbols;
+    }
+
+    public synchronized void printTable() {
+        for (Symbol aux : this.symbols) {
+            if (aux instanceof Variable) {
+                ((Variable) aux).printVariable();
+            } else if (aux instanceof ProcedureProgram) {
+                ((ProcedureProgram) aux).printProcedureProgram();
+            } else if (aux instanceof Function) {
+                ((Function) aux).printFunction();
+            }
+        }
     }
 }

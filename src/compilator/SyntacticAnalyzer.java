@@ -111,6 +111,8 @@ public class SyntacticAnalyzer {
             System.out.println("[syntaticAnalyze] | Ending compilation process");
         }
 
+        System.out.println("\n\n[syntaticAnalyze] | Symbol Table:");
+        table.printTable();
         symbolProgram = null;
     }
 
@@ -170,8 +172,8 @@ public class SyntacticAnalyzer {
                 symbolVariable.setLexemeName(token.getLexeme());
                 symbolVariable.setScope(scope);
                 //Pesquisa_duplicvar_ tabela(token.lexema)
-                    //se não encontrou duplicidade
-                    table.insertSymbol(symbolVariable);
+                //se não encontrou duplicidade
+                table.insertSymbol(symbolVariable);
 
                 token = lexicalAnalyzer.lexicalAnalyze(path);
                 token.print();
@@ -260,10 +262,10 @@ public class SyntacticAnalyzer {
                 symbolProcedure.setLexemeName(token.getLexeme());
                 symbolProcedure.setScope(scope);
                 //Pesquisa
-                    //Inserir tabela de símbolos
-                    table.insertSymbol(symbolProcedure);
+                //Inserir tabela de símbolos
+                table.insertSymbol(symbolProcedure);
                 //Gera rótulo
-                    
+
                 scopeProcedure = token.getLexeme();
                 token = lexicalAnalyzer.lexicalAnalyze(path);
                 token.print();
@@ -308,9 +310,9 @@ public class SyntacticAnalyzer {
                 symbolFunction.setLexemeName(token.getLexeme());
                 symbolFunction.setScope(scope);
                 //pesquisa
-                    //insere tabela
-                    table.insertSymbol(symbolFunction);
-                    
+                //insere tabela
+                table.insertSymbol(symbolFunction);
+
                 scopeFunction = token.getLexeme();
                 token = lexicalAnalyzer.lexicalAnalyze(path);
                 token.print();
