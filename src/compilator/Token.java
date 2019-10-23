@@ -6,12 +6,12 @@ public class Token {
     private String symbol;
     private String lexeme;
 
-    public Token(){
+    public Token() {
         line = null;
         symbol = null;
         lexeme = null;
     }
-    
+
     public void setLine(String line) {
         this.line = line;
     }
@@ -35,8 +35,8 @@ public class Token {
     public String getLexeme() {
         return this.lexeme;
     }
-    
-    public void print(){
+
+    public void print() {
         System.out.printf("[Token] | Line: %s\n", getLine());
         System.out.printf("[Token] | Symbol: %s\n", getSymbol());
         System.out.printf("[Token] | Lexeme: %s\n", getLexeme());

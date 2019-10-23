@@ -9,16 +9,18 @@ import java.io.IOException;
 public class LexicalAnalyzer {
 
     private static LexicalAnalyzer instance = null;
-    TokenList list = TokenList.getInstance();
-
-    private final ArrayList<Character> toIgnore = new ArrayList<>();
-    private final ArrayList<Character> aritmetics = new ArrayList<>();
-    private final ArrayList<Character> relationals = new ArrayList<>();
-    private final ArrayList<Character> punctuations = new ArrayList<>();
+    private final ArrayList<Character> toIgnore;
+    private final ArrayList<Character> aritmetics;
+    private final ArrayList<Character> relationals;
+    private final ArrayList<Character> punctuations;
 
     private BufferedReader reader;
+    private int indexFileLine;
     private int charRead;
     private char currentChar;
+
+    private final TokenList listTokens = TokenList.getInstance();
+    private final ErrorMessages message = ErrorMessages.getInstance();
 
     public static LexicalAnalyzer getInstance() {
         if (instance == null) {
@@ -27,7 +29,15 @@ public class LexicalAnalyzer {
         return instance;
     }
 
-    public LexicalAnalyzer() {
+    private LexicalAnalyzer() {
+        reader = null;
+        indexFileLine = 1;
+
+        toIgnore = new ArrayList<>();
+        aritmetics = new ArrayList<>();
+        relationals = new ArrayList<>();
+        punctuations = new ArrayList<>();
+
         toIgnore.add(' ');
         toIgnore.add('{');
         toIgnore.add('\n');
@@ -50,54 +60,59 @@ public class LexicalAnalyzer {
         punctuations.add('.');
     }
 
-    public void openFile(String codePath) {
-        System.out.println("[OpenFile] | Init\n");
-
+    private boolean openFile(String codePath) {
         try {
             reader = new BufferedReader(new FileReader(codePath));
-            System.out.println("[OpenFile] | File opened\n");
+            System.out.println("[OpenFile] | File opened");
+            return true;
 
         } catch (FileNotFoundException exception) {
-            System.out.println("[OpenFile] | Error, file not found\n");
-            exception.getMessage();
+            System.out.println("[OpenFile] | Error, file not found");
         }
+
+        return false;
     }
 
-    public void closeFile() {
-        System.out.println("[CloseFile] | Init\n");
-
+    private boolean closeFile() {
         try {
             if (reader != null) {
                 reader.close();
-                System.out.println("[CloseFile] | File closed\n");
+                System.out.println("[CloseFile] | File closed");
             }
+
+            return true;
         } catch (IOException exception) {
-            System.out.println("[CloseFile] | Error, file not closed\n");
-            exception.getMessage();
+            System.out.println("[CloseFile] | Error, file not closed");
+        }
+
+        return false;
+    }
+
+    protected boolean hasFileEnd() {
+        if (charRead == -1) {
+            return true;
+        } else {
+            return false;
         }
     }
 
-    public void debug(String path) {
-        System.out.println("[LexicalAnalyzer] | Init\n");
-        openFile(path);
-        analyzeFile();
-        closeFile();
-    }
+    public Token lexicalAnalyze(String path) throws IOException {
+        Token createToken;
 
-    public void analyzeFile() {
-        int indexFile;
-        Token newToken;
+        if (reader == null) {
+            if (!this.openFile(path)) {
+                return null;
+            } else {
+                charRead = reader.read();
+                currentChar = (char) charRead;
+            }
+        }
 
         try {
-            indexFile = 1;
-
-            charRead = reader.read();
-            currentChar = (char) charRead;
-
-            while (charRead != -1) {
-
+            if (!hasFileEnd()) {
                 while ((toIgnore.contains(currentChar)) && charRead != -1) {
                     if (currentChar == '{') {
+
                         while (currentChar != '}' && charRead != -1) {
                             charRead = reader.read();
                             currentChar = (char) charRead;
@@ -107,8 +122,7 @@ public class LexicalAnalyzer {
                         currentChar = (char) charRead;
 
                     } else if (currentChar == '\n') {
-                        indexFile++;
-
+                        indexFileLine++;
                         charRead = reader.read();
                         currentChar = (char) charRead;
 
@@ -123,238 +137,199 @@ public class LexicalAnalyzer {
                     }
                 }
 
-                if (charRead != -1) {
-                    System.out.printf("[analyzeFile] | Line: %d\n", indexFile);
-                    System.out.printf("[analyzeFile] | Character: %c\n", currentChar);
+                if (!hasFileEnd()) {
+                    System.out.printf("[lexicalAnalyze] | Line: %d\n", indexFileLine);
+                    System.out.printf("[lexicalAnalyze] | Character: %c\n", currentChar);
+                    createToken = this.getToken(indexFileLine);
+                    listTokens.insertToken(createToken);
+                    return createToken;
 
-                    newToken = getToken(indexFile);
-
-                    if (newToken != null) {
-                        list.insertToken(newToken);
-                    } else {
-                        System.out.println("\n[analyzeFile] | Exception Occurred");
-                        System.out.println("[analyzeFile] | End Execution");
-                        break;
-                    }
+                } else {
+                    this.closeFile();
                 }
-            }
-
-        } catch (IOException exception) {
-            System.out.println("[analyzeFile] | Error, write/read file\n");
-            exception.getMessage();
-        }
-
-        System.out.println("\n[analyzeFile] | All Tokens Obtained: ");
-        list.printAllTokens();
-    }
-
-    public Token getToken(int indexFile) {
-        Token newToken = new Token();
-
-        System.out.println("[getToken] | Init");
-
-        try {
-            if (Character.isDigit(currentChar)) {
-                newToken = isDigit(currentChar, indexFile);
-
-            } else if (Character.isLetter(currentChar)) {
-                newToken = isLetter(currentChar, indexFile);
-
-            } else if (currentChar == ':') {
-                newToken = isAttribution(currentChar, indexFile);
-
-            } else if (aritmetics.contains(currentChar)) {
-                newToken = isAritmetic(currentChar, indexFile);
-
-            } else if (relationals.contains(currentChar)) {
-                newToken = isRelational(currentChar, indexFile);
-
-            } else if (punctuations.contains(currentChar)) {
-                newToken = isPunctuation(currentChar, indexFile);
 
             } else {
-                throw new LexicalException();
+                this.closeFile();
             }
 
-            newToken.print();
-            return newToken;
+        } catch (Exception e) {
+            if (e.getMessage() != null) {
+                System.out.println(e.getMessage());
+            }
 
-        } catch (LexicalException lexical) {
-            lexical.characterInvalid(Integer.toString(indexFile), currentChar);
-            return null;
+            System.out.println("[lexicalAnalyze] | Error has ocurred");
+            System.out.println("[lexicalAnalyze] | Ending compilation process");
         }
+        return null;
     }
 
-    public Token isDigit(char character, int lineIndex) {
+    private Token getToken(int indexFile) throws Exception {
+        Token newToken = new Token();
+        
+        if (Character.isDigit(currentChar)) {
+            newToken = this.isDigit(currentChar, indexFile);
+
+        } else if (Character.isLetter(currentChar)) {
+            newToken = this.isLetter(currentChar, indexFile);
+
+        } else if (currentChar == ':') {
+            newToken = this.isAttribution(currentChar, indexFile);
+
+        } else if (aritmetics.contains(currentChar)) {
+            newToken = this.isAritmetic(currentChar, indexFile);
+
+        } else if (relationals.contains(currentChar)) {
+            newToken = this.isRelational(currentChar, indexFile);
+
+        } else if (punctuations.contains(currentChar)) {
+            newToken = this.isPunctuation(currentChar, indexFile);
+
+        } else {
+            throw new Exception(message.characterInvalid(Integer.toString(indexFile), currentChar));
+        }
+
+        return newToken;
+    }
+
+    private Token isDigit(char character, int lineIndex) throws Exception {
         Token digit = new Token();
         String number = "";
 
-        System.out.println("[isDigit] | Init\n");
-
         number += character;
+        charRead = reader.read();
+        currentChar = (char) charRead;
 
-        try {
+        while (Character.isDigit(currentChar)) {
+            number += currentChar;
             charRead = reader.read();
             currentChar = (char) charRead;
-
-            while (Character.isDigit(currentChar)) {
-                number += currentChar;
-                charRead = reader.read();
-                currentChar = (char) charRead;
-            }
-
-            System.out.printf("[isDigit] | Digit: %s\n", number);
-
-            digit.setLine(Integer.toString(lineIndex));
-            digit.setSymbol("snumero");
-            digit.setLexeme(number);
-
-            return digit;
-
-        } catch (IOException exception) {
-            exception.getMessage();
-            return null;
         }
+
+        System.out.printf("[isDigit] | Digit: %s\n", number);
+        digit.setLine(Integer.toString(lineIndex));
+        digit.setSymbol("snumero");
+        digit.setLexeme(number);
+        return digit;
     }
 
-    public Token isLetter(char character, int lineIndex) {
+    private Token isLetter(char character, int lineIndex) throws Exception {
         Token letter = new Token();
         String word = "";
 
-        System.out.println("[isLetter] | Init\n");
-
         word += character;
+        charRead = reader.read();
+        currentChar = (char) charRead;
 
-        try {
+        while (Character.isLetter(currentChar) || Character.isDigit(currentChar) || currentChar == '_') {
+            word += currentChar;
             charRead = reader.read();
             currentChar = (char) charRead;
-
-            while (Character.isLetter(currentChar) || Character.isDigit(currentChar) || currentChar == '_') {
-                word += currentChar;
-                charRead = reader.read();
-                currentChar = (char) charRead;
-            }
-
-            System.out.printf("[isLetter] | Word: %s\n", word);
-
-            letter.setLine(Integer.toString(lineIndex));
-
-            switch (word) {
-                case "programa":
-                    letter.setSymbol("sprograma");
-                    break;
-                case "se":
-                    letter.setSymbol("sse");
-                    break;
-                case "entao":
-                    letter.setSymbol("sentao");
-                    break;
-                case "senao":
-                    letter.setSymbol("ssenao");
-                    break;
-                case "enquanto":
-                    letter.setSymbol("senquanto");
-                    break;
-                case "faca":
-                    letter.setSymbol("sfaca");
-                case "inicio":
-                    letter.setSymbol("sinício");
-                    break;
-                case "fim":
-                    letter.setSymbol("sfim");
-                    break;
-                case "escreva":
-                    letter.setSymbol("sescreva");
-                    break;
-                case "leia":
-                    letter.setSymbol("sleia");
-                    break;
-                case "var":
-                    letter.setSymbol("svar");
-                    break;
-                case "inteiro":
-                    letter.setSymbol("sinteiro");
-                    break;
-                case "booleano":
-                    letter.setSymbol("sbooleano");
-                    break;
-                case "verdadeiro":
-                    letter.setSymbol("sverdadeiro");
-                    break;
-                case "falso":
-                    letter.setSymbol("sfalso");
-                    break;
-                case "procedimento":
-                    letter.setSymbol("sprocedimento");
-                    break;
-                case "funcao":
-                    letter.setSymbol("sfuncao");
-                    break;
-                case "div":
-                    letter.setSymbol("sdiv");
-                    break;
-                case "e":
-                    letter.setSymbol("se");
-                    break;
-                case "ou":
-                    letter.setSymbol("sou");
-                    break;
-                case "nao":
-                    letter.setSymbol("snao");
-                    break;
-                default:
-                    letter.setSymbol("sidentificador");
-                    break;
-            }
-
-            letter.setLexeme(word);
-            return letter;
-
-        } catch (IOException exception) {
-            exception.getMessage();
-            return null;
         }
+
+        System.out.printf("[isLetter] | Word: %s\n", word);
+        letter.setLine(Integer.toString(lineIndex));
+
+        switch (word) {
+            case "programa":
+                letter.setSymbol("sprograma");
+                break;
+            case "se":
+                letter.setSymbol("sse");
+                break;
+            case "entao":
+                letter.setSymbol("sentao");
+                break;
+            case "senao":
+                letter.setSymbol("ssenao");
+                break;
+            case "enquanto":
+                letter.setSymbol("senquanto");
+                break;
+            case "faca":
+                letter.setSymbol("sfaca");
+                break;
+            case "inicio":
+                letter.setSymbol("sinício");
+                break;
+            case "fim":
+                letter.setSymbol("sfim");
+                break;
+            case "escreva":
+                letter.setSymbol("sescreva");
+                break;
+            case "leia":
+                letter.setSymbol("sleia");
+                break;
+            case "var":
+                letter.setSymbol("svar");
+                break;
+            case "inteiro":
+                letter.setSymbol("sinteiro");
+                break;
+            case "booleano":
+                letter.setSymbol("sbooleano");
+                break;
+            case "verdadeiro":
+                letter.setSymbol("sverdadeiro");
+                break;
+            case "falso":
+                letter.setSymbol("sfalso");
+                break;
+            case "procedimento":
+                letter.setSymbol("sprocedimento");
+                break;
+            case "funcao":
+                letter.setSymbol("sfuncao");
+                break;
+            case "div":
+                letter.setSymbol("sdiv");
+                break;
+            case "e":
+                letter.setSymbol("se");
+                break;
+            case "ou":
+                letter.setSymbol("sou");
+                break;
+            case "nao":
+                letter.setSymbol("snao");
+                break;
+            default:
+                letter.setSymbol("sidentificador");
+                break;
+        }
+       
+        letter.setLexeme(word);
+        return letter;
     }
 
-    public Token isAttribution(char character, int lineIndex) {
+    private Token isAttribution(char character, int lineIndex) throws Exception {
         Token attribution = new Token();
         String attr = "";
 
-        System.out.println("[isAttribution] | Init\n");
         attr += character;
-
         attribution.setLine(Integer.toString(lineIndex));
+        charRead = reader.read();
+        currentChar = (char) charRead;
 
-        try {
+        if (currentChar == '=') {
+            attr += currentChar;
+            attribution.setSymbol("satribuição");
             charRead = reader.read();
             currentChar = (char) charRead;
 
-            if (currentChar == '=') {
-                attr += currentChar;
-                attribution.setSymbol("satribuição");
-                charRead = reader.read();
-                currentChar = (char) charRead;
-                
-            } else {
-                attribution.setSymbol("sdoispontos");
-            }
-
-            System.out.printf("[isAttribution] | Attribution: %s\n", attr);
-            attribution.setLexeme(attr);
-            return attribution;
-
-        } catch (IOException exception) {
-            exception.getMessage();
-            return null;
+        } else {
+            attribution.setSymbol("sdoispontos");
         }
+
+        System.out.printf("[isAttribution] | Attribution: %s\n", attr);
+        attribution.setLexeme(attr);
+        return attribution;
     }
 
-    public Token isAritmetic(char character, int lineIndex) {
+    private Token isAritmetic(char character, int lineIndex) throws Exception {
         Token aritmetic = new Token();
 
-        System.out.println("[isAritmetic] | Init\n");
         System.out.printf("[isAritmetic] | Aritmetic: %c\n", character);
-
         aritmetic.setLine(Integer.toString(lineIndex));
 
         if (character == '+') {
@@ -366,94 +341,75 @@ public class LexicalAnalyzer {
         }
 
         aritmetic.setLexeme(Character.toString(character));
-
-        try {
-            charRead = reader.read();
-            currentChar = (char) charRead;
-            return aritmetic;
-
-        } catch (IOException exception) {
-            exception.getMessage();
-            return null;
-        }
+        charRead = reader.read();
+        currentChar = (char) charRead;
+        return aritmetic;
     }
 
-    public Token isRelational(char character, int lineIndex) {
+    private Token isRelational(char character, int lineIndex) throws Exception {
         Token relational = new Token();
         String operation = "";
 
-        System.out.println("[isRelational] | Init\n");
         operation += character;
-
         relational.setLine(Integer.toString(lineIndex));
 
-        try {
-            if (character == '>') {
+        if (character == '>') {
+            charRead = reader.read();
+            currentChar = (char) charRead;
+
+            if (currentChar == '=') {
+                operation += currentChar;
+                relational.setSymbol("smaiorig");
                 charRead = reader.read();
                 currentChar = (char) charRead;
 
-                if (currentChar == '=') {
-                    operation += currentChar;
-                    relational.setSymbol("smaiorig");
-                    charRead = reader.read();
-                    currentChar = (char) charRead;
-                    
-                } else {
-                    relational.setSymbol("maior");
-                }
-            } else if (character == '<') {
-                charRead = reader.read();
-                currentChar = (char) charRead;
-
-                if (currentChar == '=') {
-                    operation += currentChar;
-                    relational.setSymbol("smenorig");
-                    charRead = reader.read();
-                    currentChar = (char) charRead;
-                    
-                } else {
-                    relational.setSymbol("menor");
-                }
-            } else if (character == '=') {
-                relational.setSymbol("sig");
-                charRead = reader.read();
-                currentChar = (char) charRead;
-
-            } else if (character == '!') {
-                charRead = reader.read();
-                currentChar = (char) charRead;
-
-                if (currentChar == '=') {
-                    operation += currentChar;
-                    relational.setSymbol("Sdif");
-                    charRead = reader.read();
-                    currentChar = (char) charRead;
-                    
-                } else {
-                    throw new LexicalException();
-                }
+            } else {
+                relational.setSymbol("smaior");
             }
 
-            System.out.printf("[isRelational] | Relational: %s\n", operation);
-            relational.setLexeme(operation);
-            return relational;
+        } else if (character == '<') {
+            charRead = reader.read();
+            currentChar = (char) charRead;
 
-        } catch (IOException exception) {
-            exception.getMessage();
-            return null;
+            if (currentChar == '=') {
+                operation += currentChar;
+                relational.setSymbol("smenorig");
+                charRead = reader.read();
+                currentChar = (char) charRead;
 
-        } catch (LexicalException lexical) {
-            lexical.relationalError(Integer.toString(lineIndex), currentChar);
-            return null;
+            } else {
+                relational.setSymbol("smenor");
+            }
+
+        } else if (character == '=') {
+            relational.setSymbol("sig");
+            charRead = reader.read();
+            currentChar = (char) charRead;
+
+        } else if (character == '!') {
+            charRead = reader.read();
+            currentChar = (char) charRead;
+
+            if (currentChar == '=') {
+                operation += currentChar;
+                relational.setSymbol("sdif");
+                charRead = reader.read();
+                currentChar = (char) charRead;
+
+            } else {
+                throw new Exception(message.relationalError(Integer.toString(lineIndex), operation));
+            }
         }
+
+        System.out.printf("[isRelational] | Relational: %s\n", operation);
+        relational.setLexeme(operation);
+        return relational;
     }
 
-    public Token isPunctuation(char character, int lineIndex) {
+    private Token isPunctuation(char character, int lineIndex) throws Exception {
         Token punctuation = new Token();
 
-        System.out.println("[isPunctuation] | Init\n");
         System.out.printf("[isPunctuation] | Punctuation: %c\n", character);
-
         punctuation.setLine(Integer.toString(lineIndex));
 
         if (character == ';') {
@@ -469,19 +425,8 @@ public class LexicalAnalyzer {
         }
 
         punctuation.setLexeme(Character.toString(character));
-
-        try {
-            charRead = reader.read();
-            currentChar = (char) charRead;
-            return punctuation;
-
-        } catch (IOException exception) {
-            exception.getMessage();
-            return null;
-        }
-    }
-
-    public Token requestToken(int index) {
-        return list.requestToken(index);
+        charRead = reader.read();
+        currentChar = (char) charRead;
+        return punctuation;
     }
 }
