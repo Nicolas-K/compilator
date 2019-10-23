@@ -54,67 +54,67 @@ public class ErrorMessages {
      *  Error messages associate to Syntactic Analyzer   
      */
     public String programError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sprograma expected, symbol received: " + wrongToken.getSymbol();
+        messageError = "[" + method + "] | Symbol sprograma expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
     public String identifierError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sidentificador expected, symbol received: " + wrongToken.getSymbol();
+        messageError = "[" + method + "] | Symbol sidentificador expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
     public String semicolonError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sponto_virgula expected, symbol received: " + wrongToken.getSymbol();
+        messageError = "[" + method + "] | Symbol sponto_virgula expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
     public String dotError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sponto expected, symbol received: " + wrongToken.getSymbol();
+        messageError = "[" + method + "] | Symbol sponto expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
     public String colonError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sdoispontos expected, symbol received: " + wrongToken.getSymbol();
+        messageError = "[" + method + "] | Symbol received not expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
     public String typeError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sinteiro or sbooleano expected, symbol received: " + wrongToken.getSymbol();
+        messageError = "[" + method + "] | Symbol sinteiro or sbooleano expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
     public String beginError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | symbol sinicio expected, symbol received: " + wrongToken.getSymbol();
+        messageError = "[" + method + "] | symbol sinicio expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
     public String booleanError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sverdadeiro or sfalso expected, symbol received: " + wrongToken.getSymbol();
+        messageError = "[" + method + "] | Symbol sverdadeiro or sfalso expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
     public String openparenthesesError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sabre_parenteses expected, symbol received: " + wrongToken.getSymbol();
+        messageError = "[" + method + "] | Symbol sabre_parenteses expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
     public String closeparenthesesError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sfecha_parenteses expected, symbol received: " + wrongToken.getSymbol();
+        messageError = "[" + method + "] | Symbol sfecha_parenteses expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
     public String doError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sfaca expected, symbol received: " + wrongToken.getSymbol();
+        messageError = "[" + method + "] | Symbol sfaca expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
     public String thenError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sentao expected, symbol received: " + wrongToken.getSymbol();
+        messageError = "[" + method + "] | Symbol sentao expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
     public String endoffileError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | End of file expected, symbol received: " + wrongToken.getSymbol();
+        messageError = "[" + method + "] | End of file expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 }

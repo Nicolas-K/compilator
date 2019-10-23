@@ -61,8 +61,6 @@ public class LexicalAnalyzer {
     }
 
     private boolean openFile(String codePath) {
-        System.out.println("[OpenFile] | Init");
-
         try {
             reader = new BufferedReader(new FileReader(codePath));
             System.out.println("[OpenFile] | File opened");
@@ -76,8 +74,6 @@ public class LexicalAnalyzer {
     }
 
     private boolean closeFile() {
-        System.out.println("[CloseFile] | Init");
-
         try {
             if (reader != null) {
                 reader.close();
@@ -142,8 +138,8 @@ public class LexicalAnalyzer {
                 }
 
                 if (!hasFileEnd()) {
-                    System.out.printf("[newToken] | Line: %d\n", indexFileLine);
-                    System.out.printf("[newToken] | Character: %c\n", currentChar);
+                    System.out.printf("[lexicalAnalyze] | Line: %d\n", indexFileLine);
+                    System.out.printf("[lexicalAnalyze] | Character: %c\n", currentChar);
                     createToken = this.getToken(indexFileLine);
                     listTokens.insertToken(createToken);
                     return createToken;
@@ -169,8 +165,7 @@ public class LexicalAnalyzer {
 
     private Token getToken(int indexFile) throws Exception {
         Token newToken = new Token();
-        System.out.println("[getToken] | Init");
-
+        
         if (Character.isDigit(currentChar)) {
             newToken = this.isDigit(currentChar, indexFile);
 
