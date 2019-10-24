@@ -13,7 +13,7 @@ public class ErrorMessages {
     }
 
     /*
-     *  Error messages associate to Lexical Analyzer 
+     *  mensagens de erro associadas ao analisador lexico
      */
     public String digitError(String line, char character) {
         messageError = "[DigitError] Line: " + line + " Character: " + character + " | Invalid Digit Format";
@@ -51,10 +51,10 @@ public class ErrorMessages {
     }
 
     /*
-     *  Error messages associate to Syntactic Analyzer   
+     *  Mensagens de erro associadas ao analisador sintatico
      */
     public String programError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sprograma expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
+        messageError = "[" + method + "] | Expression not, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
@@ -115,6 +115,25 @@ public class ErrorMessages {
 
     public String endoffileError(String method, Token wrongToken) {
         messageError = "[" + method + "] | End of file expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
+        return messageError;
+    }
+    
+    /*
+     *  mensagens de erro associadas ao analisador semantico
+     */
+    
+    public String duplicateVariableError(String method, String variable){
+        messageError = "[" + method + "] | Variable" + variable + " already declared in this scope";
+        return messageError;
+    }
+    
+    public String duplicateFunctionError(String method, String function) {
+        messageError = "[" + method + "] | Function" + function + " already declared";
+        return messageError;
+    }
+    
+    public String duplicateProcedureProgramError(String method, String function) {
+        messageError = "[" + method + "] | Function" + function + " already declared";
         return messageError;
     }
 }

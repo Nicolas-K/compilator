@@ -201,7 +201,7 @@ public class SyntacticAnalyzer {
                         throw new Exception();
                     }
                 } else {
-                    // throw new Exception(message.duplicateVariable());
+                    throw new Exception(message.duplicateVariableError("analyzeVariables", symbolVariable.getLexemeName()));
                 }
             }
 
@@ -287,7 +287,7 @@ public class SyntacticAnalyzer {
                         throw new Exception();
                     }
                 } else {
-                    // throw new Exception(message.duplicateProcedureProgram());
+                    throw new Exception(message.duplicateProcedureProgramError("analyzeProcedureDeclaration", symbolProcedure.getLexemeName()));
                 }
 
             } else {
@@ -374,9 +374,9 @@ public class SyntacticAnalyzer {
                     } else {
                         throw new Exception();
                     }
-                    
+
                 } else {
-                    //throw new Exception(message.duplicateFunction());
+                    throw new Exception(message.duplicateFunctionError("analyzeFunctionDeclaration", symbolFunction.getLexemeName()));
                 }
 
             } else {

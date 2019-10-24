@@ -13,11 +13,11 @@ public class SemanticAnalyzer {
         }
         return instance;
     }
-    
+
     /*
      *  Pesquisas na tabela de simbolo por duplicatas
      */
-    public boolean searchVariableDuplicate(String lexeme, String scope) {
+    public boolean searchVariableDuplicate(String lexeme, String scope) throws Exception {
         ArrayList<Symbol> symbols = table.requestSymbols();
 
         for (Symbol aux : symbols) {
@@ -30,10 +30,11 @@ public class SemanticAnalyzer {
             }
         }
 
+        symbols = null;
         return false;
     }
 
-    public boolean searchProcedureProgramDuplicate(String lexeme) {
+    public boolean searchProcedureProgramDuplicate(String lexeme) throws Exception {
         ArrayList<Symbol> symbols = table.requestSymbols();
 
         for (Symbol aux : symbols) {
@@ -43,11 +44,12 @@ public class SemanticAnalyzer {
                 }
             }
         }
-        
+
+        symbols = null;
         return false;
     }
 
-    public boolean searchFunctionDuplicate(String lexeme) {
+    public boolean searchFunctionDuplicate(String lexeme) throws Exception {
         ArrayList<Symbol> symbols = table.requestSymbols();
 
         for (Symbol aux : symbols) {
@@ -57,14 +59,15 @@ public class SemanticAnalyzer {
                 }
             }
         }
-        
+
+        symbols = null;
         return false;
     }
-    
+
     /*
      *  Inserção de tipo nos simbolos
      */
-    public void setTypeVariable(String type) {
+    public void setTypeVariable(String type) throws Exception {
         ArrayList<Symbol> symbols = table.requestSymbols();
 
         for (int i = symbols.size() - 1; i >= 0; i--) {
@@ -76,9 +79,10 @@ public class SemanticAnalyzer {
         }
 
         table.updateSymbols(symbols);
+        symbols = null;
     }
 
-    public void setTypeFunction(String type) {
+    public void setTypeFunction(String type) throws Exception {
         ArrayList<Symbol> symbols = table.requestSymbols();
 
         for (int i = symbols.size() - 1; i >= 0; i--) {
@@ -90,5 +94,6 @@ public class SemanticAnalyzer {
         }
 
         table.updateSymbols(symbols);
+        symbols = null;
     }
 }
