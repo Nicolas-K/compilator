@@ -21,13 +21,17 @@ public class SymbolTable {
     public synchronized void insertSymbol(Symbol newSymbol) {
         symbols.add(newSymbol);
     }
-    
+
     public synchronized void updateSymbols(ArrayList<Symbol> symbols) {
         this.symbols = symbols;
     }
 
     public synchronized ArrayList<Symbol> requestSymbols() {
         return this.symbols;
+    }
+
+    public synchronized Symbol getLast() {
+        return this.symbols.get(symbols.size() - 1);
     }
 
     public synchronized void printTable() {

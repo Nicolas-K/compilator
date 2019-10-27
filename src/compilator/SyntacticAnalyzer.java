@@ -298,19 +298,12 @@ public class SyntacticAnalyzer {
             throw new Exception();
         }
 
+        semanticAnalyzer.unstackSymbols(symbolProcedure);
         symbolProcedure = null;
-        //Desempilha e volta nível
     }
 
     private void analyzeProcedureCall() throws Exception {
-        token = lexicalAnalyzer.lexicalAnalyze(path);
-        token.print();
-
-        if (!isEmpty(token)) {
-
-        } else {
-            throw new Exception();
-        }
+        
     }
 
     private void analyzeFunctionDeclaration(String scope) throws Exception {
@@ -386,20 +379,13 @@ public class SyntacticAnalyzer {
         } else {
             throw new Exception();
         }
-
+        
+        semanticAnalyzer.unstackSymbols(symbolFunction);
         symbolFunction = null;
-        //Desempilha u volta nível
     }
 
     private void analyzeFunctionCall() throws Exception {
-        token = lexicalAnalyzer.lexicalAnalyze(path);
-        token.print();
-
-        if (!isEmpty(token)) {
-
-        } else {
-            throw new Exception();
-        }
+        
     }
 
     /*
@@ -468,7 +454,7 @@ public class SyntacticAnalyzer {
             if (token.getSymbol().equals("satribuição")) {
                 analyzeAttribution();
             } else {
-                //analyzeProcedureCall();
+                analyzeProcedureCall();
             }
         } else {
             throw new Exception();

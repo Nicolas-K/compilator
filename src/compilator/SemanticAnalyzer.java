@@ -96,4 +96,23 @@ public class SemanticAnalyzer {
         table.updateSymbols(symbols);
         symbols = null;
     }
+    
+    /*
+     *  Desempilhar simbolos (voltar nivel)
+     *  Validar | Modificar para remover apenas simbolos de determinado escopo
+     */
+    public void unstackSymbols(Symbol target) {
+        ArrayList<Symbol> symbols = table.requestSymbols();
+        
+        for(int i = symbols.size() - 1; i >= 0; i--) {
+            if(!symbols.get(i).equals(target)) {
+                symbols.remove(i);
+            } else {
+                break;
+            }
+        }
+        
+        table.updateSymbols(symbols);
+        symbols = null;
+    }
 }
