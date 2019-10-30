@@ -27,6 +27,12 @@ public class SemanticAnalyzer {
                         return true;
                     }
                 }
+            } else {
+                if (aux instanceof ProcedureProgram || aux instanceof Function) {
+                    if (aux.getLexemeName().equals(lexeme)) {
+                        return true;
+                    }
+                }
             }
         }
 
@@ -96,23 +102,60 @@ public class SemanticAnalyzer {
         table.updateSymbols(symbols);
         symbols = null;
     }
-    
+
     /*
      *  Desempilhar simbolos (voltar nivel)
      *  Validar | Modificar para remover apenas simbolos de determinado escopo
      */
     public void unstackSymbols(Symbol target) {
         ArrayList<Symbol> symbols = table.requestSymbols();
-        
-        for(int i = symbols.size() - 1; i >= 0; i--) {
-            if(!symbols.get(i).equals(target)) {
+
+        for (int i = symbols.size() - 1; i >= 0; i--) {
+            if (!symbols.get(i).equals(target)) {
                 symbols.remove(i);
             } else {
                 break;
             }
         }
-        
+
         table.updateSymbols(symbols);
         symbols = null;
+    }
+
+    /*
+     *  Utilização de identificadores e valores de expressões
+     */
+    public boolean identifierUsage(String identifier) {
+        ArrayList<Symbol> symbols = table.requestSymbols();
+
+        for (Symbol aux : symbols) {
+            if (aux.getLexemeName().equals(identifier)) {
+                return true;
+            }
+        }
+
+        symbols = null;
+        return false;
+    }
+
+    /*
+     *  Retornar instanceof do simbolo
+     */
+    public String instanceofSymbol(String identifier) {
+        String instance;
+        
+        ArrayList<Symbol> symbols = table.requestSymbols();
+
+        for (Symbol aux : symbols) {
+            if(aux.getLexemeName().equals(identifier)){
+                if (aux instanceof Function) {
+                    instance = "function";
+                    return instance;
+                } 
+            }
+        }
+        
+        instance = "variable";
+        return instance;
     }
 }

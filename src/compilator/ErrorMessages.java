@@ -54,67 +54,67 @@ public class ErrorMessages {
      *  Mensagens de erro associadas ao analisador sintatico
      */
     public String programError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Expression not, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
+        messageError = "[" + method + "] | Symbol not expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
     public String identifierError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sidentificador expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
+        messageError = "[" + method + "] | Symbol not expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
     public String semicolonError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sponto_virgula expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
+        messageError = "[" + method + "] | Symbol not expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
     public String dotError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sponto expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
+        messageError = "[" + method + "] | Symbol not expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
     public String colonError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol received not expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
+        messageError = "[" + method + "] | Symbol not expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
     public String typeError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sinteiro or sbooleano expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
+        messageError = "[" + method + "] | Symbol not expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
     public String beginError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | symbol sinicio expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
+        messageError = "[" + method + "] | Symbol not expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
     public String booleanError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sverdadeiro or sfalso expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
+        messageError = "[" + method + "] | Symbol not expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
     public String openparenthesesError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sabre_parenteses expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
+        messageError = "[" + method + "] | Symbol not expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
     public String closeparenthesesError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sfecha_parenteses expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
+        messageError = "[" + method + "] | Symbol not expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
     public String doError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sfaca expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
+        messageError = "[" + method + "] |  Symbol not expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
     public String thenError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sentao expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
+        messageError = "[" + method + "] |  Symbol not expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
     public String endoffileError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | End of file expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
+        messageError = "[" + method + "] | Symbol not expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
     
@@ -122,18 +122,23 @@ public class ErrorMessages {
      *  mensagens de erro associadas ao analisador semantico
      */
     
-    public String duplicateVariableError(String method, String variable){
-        messageError = "[" + method + "] | Variable" + variable + " already declared in this scope";
+    public String duplicateVariableError(String method, Token variable){
+        messageError = "[" + method + "] | Variable Identifier " + variable.getLexeme() + " already declared\n| Line: " + variable.getLine();
         return messageError;
     }
     
-    public String duplicateFunctionError(String method, String function) {
-        messageError = "[" + method + "] | Function" + function + " already declared";
+    public String duplicateFunctionError(String method, Token function) {
+        messageError = "[" + method + "] | Function Identifier " + function.getLexeme() + " already declared\n| Line: " + function.getLine();
         return messageError;
     }
     
-    public String duplicateProcedureProgramError(String method, String function) {
-        messageError = "[" + method + "] | Function" + function + " already declared";
+    public String duplicateProcedureProgramError(String method, Token procedure) {
+        messageError = "[" + method + "] | Procedure Identifier" + procedure.getLexeme() + " already declared\n| Line: " + procedure.getLine();
+        return messageError;
+    }
+    
+    public String identifierUsageError(String method, Token identifier) {
+        messageError = "[" + method + "] | Identifier " + identifier.getLexeme() + " not declared before\n| Line: " + identifier.getLine();
         return messageError;
     }
 }
