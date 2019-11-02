@@ -72,14 +72,14 @@ public class SyntacticAnalyzer {
                                         token = lexicalAnalyzer.lexicalAnalyze(path);
 
                                         if (!lexicalAnalyzer.hasFileEnd()) {
-                                            throw new Exception(message.endoffileError("syntaticAnalyze", token));
+                                            throw new Exception(message.syntaticError("syntaticAnalyze", token));
                                         }
                                     } else {
-                                        throw new Exception(message.dotError("syntaticAnalyze", token));
+                                        throw new Exception(message.syntaticError("syntaticAnalyze", token));
                                     }
 
                                 } else {
-                                    throw new Exception(message.semicolonError("syntaticAnalyze", token));
+                                    throw new Exception(message.syntaticError("syntaticAnalyze", token));
                                 }
 
                             } else {
@@ -87,7 +87,7 @@ public class SyntacticAnalyzer {
                             }
 
                         } else {
-                            throw new Exception(message.identifierError("syntaticAnalyze", token));
+                            throw new Exception(message.syntaticError("syntaticAnalyze", token));
                         }
 
                     } else {
@@ -95,7 +95,7 @@ public class SyntacticAnalyzer {
                     }
 
                 } else {
-                    throw new Exception(message.programError("syntaticAnalyze", token));
+                    throw new Exception(message.syntaticError("syntaticAnalyze", token));
                 }
 
             } else {
@@ -149,12 +149,12 @@ public class SyntacticAnalyzer {
                             }
 
                         } else {
-                            throw new Exception(message.semicolonError("analyzeVariablesDeclaration", token));
+                            throw new Exception(message.syntaticError("analyzeVariablesDeclaration", token));
                         }
                     }
 
                 } else {
-                    throw new Exception(message.identifierError("analyzeVariablesDeclaration", token));
+                    throw new Exception(message.syntaticError("analyzeVariablesDeclaration", token));
                 }
             } else {
                 throw new Exception();
@@ -181,7 +181,7 @@ public class SyntacticAnalyzer {
 
                                 if (!isEmpty(token)) {
                                     if (token.getSymbol().equals("sdoispontos")) {
-                                        throw new Exception(message.colonError("analyzeVariables", token));
+                                        throw new Exception(message.syntaticError("analyzeVariables", token));
                                     }
 
                                 } else {
@@ -194,7 +194,7 @@ public class SyntacticAnalyzer {
                         throw new Exception();
                     }
                 } else {
-                    throw new Exception(message.duplicateVariableError("analyzeVariables", token));
+                    throw new Exception(message.duplicateError("analyzeVariables", "Variable", token));
                 }
             }
 
@@ -238,7 +238,7 @@ public class SyntacticAnalyzer {
                 }
 
             } else {
-                throw new Exception(message.semicolonError("analyzeSubRoutineDeclaration", token));
+                throw new Exception(message.syntaticError("analyzeSubRoutineDeclaration", token));
             }
         }
 
@@ -258,7 +258,7 @@ public class SyntacticAnalyzer {
                 symbolProcedure.setLexemeName(token.getLexeme());
                 symbolProcedure.setScope(scope);
 
-                if (!semanticAnalyzer.searchProcedureProgramDuplicate(symbolProcedure.getLexemeName())) {
+                if (!semanticAnalyzer.searchProcedureDuplicate(symbolProcedure.getLexemeName())) {
                     table.insertSymbol(symbolProcedure);
                     //Gera rótulo
 
@@ -269,18 +269,18 @@ public class SyntacticAnalyzer {
                         if (token.getSymbol().equals("sponto_vírgula")) {
                             analyzeBlock(scopeProcedure);
                         } else {
-                            throw new Exception(message.semicolonError("analyzeProcedureDeclaration", token));
+                            throw new Exception(message.syntaticError("analyzeProcedureDeclaration", token));
                         }
 
                     } else {
                         throw new Exception();
                     }
                 } else {
-                    throw new Exception(message.duplicateProcedureProgramError("analyzeProcedureDeclaration", token));
+                    throw new Exception(message.duplicateError("analyzeProcedureDeclaration", "Procedure", token));
                 }
 
             } else {
-                throw new Exception(message.identifierError("analyzeProcedureDeclaration", token));
+                throw new Exception(message.syntaticError("analyzeProcedureDeclaration", token));
             }
 
         } else {
@@ -330,7 +330,7 @@ public class SyntacticAnalyzer {
                                         if (token.getSymbol().equals("sponto_vírgula")) {
                                             analyzeBlock(scopeFunction);
                                         } else {
-                                            throw new Exception(message.semicolonError("analyzeFunctionDeclaration", token));
+                                            throw new Exception(message.syntaticError("analyzeFunctionDeclaration", token));
                                         }
 
                                     } else {
@@ -338,7 +338,7 @@ public class SyntacticAnalyzer {
                                     }
 
                                 } else {
-                                    throw new Exception(message.typeError("analyzeFunctionDeclaration", token));
+                                    throw new Exception(message.syntaticError("analyzeFunctionDeclaration", token));
                                 }
 
                             } else {
@@ -346,7 +346,7 @@ public class SyntacticAnalyzer {
                             }
 
                         } else {
-                            throw new Exception(message.colonError("analyzeFunctionDeclaration", token));
+                            throw new Exception(message.syntaticError("analyzeFunctionDeclaration", token));
                         }
 
                     } else {
@@ -354,11 +354,11 @@ public class SyntacticAnalyzer {
                     }
 
                 } else {
-                    throw new Exception(message.duplicateFunctionError("analyzeFunctionDeclaration", token));
+                    throw new Exception(message.duplicateError("analyzeFunctionDeclaration", "Function", token));
                 }
 
             } else {
-                throw new Exception(message.identifierError("analyzeFunctionDeclaration", token));
+                throw new Exception(message.syntaticError("analyzeFunctionDeclaration", token));
             }
 
         } else {
@@ -397,7 +397,7 @@ public class SyntacticAnalyzer {
                         }
 
                     } else {
-                        throw new Exception(message.semicolonError("analyzeCommands", token));
+                        throw new Exception(message.syntaticError("analyzeCommands", token));
                     }
                 }
 
@@ -408,7 +408,7 @@ public class SyntacticAnalyzer {
             }
 
         } else {
-            throw new Exception(message.beginError("analyzeCommands", token));
+            throw new Exception(message.syntaticError("analyzeCommands", token));
         }
     }
 
@@ -464,7 +464,7 @@ public class SyntacticAnalyzer {
                                     }
 
                                 } else {
-                                    throw new Exception(message.closeparenthesesError("analyzeRead", token));
+                                    throw new Exception(message.syntaticError("analyzeRead", token));
                                 }
                             }
                         } else {
@@ -472,7 +472,7 @@ public class SyntacticAnalyzer {
                         }
 
                     } else {
-                        throw new Exception(message.identifierError("analyzeRead", token));
+                        throw new Exception(message.syntaticError("analyzeRead", token));
                     }
 
                 } else {
@@ -480,7 +480,7 @@ public class SyntacticAnalyzer {
                 }
 
             } else {
-                throw new Exception(message.openparenthesesError("analyzeRead", token));
+                throw new Exception(message.syntaticError("analyzeRead", token));
             }
 
         } else {
@@ -506,18 +506,18 @@ public class SyntacticAnalyzer {
                         }
 
                     } else {
-                        throw new Exception(message.closeparenthesesError("analyzeWrite", token));
+                        throw new Exception(message.syntaticError("analyzeWrite", token));
                     }
                 } else {
                     throw new Exception(message.identifierUsageError("analyzeWrite", token));
                 }
 
             } else {
-                throw new Exception(message.identifierError("analyzeWrite", token));
+                throw new Exception(message.syntaticError("analyzeWrite", token));
             }
 
         } else {
-            throw new Exception(message.openparenthesesError("analyzeWrite", token));
+            throw new Exception(message.syntaticError("analyzeWrite", token));
         }
     }
 
@@ -545,7 +545,7 @@ public class SyntacticAnalyzer {
                 }
 
             } else {
-                throw new Exception(message.doError("analyzeWhile", token));
+                throw new Exception(message.syntaticError("analyzeWhile", token));
             }
 
         } else {
@@ -580,7 +580,7 @@ public class SyntacticAnalyzer {
                 }
 
             } else {
-                throw new Exception(message.thenError("analyzeIf", token));
+                throw new Exception(message.syntaticError("analyzeIf", token));
             }
 
         } else {
@@ -605,7 +605,7 @@ public class SyntacticAnalyzer {
         if (token.getSymbol().equals("sinteiro") || token.getSymbol().equals("sbooleano")) {
             semanticAnalyzer.setTypeVariable(token.getLexeme());
         } else {
-            throw new Exception(message.typeError("analyzeType", token));
+            throw new Exception(message.syntaticError("analyzeType", token));
         }
 
         token = lexicalAnalyzer.lexicalAnalyze(path);
@@ -706,7 +706,7 @@ public class SyntacticAnalyzer {
                     }
 
                 } else {
-                    throw new Exception(message.closeparenthesesError("analyzeFactor", token));
+                    throw new Exception(message.syntaticError("analyzeFactor", token));
                 }
             } else {
                 throw new Exception();
@@ -720,7 +720,7 @@ public class SyntacticAnalyzer {
             }
 
         } else {
-            throw new Exception(message.booleanError("analyzeFactor", token));
+            throw new Exception(message.syntaticError("analyzeFactor", token));
         }
     }
 }

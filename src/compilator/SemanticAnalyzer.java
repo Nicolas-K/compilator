@@ -40,7 +40,7 @@ public class SemanticAnalyzer {
         return false;
     }
 
-    public boolean searchProcedureProgramDuplicate(String lexeme) throws Exception {
+    public boolean searchProcedureDuplicate(String lexeme) throws Exception {
         ArrayList<Symbol> symbols = table.requestSymbols();
 
         for (Symbol aux : symbols) {

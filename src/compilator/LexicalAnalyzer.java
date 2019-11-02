@@ -185,7 +185,7 @@ public class LexicalAnalyzer {
             newToken = this.isPunctuation(currentChar, indexFile);
 
         } else {
-            throw new Exception(message.characterInvalid(Integer.toString(indexFile), currentChar));
+            throw new Exception(message.lexicalError("getToken", Integer.toString(indexFile), Character.toString(currentChar)));
         }
 
         return newToken;
@@ -397,7 +397,7 @@ public class LexicalAnalyzer {
                 currentChar = (char) charRead;
 
             } else {
-                throw new Exception(message.relationalError(Integer.toString(lineIndex), operation));
+                throw new Exception(message.lexicalError("isRelational", Integer.toString(lineIndex), operation));
             }
         }
 
