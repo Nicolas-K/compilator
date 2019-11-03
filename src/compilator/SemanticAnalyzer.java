@@ -5,13 +5,22 @@ import java.util.ArrayList;
 public class SemanticAnalyzer {
 
     private static SemanticAnalyzer instance = null;
-    private SymbolTable table = SymbolTable.getInstance();
+    private SymbolTable table;
+
+    private ArrayList<String> posfix;
+    private ArrayList<Token> posfixStack;
 
     public static SemanticAnalyzer getInstance() {
         if (instance == null) {
             instance = new SemanticAnalyzer();
         }
         return instance;
+    }
+
+    public SemanticAnalyzer() {
+        table = SymbolTable.getInstance();
+        posfix = new ArrayList<>();
+        posfixStack = new ArrayList<>();
     }
 
     /*
@@ -143,19 +152,104 @@ public class SemanticAnalyzer {
      */
     public String instanceofSymbol(String identifier) {
         String instance;
-        
+
         ArrayList<Symbol> symbols = table.requestSymbols();
 
         for (Symbol aux : symbols) {
-            if(aux.getLexemeName().equals(identifier)){
+            if (aux.getLexemeName().equals(identifier)) {
                 if (aux instanceof Function) {
                     instance = "function";
                     return instance;
-                } 
+                }
             }
         }
-        
+
         instance = "variable";
         return instance;
     }
+
+    /*
+     *  PosFix 
+     */
+    public void posfixTextAdd(String newPosfixText) {
+        posfix.add(newPosfixText);
+    }
+
+    public void posfixTableAdd(Token operator) {
+        posfixStack.add(operator);
+    }
+
+    public void clearPosfix() {
+        for(String posfixText : posfix) {
+            posfix.remove(posfixText);
+        }
+        
+        for (Token operator : posfixStack) {
+            posfixStack.remove(operator);
+        }
+    }
+
+    public ArrayList getPosfix() {
+        return posfix;
+    }
+
+    public void printPosfix() {
+        for (String posFix : posfix) {
+            System.out.print(posFix);
+        }
+        System.out.println();
+    }
+
+    /*public void posfixStackHandler(int postLevel) {
+        int i;
+
+        for (i = posfixStack.size() - 1; i >= 0; i--) {
+            if (postLevel == -2) {
+                if (postfixTable.get(count).getSymbol() == -1) {
+                    postfixTable.remove(count);
+                    break;
+                } else {
+                    posfixTextAdd(postfixTable.get(count).getLexeme());
+                    postfixTable.remove(count);
+                }
+            } else {
+                if (postLevel == -3) {
+                    posfixTextAdd(postfixTable.get(count).getLexeme());
+                    postfixTable.remove(count);
+                } else {
+                    if (postfixTable.get(count).getSymbol() >= postLevel) {
+                        posfixTextAdd(postfixTable.get(count).getLexeme());
+                        postfixTable.remove(count);
+                    } else {
+                        break;
+                    }
+                }
+
+            }
+        }
+    }
+
+    public String posfixType() {
+        int varPosition = -1, funPosition = -1;
+        if (booleanString.contains(postfix.get(postfix.size() - 1))) {
+            return "boolean";
+        } else {
+            if (intString.contains(postfix.get(postfix.size() - 1))) {
+                return "integer";
+            } else {
+                varPosition = varDeclSearch(postfix.get(postfix.size() - 1));
+                if (varPosition != -1) {
+                    return ((Variable) symbolsTable.get(varPosition)).type;
+                } else {
+                    funPosition = funcDeclSearch(postfix.get(postfix.size() - 1));
+                    if (funPosition != -1) {
+                        return ((Function) symbolsTable.get(funPosition)).type;
+                    } else {
+                        return "integer";
+                    }
+                }
+            }
+
+        }
+    }*/
 }
