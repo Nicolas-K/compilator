@@ -116,11 +116,11 @@ public class SemanticAnalyzer {
      *  Desempilhar simbolos (voltar nivel)
      *  Validar | Modificar para remover apenas simbolos de determinado escopo
      */
-    public void unstackSymbols(Symbol target) {
+    public void unstackSymbols(String scope) {
         ArrayList<Symbol> symbols = table.requestSymbols();
 
         for (int i = symbols.size() - 1; i >= 0; i--) {
-            if (!symbols.get(i).equals(target)) {
+            if (symbols.get(i).getScope().equals(scope)) {
                 symbols.remove(i);
             } else {
                 break;

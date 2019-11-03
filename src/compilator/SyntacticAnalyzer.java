@@ -7,9 +7,12 @@ public class SyntacticAnalyzer {
 
     private final LexicalAnalyzer lexicalAnalyzer;
     private final SemanticAnalyzer semanticAnalyzer;
+    private final CodeGenerator codeGenerator;
 
     private Token token;
     private SymbolTable table;
+    
+    private int label;
 
     private final ErrorMessages message;
 
@@ -21,11 +24,14 @@ public class SyntacticAnalyzer {
     }
 
     public SyntacticAnalyzer() {
-        this.message = ErrorMessages.getInstance();
         this.lexicalAnalyzer = LexicalAnalyzer.getInstance();
         this.semanticAnalyzer = SemanticAnalyzer.getInstance();
-        this.token = null;
+        this.codeGenerator = CodeGenerator.getInstance();
+        
+        this.message = ErrorMessages.getInstance();
         this.path = null;
+        
+        this.token = null;
         this.table = SymbolTable.getInstance();
     }
 
@@ -214,12 +220,12 @@ public class SyntacticAnalyzer {
      *  Analise Relacionada a SubRotinas
      */
     private void analyzeSubRoutineDeclaration(String scope) throws Exception {
-        int flag = 0;
+        int auxlabel=0, flag = 0;
 
         if (token.getSymbol().equals("sprocedimento") || token.getSymbol().equals("sfuncao")) {
-            //auxrot:= rotulo
-            //GERA(´ ´,JMP,rotulo,´ ´) {Salta sub-rotinas}
-            // rotulo:= rotulo + 1 
+            auxlabel =  label;
+            codeGenerator.CreateCode("", "JMP ", "L"+label, "");
+            label = label + 1; 
             flag = 1;
         }
 
@@ -243,7 +249,7 @@ public class SyntacticAnalyzer {
         }
 
         if (flag == 1) {
-            //Gera(auxrot,NULL,´ ´,´ ´) {início do principal} 
+            codeGenerator.CreateCode("L"+auxlabel+" ", "NULL", "", "");
         }
     }
 
@@ -287,7 +293,7 @@ public class SyntacticAnalyzer {
             throw new Exception();
         }
 
-        semanticAnalyzer.unstackSymbols(symbolProcedure);
+        semanticAnalyzer.unstackSymbols(scopeProcedure);
         symbolProcedure = null;
     }
 
@@ -365,7 +371,7 @@ public class SyntacticAnalyzer {
             throw new Exception();
         }
 
-        semanticAnalyzer.unstackSymbols(symbolFunction);
+        semanticAnalyzer.unstackSymbols(scopeFunction);
         symbolFunction = null;
     }
 
