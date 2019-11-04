@@ -7,8 +7,8 @@ public class SemanticAnalyzer {
     private static SemanticAnalyzer instance = null;
     private SymbolTable table;
 
-    private ArrayList<String> posfix;
-    private ArrayList<Token> posfixStack;
+    private ArrayList<String> postfix;
+    private ArrayList<Token> postfixStack;
 
     public static SemanticAnalyzer getInstance() {
         if (instance == null) {
@@ -19,8 +19,8 @@ public class SemanticAnalyzer {
 
     public SemanticAnalyzer() {
         table = SymbolTable.getInstance();
-        posfix = new ArrayList<>();
-        posfixStack = new ArrayList<>();
+        postfix = new ArrayList<>();
+        postfixStack = new ArrayList<>();
     }
 
     /*
@@ -171,31 +171,31 @@ public class SemanticAnalyzer {
     /*
      *  PosFix 
      */
-    public void posfixTextAdd(String newPosfixText) {
-        posfix.add(newPosfixText);
+    public void postfixTextAdd(String newPostfixText) {
+        postfix.add(newPostfixText);
     }
 
-    public void posfixTableAdd(Token operator) {
-        posfixStack.add(operator);
+    public void postfixTableAdd(Token operator) {
+        postfixStack.add(operator);
     }
 
-    public void clearPosfix() {
-        for(String posfixText : posfix) {
-            posfix.remove(posfixText);
+    public void clearPostfix() {
+        for(String posfixText : postfix) {
+            postfix.remove(posfixText);
         }
         
-        for (Token operator : posfixStack) {
-            posfixStack.remove(operator);
+        for (Token operator : postfixStack) {
+            postfixStack.remove(operator);
         }
     }
 
-    public ArrayList getPosfix() {
-        return posfix;
+    public ArrayList getPostfix() {
+        return postfix;
     }
 
-    public void printPosfix() {
-        for (String posFix : posfix) {
-            System.out.print(posFix);
+    public void printPostfix() {
+        for (String postFix : postfix) {
+            System.out.print(postFix);
         }
         System.out.println();
     }
