@@ -147,6 +147,21 @@ public class SemanticAnalyzer {
         return false;
     }
 
+    public int searchSymbolPos(String lexeme) {
+        ArrayList<Symbol> symbols = table.requestSymbols();
+        int i = 0;
+
+        for (Symbol search : symbols) {
+            if (!search.getLexemeName().equals(lexeme)) {
+                i++;
+            } else {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
     /*
      *  Retornar instanceof do simbolo
      */
@@ -180,10 +195,10 @@ public class SemanticAnalyzer {
     }
 
     public void clearPostfix() {
-        for(String posfixText : postfix) {
+        for (String posfixText : postfix) {
             postfix.remove(posfixText);
         }
-        
+
         for (Token operator : postfixStack) {
             postfixStack.remove(operator);
         }
@@ -200,56 +215,61 @@ public class SemanticAnalyzer {
         System.out.println();
     }
 
-    /*public void posfixStackHandler(int postLevel) {
-        int i;
+    /*public void postfixStackHandler(int postLevel) {
+     int i;
 
-        for (i = posfixStack.size() - 1; i >= 0; i--) {
-            if (postLevel == -2) {
-                if (postfixTable.get(count).getSymbol() == -1) {
-                    postfixTable.remove(count);
-                    break;
-                } else {
-                    posfixTextAdd(postfixTable.get(count).getLexeme());
-                    postfixTable.remove(count);
-                }
+     for (i = posfixStack.size() - 1; i >= 0; i--) {
+     if (postLevel == -2) {
+     if (postfixTable.get(count).getSymbol() == -1) {
+     postfixTable.remove(count);
+     break;
+     } else {
+     posfixTextAdd(postfixTable.get(count).getLexeme());
+     postfixTable.remove(count);
+     }
+     } else {
+     if (postLevel == -3) {
+     posfixTextAdd(postfixTable.get(count).getLexeme());
+     postfixTable.remove(count);
+     } else {
+     if (postfixTable.get(count).getSymbol() >= postLevel) {
+     posfixTextAdd(postfixTable.get(count).getLexeme());
+     postfixTable.remove(count);
+     } else {
+     break;
+     }
+     }
+
+     }
+     }
+     }
+     */
+    
+    public String postfixTypeHandler() {
+        int symbolPosition = -1;
+
+        if (postfix.get(postfix.size() - 1) == ">"
+                || postfix.get(postfix.size() - 1) == ">="
+                || postfix.get(postfix.size() - 1) == "<"
+                || postfix.get(postfix.size() - 1) == "<="
+                || postfix.get(postfix.size() - 1) == "="
+                || postfix.get(postfix.size() - 1) == "!=") {
+            return "boolean";
+
+        } else if (postfix.get(postfix.size() - 1) == "+"
+                || postfix.get(postfix.size() - 1) == "-"
+                || postfix.get(postfix.size() - 1) == "*"
+                || postfix.get(postfix.size() - 1) == "div") {
+            return "integer";
+
+        } else {
+            symbolPosition = searchSymbolPos(postfix.get(postfix.size() - 1));
+
+            if (symbolPosition != -1) {
+                return table.getSymbolType(symbolPosition);
             } else {
-                if (postLevel == -3) {
-                    posfixTextAdd(postfixTable.get(count).getLexeme());
-                    postfixTable.remove(count);
-                } else {
-                    if (postfixTable.get(count).getSymbol() >= postLevel) {
-                        posfixTextAdd(postfixTable.get(count).getLexeme());
-                        postfixTable.remove(count);
-                    } else {
-                        break;
-                    }
-                }
-
+                return "integer";
             }
         }
     }
-
-    public String posfixType() {
-        int varPosition = -1, funPosition = -1;
-        if (booleanString.contains(postfix.get(postfix.size() - 1))) {
-            return "boolean";
-        } else {
-            if (intString.contains(postfix.get(postfix.size() - 1))) {
-                return "integer";
-            } else {
-                varPosition = varDeclSearch(postfix.get(postfix.size() - 1));
-                if (varPosition != -1) {
-                    return ((Variable) symbolsTable.get(varPosition)).type;
-                } else {
-                    funPosition = funcDeclSearch(postfix.get(postfix.size() - 1));
-                    if (funPosition != -1) {
-                        return ((Function) symbolsTable.get(funPosition)).type;
-                    } else {
-                        return "integer";
-                    }
-                }
-            }
-
-        }
-    }*/
 }

@@ -30,6 +30,7 @@ public class SyntacticAnalyzer {
         
         this.message = ErrorMessages.getInstance();
         this.path = null;
+        this.label = 1;
         
         this.token = null;
         this.table = SymbolTable.getInstance();
@@ -224,7 +225,7 @@ public class SyntacticAnalyzer {
 
         if (token.getSymbol().equals("sprocedimento") || token.getSymbol().equals("sfuncao")) {
             auxlabel =  label;
-            codeGenerator.CreateCode("", "JMP ", "L"+label, "");
+            codeGenerator.createCode("", "JMP ", "L"+label, "");
             label = label + 1; 
             flag = 1;
         }
@@ -249,7 +250,7 @@ public class SyntacticAnalyzer {
         }
 
         if (flag == 1) {
-            codeGenerator.CreateCode("L"+auxlabel+" ", "NULL", "", "");
+            codeGenerator.createCode("L"+auxlabel+" ", "NULL", "", "");
         }
     }
 
@@ -528,24 +529,28 @@ public class SyntacticAnalyzer {
     }
 
     private void analyzeWhile() throws Exception {
-        //Rotulos definição
-        //Gera
-        // rotulo = rotulo + 1
+        int auxLabelWhile = 0, auxLabelEnd = 0;
+
+        auxLabelWhile = label;
+        codeGenerator.createCode("L"+auxLabelWhile, " NULL", "", "");
+        label = label + 1;
+
         token = lexicalAnalyzer.lexicalAnalyze(path);
 
         if (!isEmpty(token)) {
             analyzeExpressions();
 
             if (token.getSymbol().equals("sfaca")) {
-                //rot2 = rotulo
-                // gera
-                // rotulo = rotulo + 1
+                auxLabelEnd = label;
+                codeGenerator.createCode("", "JMPF ", "L"+auxLabelEnd, "");
+                label = label + 1;
+                
                 token = lexicalAnalyzer.lexicalAnalyze(path);
 
                 if (!isEmpty(token)) {
                     analyzeCommand();
-                    //Gera
-                    //Gera
+                    codeGenerator.createCode("", "JMP ", "L"+auxLabelWhile, "");
+                    codeGenerator.createCode("L"+auxLabelEnd, " NULL", "", "");
                 } else {
                     throw new Exception();
                 }

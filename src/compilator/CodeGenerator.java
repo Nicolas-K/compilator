@@ -16,7 +16,7 @@ public class CodeGenerator {
         return instance;
     }
 
-    public void CreateCode(Object label, String command, Object target1, Object target2) {
+    public void createCode(Object label, String command, Object target1, Object target2) {
         codeText = codeText + label + command + target1 + target2 + '\n';
     }
 
@@ -40,7 +40,7 @@ public class CodeGenerator {
         variablePosition = variablePosition + plus;
     }
 
-    public void resetVarPosition(int minus) {
+    public void resetVariablePosition(int minus) {
         variablePosition = variablePosition - minus;
     }
 
@@ -48,67 +48,67 @@ public class CodeGenerator {
         return variablePosition;
     }
 
-    public void posfixCreation(ArrayList<String> postfix, SemanticAnalyzer semantic) {
+    public void postfixCreation(ArrayList<String> postfix, SemanticAnalyzer semantic) {
         String value;
         int positionVariable, positionFunction, i = 0;
 
         while (i < postfix.size()) {
             positionVariable = variablePosition - 1;
-            positionFunction = 
+            //positionFunction = 
                     
-            if (semantic.varDeclSearch(postfix.get(i)) != -1) {
-                CreateCode("", "LDV", positionVariable, "");
+            if (semantic.searchSymbolPos(postfix.get(i)) != -1) {
+                createCode("", "LDV ", positionVariable, "");
 
             } else if (postfix.get(i).equals("+")) {
-                CreateCode("", "ADD", "", "");
+                createCode("", "ADD", "", "");
 
             } else if (postfix.get(i).equals("*")) {
-                CreateCode("", "MULT", "", "");
+                createCode("", "MULT", "", "");
 
             } else if (postfix.get(i).equals("div")) {
-                CreateCode("", "DIVI", "", "");
+                createCode("", "DIVI", "", "");
 
             } else if (postfix.get(i).equals("-")) {
-                CreateCode("", "SUB", "", "");
+                createCode("", "SUB", "", "");
 
             } else if (postfix.get(i).equals("!")) {
-                CreateCode("", "INV", "", "");
+                createCode("", "INV", "", "");
 
             } else if (postfix.get(i).equals("e")) {
-                CreateCode("", "AND", "", "");
+                createCode("", "AND", "", "");
 
             } else if (postfix.get(i).equals("ou")) {
-                CreateCode("", "OR", "", "");
+                createCode("", "OR", "", "");
 
             } else if (postfix.get(i).equals("<")) {
-                CreateCode("", "CME", "", "");
+                createCode("", "CME", "", "");
 
             } else if (postfix.get(i).equals(">")) {
-                CreateCode("", "CMA", "", "");
+                createCode("", "CMA", "", "");
 
             } else if (postfix.get(i).equals("=")) {
-                CreateCode("", "CEQ", "", "");
+                createCode("", "CEQ", "", "");
 
             } else if (postfix.get(i).equals("!=")) {
-                CreateCode("", "CDIF", "", "");
+                createCode("", "CDIF", "", "");
 
             } else if (postfix.get(i).equals("<=")) {
-                CreateCode("", "CMEQ", "", "");
+                createCode("", "CMEQ", "", "");
 
             } else if (postfix.get(i).equals(">=")) {
-                CreateCode("", "CMAQ", "", "");
+                createCode("", "CMAQ", "", "");
 
             } else if (postfix.get(i).equals("verdadeiro")) {
-                CreateCode("", "LDC ", 0, "");
+                createCode("", "LDC ", 1, "");
 
             } else if (postfix.get(i).equals("falso")) {
-                CreateCode("", "LDC ", 1, "");
+                createCode("", "LDC ", 0, "");
 
-            } else if (positionFunction != -1) {
-                CreateCode("", "CALL ", "L" + ((Function) semantic.symbolsTable.get(positionFunction)).rotulo, "");
+            } /*else if (positionFunction != -1) {
+                // CreateCode("", "CALL ", "L" + ((Function) semantic.symbolsTable.get(positionFunction)).rotulo, "");
 
-            } else {
-                CreateCode("", "LDC ", postfix.get(i), "");
+            }*/ else {
+                createCode("", "LDC ", postfix.get(i), "");
             }
 
             i++;
