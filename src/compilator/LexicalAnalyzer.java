@@ -18,8 +18,6 @@ public class LexicalAnalyzer {
     private int indexFileLine;
     private int charRead;
     private char currentChar;
-
-    private final TokenList listTokens = TokenList.getInstance();
     private final ErrorMessages message = ErrorMessages.getInstance();
 
     public static LexicalAnalyzer getInstance() {
@@ -140,9 +138,7 @@ public class LexicalAnalyzer {
                 if (!hasFileEnd()) {
                     System.out.printf("[lexicalAnalyze] | Line: %d\n", indexFileLine);
                     System.out.printf("[lexicalAnalyze] | Character: %c\n", currentChar);
-                    createToken = this.getToken(indexFileLine);
-                    listTokens.insertToken(createToken);
-                    return createToken;
+                    return this.getToken(indexFileLine);
 
                 } else {
                     this.closeFile();

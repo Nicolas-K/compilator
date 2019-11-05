@@ -4,6 +4,7 @@ public class SyntacticAnalyzer {
 
     private static SyntacticAnalyzer instance = null;
     private String path;
+    private int label;
 
     private final LexicalAnalyzer lexicalAnalyzer;
     private final SemanticAnalyzer semanticAnalyzer;
@@ -11,8 +12,6 @@ public class SyntacticAnalyzer {
 
     private Token token;
     private SymbolTable table;
-    
-    private int label;
 
     private final ErrorMessages message;
 
@@ -118,8 +117,6 @@ public class SyntacticAnalyzer {
             System.out.println("[syntaticAnalyze] | Ending compilation process");
         }
 
-        System.out.println("\n[syntaticAnalyze] | Symbol Table:");
-        table.printTable();
         symbolProgram = null;
     }
 

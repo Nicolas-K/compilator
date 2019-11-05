@@ -45,16 +45,4 @@ public class SymbolTable {
             return ((Function) aux).getType();
         }
     }
-
-    public synchronized void printTable() {
-        for (Symbol aux : this.symbols) {
-            if (aux instanceof Variable) {
-                ((Variable) aux).printVariable();
-            } else if (aux instanceof ProcedureProgram) {
-                ((ProcedureProgram) aux).printProcedureProgram();
-            } else if (aux instanceof Function) {
-                ((Function) aux).printFunction();
-            }
-        }
-    }
 }
