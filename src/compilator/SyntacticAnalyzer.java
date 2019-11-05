@@ -526,10 +526,10 @@ public class SyntacticAnalyzer {
     }
 
     private void analyzeWhile() throws Exception {
-        int auxLabelWhile = 0, auxLabelEnd = 0;
+        int auxlabel1 = 0, auxlabel2 = 0;
 
-        auxLabelWhile = label;
-        codeGenerator.createCode("L"+auxLabelWhile, " NULL", "", "");
+        auxlabel1 = label;
+        codeGenerator.createCode("L"+auxlabel1+" ", "NULL", "", "");
         label = label + 1;
 
         token = lexicalAnalyzer.lexicalAnalyze(path);
@@ -538,16 +538,16 @@ public class SyntacticAnalyzer {
             analyzeExpressions();
 
             if (token.getSymbol().equals("sfaca")) {
-                auxLabelEnd = label;
-                codeGenerator.createCode("", "JMPF ", "L"+auxLabelEnd, "");
+                auxlabel2 = label;
+                codeGenerator.createCode("", "JMPF ", "L"+auxlabel2, "");
                 label = label + 1;
                 
                 token = lexicalAnalyzer.lexicalAnalyze(path);
 
                 if (!isEmpty(token)) {
                     analyzeCommand();
-                    codeGenerator.createCode("", "JMP ", "L"+auxLabelWhile, "");
-                    codeGenerator.createCode("L"+auxLabelEnd, " NULL", "", "");
+                    codeGenerator.createCode("", "JMP ", "L"+auxlabel1, "");
+                    codeGenerator.createCode("L"+auxlabel2+" ", "NULL", "", "");
                 } else {
                     throw new Exception();
                 }
