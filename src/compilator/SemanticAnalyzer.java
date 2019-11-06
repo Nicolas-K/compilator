@@ -8,7 +8,7 @@ public class SemanticAnalyzer {
     private SymbolTable table;
 
     private ArrayList<String> postfix;
-    private ArrayList<Token> postfixStack;
+    private ArrayList<Operator> stack;
 
     public static SemanticAnalyzer getInstance() {
         if (instance == null) {
@@ -20,7 +20,7 @@ public class SemanticAnalyzer {
     public SemanticAnalyzer() {
         table = SymbolTable.getInstance();
         postfix = new ArrayList<>();
-        postfixStack = new ArrayList<>();
+        stack = new ArrayList<>();
     }
 
     /*
@@ -184,14 +184,14 @@ public class SemanticAnalyzer {
     }
 
     /*
-     *  PosFix 
+     *  Postfix 
      */
-    public void postfixTextAdd(String newPostfixText) {
-        postfix.add(newPostfixText);
+    public void addToPostfix(String postfixString) {
+        postfix.add(postfixString);
     }
 
-    public void postfixTableAdd(Token operator) {
-        postfixStack.add(operator);
+    public void addToStack(Operator operator) {
+        stack.add(operator);
     }
 
     public void clearPostfix() {
@@ -199,8 +199,8 @@ public class SemanticAnalyzer {
             postfix.remove(posfixText);
         }
 
-        for (Token operator : postfixStack) {
-            postfixStack.remove(operator);
+        for (Operator operator : stack) {
+            stack.remove(operator);
         }
     }
 
@@ -215,36 +215,42 @@ public class SemanticAnalyzer {
         System.out.println();
     }
 
-    /*public void postfixStackHandler(int postLevel) {
-     int i;
-
-     for (i = posfixStack.size() - 1; i >= 0; i--) {
-     if (postLevel == -2) {
-     if (postfixTable.get(count).getSymbol() == -1) {
-     postfixTable.remove(count);
-     break;
-     } else {
-     posfixTextAdd(postfixTable.get(count).getLexeme());
-     postfixTable.remove(count);
-     }
-     } else {
-     if (postLevel == -3) {
-     posfixTextAdd(postfixTable.get(count).getLexeme());
-     postfixTable.remove(count);
-     } else {
-     if (postfixTable.get(count).getSymbol() >= postLevel) {
-     posfixTextAdd(postfixTable.get(count).getLexeme());
-     postfixTable.remove(count);
-     } else {
-     break;
-     }
-     }
-
-     }
-     }
-     }
+    /*
+     *     Prioridades:
+     *      + - not (unarios)   =   6
+     *      * /                 =   5
+     *      + -                 =   4
+     *      > < >= <= = !=      =   3
+     *      e                   =   2
+     *      ou                  =   1
+     *      (                   =   0
+     *      )                   =   -1
      */
-    
+    public void postfixStackHandler(int priority) {
+        int i;
+
+        for (i = stack.size() - 1; i >= 0; i--) {
+            /*if (priority == -2) {
+                if (stack.get(i).getPriority() == -1) {
+                    stack.remove(i);
+                    break;
+                } else {
+                    addToPostfix(stack.get(i).getOperator().getLexeme());
+                    stack.remove(i);
+                }
+            } else if (priority == -3) {
+                addToPostfix(stack.get(i).getOperator().getLexeme());
+                stack.remove(i);
+            } else if (stack.get(i).getPriority() >= priority) {
+                addToPostfix(stack.get(i).getOperator().getLexeme());
+                stack.remove(i);
+            } else {
+                break;
+            }*/
+        }
+
+    }
+
     public String postfixTypeHandler() {
         int symbolPosition = -1;
 
@@ -254,13 +260,13 @@ public class SemanticAnalyzer {
                 || postfix.get(postfix.size() - 1) == "<="
                 || postfix.get(postfix.size() - 1) == "="
                 || postfix.get(postfix.size() - 1) == "!=") {
-            return "boolean";
+            return "booleano";
 
         } else if (postfix.get(postfix.size() - 1) == "+"
                 || postfix.get(postfix.size() - 1) == "-"
                 || postfix.get(postfix.size() - 1) == "*"
                 || postfix.get(postfix.size() - 1) == "div") {
-            return "integer";
+            return "inteiro";
 
         } else {
             symbolPosition = searchSymbolPos(postfix.get(postfix.size() - 1));
@@ -268,7 +274,7 @@ public class SemanticAnalyzer {
             if (symbolPosition != -1) {
                 return table.getSymbolType(symbolPosition);
             } else {
-                return "integer";
+                return "inteiro";
             }
         }
     }

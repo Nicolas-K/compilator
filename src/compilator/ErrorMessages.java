@@ -43,4 +43,9 @@ public class ErrorMessages {
         messageError = "[" + method + "] | Identifier " + identifier.getLexeme() + " not declared before\n| Line: " + identifier.getLine();
         return messageError;
     }
+    
+    public String wrongUsageSymbol(String method, Token wrong){
+        messageError = "[" + method + "] | Wrong use of the Symbol " + wrong.getLexeme() + "\n| Line " + wrong.getLine();
+        return messageError;
+    }
 }
