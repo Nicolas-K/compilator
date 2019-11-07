@@ -392,7 +392,12 @@ public class SyntacticAnalyzer {
     }
 
     private void analyzeFunctionCall() throws Exception {
-
+        Symbol auxFunction;
+        int auxlabel;
+        
+        auxFunction = table.getSymbol(semanticAnalyzer.searchSymbolPos(buffer.getLexeme()));
+        auxlabel = ((Function) auxFunction).getLabel();
+        codeGenerator.createCode("", "CALL ", "L" + auxlabel, "");
     }
 
     /*
