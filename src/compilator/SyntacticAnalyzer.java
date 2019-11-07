@@ -223,7 +223,7 @@ public class SyntacticAnalyzer {
 
         if (token.getSymbol().equals("sprocedimento") || token.getSymbol().equals("sfuncao")) {
             auxlabel = label;
-            codeGenerator.createCode("", "JMP ", "L" + label, "");
+            codeGenerator.createCode("", "JMP ", "L" + auxlabel, "");
             label = label + 1;
             flag = 1;
         }
@@ -254,6 +254,7 @@ public class SyntacticAnalyzer {
 
     private void analyzeProcedureDeclaration(String scope) throws Exception {
         String scopeProcedure;
+        int auxlabel = label;
         ProcedureProgram symbolProcedure = new ProcedureProgram();
 
         token = lexicalAnalyzer.lexicalAnalyze(path);
@@ -264,8 +265,10 @@ public class SyntacticAnalyzer {
                 symbolProcedure.setScope(scope);
 
                 if (!semanticAnalyzer.searchProcedureDuplicate(symbolProcedure.getLexemeName())) {
+                    symbolProcedure.setLabel(auxlabel);
                     table.insertSymbol(symbolProcedure);
-                    //Gera rótulo
+                    codeGenerator.createCode("L" + auxlabel + " ", "NULL", "", "");
+                    label = label + 1;
 
                     scopeProcedure = token.getLexeme();
                     token = lexicalAnalyzer.lexicalAnalyze(path);
@@ -297,23 +300,37 @@ public class SyntacticAnalyzer {
     }
 
     private void analyzeProcedureCall() throws Exception {
-
+        Symbol auxProcedure;
+        int auxlabel;
+        
+        if(semanticAnalyzer.identifierUsage(buffer.getLexeme())){
+            auxProcedure = table.getSymbol(semanticAnalyzer.searchSymbolPos(buffer.getLexeme()));
+            auxlabel = ((ProcedureProgram) auxProcedure).getLabel();
+            codeGenerator.createCode("", "CALL ", "L" + auxlabel, "");
+        } else {
+            throw new Exception(message.identifierUsageError("analyzeProcedureCall", buffer));
+        }
     }
 
     private void analyzeFunctionDeclaration(String scope) throws Exception {
         String scopeFunction;
+        int auxlabel = label;
+        
         Function symbolFunction = new Function();
 
         token = lexicalAnalyzer.lexicalAnalyze(path);
 
         if (!isEmpty(token)) {
-            //Label
             if (token.getSymbol().equals("sidentificador")) {
                 symbolFunction.setLexemeName(token.getLexeme());
                 symbolFunction.setScope(scope);
 
                 if (!semanticAnalyzer.searchFunctionDuplicate(symbolFunction.getLexemeName())) {
+                    symbolFunction.setLabel(auxlabel);
                     table.insertSymbol(symbolFunction);
+                    codeGenerator.createCode("L" + auxlabel + " ", "NULL", "", "");
+                    label = label + 1;
+                    
                     scopeFunction = token.getLexeme();
                     token = lexicalAnalyzer.lexicalAnalyze(path);
 
