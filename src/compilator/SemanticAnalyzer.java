@@ -226,29 +226,33 @@ public class SemanticAnalyzer {
      *      (                   =   0
      *      )                   =   -1
      */
-    public void postfixStackHandler(int priority) {
-        int i;
+    public void postfixStackHandler(int priority) { // ==> Validar Depois <== \\
+        int i, j;
 
         for (i = stack.size() - 1; i >= 0; i--) {
-            /*if (priority == -2) {
-                if (stack.get(i).getPriority() == -1) {
-                    stack.remove(i);
-                    break;
-                } else {
+            if (priority == -1) {
+                stack.remove(i);
+                j = i - 1;
+
+                while (stack.get(j).getPriority() != 0) {
+                    addToPostfix(stack.get(j).getOperator().getLexeme());
+                    stack.remove(j);
+                    j--;
+                }
+
+                stack.remove(j);
+                i = j;
+                break;
+
+            } else if (priority != 0) {
+                if (priority <= stack.get(i).getPriority()) {
                     addToPostfix(stack.get(i).getOperator().getLexeme());
                     stack.remove(i);
                 }
-            } else if (priority == -3) {
-                addToPostfix(stack.get(i).getOperator().getLexeme());
-                stack.remove(i);
-            } else if (stack.get(i).getPriority() >= priority) {
-                addToPostfix(stack.get(i).getOperator().getLexeme());
-                stack.remove(i);
             } else {
                 break;
-            }*/
+            }
         }
-
     }
 
     public String postfixTypeHandler() {

@@ -302,8 +302,8 @@ public class SyntacticAnalyzer {
     private void analyzeProcedureCall() throws Exception {
         Symbol auxProcedure;
         int auxlabel;
-        
-        if(semanticAnalyzer.identifierUsage(buffer.getLexeme())){
+
+        if (semanticAnalyzer.identifierUsage(buffer.getLexeme())) {
             auxProcedure = table.getSymbol(semanticAnalyzer.searchSymbolPos(buffer.getLexeme()));
             auxlabel = ((ProcedureProgram) auxProcedure).getLabel();
             codeGenerator.createCode("", "CALL ", "L" + auxlabel, "");
@@ -315,7 +315,7 @@ public class SyntacticAnalyzer {
     private void analyzeFunctionDeclaration(String scope) throws Exception {
         String scopeFunction;
         int auxlabel = label;
-        
+
         Function symbolFunction = new Function();
 
         token = lexicalAnalyzer.lexicalAnalyze(path);
@@ -330,7 +330,7 @@ public class SyntacticAnalyzer {
                     table.insertSymbol(symbolFunction);
                     codeGenerator.createCode("L" + auxlabel + " ", "NULL", "", "");
                     label = label + 1;
-                    
+
                     scopeFunction = token.getLexeme();
                     token = lexicalAnalyzer.lexicalAnalyze(path);
 
@@ -394,7 +394,7 @@ public class SyntacticAnalyzer {
     private void analyzeFunctionCall() throws Exception {
         Symbol auxFunction;
         int auxlabel;
-        
+
         auxFunction = table.getSymbol(semanticAnalyzer.searchSymbolPos(buffer.getLexeme()));
         auxlabel = ((Function) auxFunction).getLabel();
         codeGenerator.createCode("", "CALL ", "L" + auxlabel, "");
@@ -563,31 +563,30 @@ public class SyntacticAnalyzer {
         token = lexicalAnalyzer.lexicalAnalyze(path);
 
         if (!isEmpty(token)) {
-            //typeExpression = analyzeExpressions();
-            analyzeExpressions();
-            
-            //if(typeExpression.equals("booleano")) {
-            if (token.getSymbol().equals("sfaca")) {
-                auxlabel2 = label;
-                codeGenerator.createCode("", "JMPF ", "L" + auxlabel2, "");
-                label = label + 1;
-                token = lexicalAnalyzer.lexicalAnalyze(path);
+            typeExpression = analyzeExpressions();
 
-                if (!isEmpty(token)) {
-                    analyzeCommand();
-                    codeGenerator.createCode("", "JMP ", "L" + auxlabel1, "");
-                    codeGenerator.createCode("L" + auxlabel2 + " ", "NULL", "", "");
+            if (typeExpression.equals("booleano")) {
+                if (token.getSymbol().equals("sfaca")) {
+                    auxlabel2 = label;
+                    codeGenerator.createCode("", "JMPF ", "L" + auxlabel2, "");
+                    label = label + 1;
+                    token = lexicalAnalyzer.lexicalAnalyze(path);
+
+                    if (!isEmpty(token)) {
+                        analyzeCommand();
+                        codeGenerator.createCode("", "JMP ", "L" + auxlabel1, "");
+                        codeGenerator.createCode("L" + auxlabel2 + " ", "NULL", "", "");
+                    } else {
+                        throw new Exception();
+                    }
+
                 } else {
-                    throw new Exception();
+                    throw new Exception(message.syntaticError("analyzeWhile", token));
                 }
-
             } else {
-                throw new Exception(message.syntaticError("analyzeWhile", token));
-            }
-            /*} else {
                 throw new Exception();
             }
-            */
+
         } else {
             throw new Exception();
         }
@@ -598,48 +597,55 @@ public class SyntacticAnalyzer {
         token = lexicalAnalyzer.lexicalAnalyze(path);
 
         if (!isEmpty(token)) {
-            //typeExpression = analyzeExpressions();
-            analyzeExpressions();
+            typeExpression = analyzeExpressions();
 
-            //if(typeExpression.equals("booleano") {
-            if (token.getSymbol().equals("sentao")) {
-                token = lexicalAnalyzer.lexicalAnalyze(path);
+            if (typeExpression.equals("booleano")) {
+                if (token.getSymbol().equals("sentao")) {
+                    token = lexicalAnalyzer.lexicalAnalyze(path);
 
-                if (!isEmpty(token)) {
-                    analyzeCommand();
+                    if (!isEmpty(token)) {
+                        analyzeCommand();
 
-                    if (token.getSymbol().equals("ssenao")) {
-                        token = lexicalAnalyzer.lexicalAnalyze(path);
+                        if (token.getSymbol().equals("ssenao")) {
+                            token = lexicalAnalyzer.lexicalAnalyze(path);
 
-                        if (!isEmpty(token)) {
-                            analyzeCommand();
-                        } else {
-                            throw new Exception();
+                            if (!isEmpty(token)) {
+                                analyzeCommand();
+                            } else {
+                                throw new Exception();
+                            }
                         }
+
+                    } else {
+                        throw new Exception();
                     }
 
                 } else {
-                    throw new Exception();
+                    throw new Exception(message.syntaticError("analyzeIf", token));
                 }
-
             } else {
-                throw new Exception(message.syntaticError("analyzeIf", token));
-            }
-            /* } else { 
                 throw new Exception();
             }
-            */
+
         } else {
             throw new Exception();
         }
     }
 
     private void analyzeAttribution() throws Exception {
+        String typeExpression, typeAttr;
+
         if (semanticAnalyzer.instanceofSymbol(buffer.getLexeme()).equals("variable")) {
+            typeAttr = table.getSymbolType(semanticAnalyzer.searchSymbolPos(buffer.getLexeme()));
             token = lexicalAnalyzer.lexicalAnalyze(path);
 
             if (!isEmpty(token)) {
-                analyzeExpressions();
+                typeExpression = analyzeExpressions();
+
+                if (!typeAttr.equals(typeExpression)) {
+                    throw new Exception();
+                }
+
             } else {
                 throw new Exception();
             }
@@ -665,11 +671,12 @@ public class SyntacticAnalyzer {
         }
     }
 
-    private void analyzeExpressions() throws Exception {
+    private String analyzeExpressions() throws Exception {
         analyzeExpression();
 
         if ((token.getSymbol().equals("smaior")) || (token.getSymbol().equals("smaiorig")) || (token.getSymbol().equals("sig")) || (token.getSymbol().equals("smenor")) || (token.getSymbol().equals("smenorig")) || (token.getSymbol().equals("sdif"))) {
             buffer = token;
+            semanticAnalyzer.postfixStackHandler(3);
             semanticAnalyzer.addToStack(new Operator(buffer, 3));
             token = lexicalAnalyzer.lexicalAnalyze(path);
 
@@ -679,11 +686,15 @@ public class SyntacticAnalyzer {
                 throw new Exception();
             }
         }
+
+        semanticAnalyzer.postfixStackHandler(-2);
+        return semanticAnalyzer.postfixTypeHandler();
     }
 
     private void analyzeExpression() throws Exception {
         if (token.getSymbol().equals("smais") || token.getSymbol().equals("smenos")) {
             buffer = token;
+            semanticAnalyzer.postfixStackHandler(6);
             semanticAnalyzer.addToStack(new Operator(buffer, 6));
             token = lexicalAnalyzer.lexicalAnalyze(path);
 
@@ -695,10 +706,12 @@ public class SyntacticAnalyzer {
 
         while (token.getSymbol().equals("smais") || token.getSymbol().equals("smenos") || token.getSymbol().equals("sou")) {
             buffer = token;
-            
-            if(buffer.getSymbol().equals("sou")){
+
+            if (buffer.getSymbol().equals("sou")) {
+                semanticAnalyzer.postfixStackHandler(1);
                 semanticAnalyzer.addToStack(new Operator(buffer, 1));
             } else {
+                semanticAnalyzer.postfixStackHandler(4);
                 semanticAnalyzer.addToStack(new Operator(buffer, 4));
             }
 
@@ -717,13 +730,15 @@ public class SyntacticAnalyzer {
 
         while ((token.getSymbol().equals("smult")) || (token.getSymbol().equals("sdiv")) || (token.getSymbol().equals("se"))) {
             buffer = token;
-            
-            if(buffer.getSymbol().equals("se")){
+
+            if (buffer.getSymbol().equals("se")) {
+                semanticAnalyzer.postfixStackHandler(2);
                 semanticAnalyzer.addToStack(new Operator(buffer, 2));
             } else {
+                semanticAnalyzer.postfixStackHandler(5);
                 semanticAnalyzer.addToStack(new Operator(buffer, 5));
             }
-            
+
             token = lexicalAnalyzer.lexicalAnalyze(path);
 
             if (!isEmpty(token)) {
@@ -739,7 +754,7 @@ public class SyntacticAnalyzer {
             if (semanticAnalyzer.identifierUsage(token.getLexeme())) {
                 buffer = token;
                 semanticAnalyzer.addToPostfix(buffer.getLexeme());
-                
+
                 if (semanticAnalyzer.instanceofSymbol(token.getLexeme()).equals("function")) {
                     analyzeFunctionCall();
                 } else {
@@ -760,6 +775,7 @@ public class SyntacticAnalyzer {
 
         } else if (token.getSymbol().equals("snao")) {
             buffer = token;
+            semanticAnalyzer.postfixStackHandler(6);
             semanticAnalyzer.addToStack(new Operator(buffer, 6));
             token = lexicalAnalyzer.lexicalAnalyze(path);
 
@@ -771,6 +787,7 @@ public class SyntacticAnalyzer {
 
         } else if (token.getSymbol().equals("sabre_parênteses")) {
             buffer = token;
+            semanticAnalyzer.postfixStackHandler(0);
             semanticAnalyzer.addToStack(new Operator(buffer, 0));
             token = lexicalAnalyzer.lexicalAnalyze(path);
 
@@ -780,6 +797,7 @@ public class SyntacticAnalyzer {
                 if (token.getSymbol().equals("sfecha_parênteses")) {
                     buffer = token;
                     semanticAnalyzer.addToStack(new Operator(buffer, -1));
+                    semanticAnalyzer.postfixStackHandler(-1);
                     token = lexicalAnalyzer.lexicalAnalyze(path);
 
                     if (isEmpty(token)) {
