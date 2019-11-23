@@ -52,6 +52,7 @@ public class SyntacticAnalyzer {
     }
 
     public boolean syntaticAnalyze() {
+        int programVarCount;
         String scopeProgram;
         ProcedureProgram symbolProgram = new ProcedureProgram();
 
@@ -74,7 +75,7 @@ public class SyntacticAnalyzer {
 
                             if (!isEmpty(token)) {
                                 if (token.getSymbol().equals("sponto_vírgula")) {
-                                    analyzeBlock(scopeProgram);
+                                    programVarCount = analyzeBlock(scopeProgram);
 
                                     if (token.getSymbol().equals("sponto")) {
                                         token = lexicalAnalyzer.lexicalAnalyze(path);
@@ -83,6 +84,10 @@ public class SyntacticAnalyzer {
                                             throw new Exception(message.syntaticError(token));
 
                                         } else {
+                                            if(programVarCount != 0) {
+                                                codeGenerator.createCode("", "DALLOC ", codeGenerator.getVariablePosition()+" ", programVarCount);
+                                            }
+                                            semanticAnalyzer.unstackSymbols(scopeProgram);
                                             codeGenerator.createCode("", "HLT", "", "");
                                             return true;
                                         }
@@ -130,26 +135,31 @@ public class SyntacticAnalyzer {
         return false;
     }
 
-    private void analyzeBlock(String scope) throws Exception {
+    private int analyzeBlock(String scope) throws Exception {
+        int varCount = 0;
+        
         token = lexicalAnalyzer.lexicalAnalyze(path);
         token.print();
 
         if (!isEmpty(token)) {
             analyzeVariablesDeclaration(scope);
+            varCount = codeGenerator.getVariableCount();
+            codeGenerator.resetVariableCount();
+            codeGenerator.setVariablePostion(varCount);
             analyzeSubRoutineDeclaration(scope);
             analyzeCommands();
         } else {
             lexicalError = lexicalAnalyzer.getErrorMessage();
             throw new Exception(lexicalError);
         }
+        
+        return varCount;
     }
 
     /*
      *  Analise Relacionada a Variaveis
      */
-    private void analyzeVariablesDeclaration(String scope) throws Exception {
-        int countVar;
-        
+    private void analyzeVariablesDeclaration(String scope) throws Exception {        
         if (token.getSymbol().equals("svar")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
 
@@ -192,6 +202,8 @@ public class SyntacticAnalyzer {
                 symbolVariable.setScope(scope);
 
                 if (!semanticAnalyzer.searchVariableDuplicate(symbolVariable.getLexemeName(), symbolVariable.getScope())) {
+                    countVariable++;
+                    codeGenerator.increaseVariableCount();
                     table.insertSymbol(symbolVariable);
                     token = lexicalAnalyzer.lexicalAnalyze(path);
 
@@ -220,7 +232,6 @@ public class SyntacticAnalyzer {
                     throw new Exception(message.duplicateError("analyzeVariables", "Variable", token));
                 }
                 
-                countVariable++;
             }
             symbolVariable = null;
         }
@@ -276,7 +287,7 @@ public class SyntacticAnalyzer {
 
     private void analyzeProcedureDeclaration(String scope) throws Exception {
         String scopeProcedure;
-        int auxlabel = label;
+        int auxlabel = label, procedureVarCount;
         ProcedureProgram symbolProcedure = new ProcedureProgram();
 
         token = lexicalAnalyzer.lexicalAnalyze(path);
@@ -297,7 +308,13 @@ public class SyntacticAnalyzer {
 
                     if (!isEmpty(token)) {
                         if (token.getSymbol().equals("sponto_vírgula")) {
-                            analyzeBlock(scopeProcedure);
+                            procedureVarCount = analyzeBlock(scopeProcedure);
+                            
+                            if(procedureVarCount != 0) {
+                                codeGenerator.resetVariablePosition(procedureVarCount);
+                                codeGenerator.createCode("", "DALLOC ", codeGenerator.getVariablePosition()+" ", procedureVarCount);
+                            }
+                            
                             codeGenerator.createCode("", "RETURN", "", "");
                         } else {
                             throw new Exception(message.syntaticError(token));
