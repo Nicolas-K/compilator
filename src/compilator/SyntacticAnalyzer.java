@@ -148,6 +148,8 @@ public class SyntacticAnalyzer {
      *  Analise Relacionada a Variaveis
      */
     private void analyzeVariablesDeclaration(String scope) throws Exception {
+        int countVar;
+        
         if (token.getSymbol().equals("svar")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
 
@@ -180,6 +182,8 @@ public class SyntacticAnalyzer {
     }
 
     private void analyzeVariables(String scope) throws Exception {
+        int countVariable = 0;
+        
         while (!token.getSymbol().equals("sdoispontos")) {
             Variable symbolVariable = new Variable();
 
@@ -215,10 +219,12 @@ public class SyntacticAnalyzer {
                 } else {
                     throw new Exception(message.duplicateError("analyzeVariables", "Variable", token));
                 }
+                
+                countVariable++;
             }
-
             symbolVariable = null;
         }
+        codeGenerator.createCode("", "ALLOC ", codeGenerator.getVariablePosition()+" ", countVariable);
 
         token = lexicalAnalyzer.lexicalAnalyze(path);
 
@@ -836,6 +842,8 @@ public class SyntacticAnalyzer {
     }
 
     private void analyzeFactor() throws Exception {
+        String typeExpression;
+        
         if (token.getSymbol().equals("sidentificador")) {
             if (semanticAnalyzer.identifierUsage(token.getLexeme())) {
                 buffer = token;
@@ -885,7 +893,7 @@ public class SyntacticAnalyzer {
             token = lexicalAnalyzer.lexicalAnalyze(path);
 
             if (!isEmpty(token)) {
-                analyzeExpressions();
+                typeExpression = analyzeExpressions();
 
                 if (token.getSymbol().equals("sfecha_parênteses")) {
                     buffer = token;

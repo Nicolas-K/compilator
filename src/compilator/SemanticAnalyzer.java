@@ -162,6 +162,24 @@ public class SemanticAnalyzer {
         return -1;
     }
 
+    public int countVariable(String lexeme) {
+        int count = -1;
+        ArrayList<Symbol> symbols = table.requestSymbols();
+
+        for (int i = symbols.size() - 1; i >= 0; i--) {
+            if (symbols.get(i).getLexemeName().equals(lexeme) && (symbols.get(i) instanceof Variable)) {
+                count++;
+                return count;
+            } else {
+                if (symbols.get(i) instanceof Variable) {
+                    count++;
+                }
+            }
+        }
+
+        return -1;
+    }
+
     /*
      *  Retornar instanceof do simbolo
      */
