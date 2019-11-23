@@ -15,6 +15,7 @@ public class SyntacticAnalyzer {
     private SymbolTable table;
 
     private final ErrorMessages message;
+    private String lexicalError;
 
     public static SyntacticAnalyzer getInstance() {
         if (instance == null) {
@@ -50,7 +51,7 @@ public class SyntacticAnalyzer {
         return false;
     }
 
-    public void syntaticAnalyze() {
+    public boolean syntaticAnalyze() {
         String scopeProgram;
         ProcedureProgram symbolProgram = new ProcedureProgram();
 
@@ -76,40 +77,44 @@ public class SyntacticAnalyzer {
                                     analyzeBlock(scopeProgram);
 
                                     if (token.getSymbol().equals("sponto")) {
-
                                         token = lexicalAnalyzer.lexicalAnalyze(path);
 
                                         if (!lexicalAnalyzer.hasFileEnd()) {
-                                            throw new Exception(message.syntaticError("syntaticAnalyze", token));
+                                            throw new Exception(message.syntaticError(token));
+
                                         } else {
                                             codeGenerator.createCode("", "HLT", "", "");
+                                            return true;
                                         }
                                     } else {
-                                        throw new Exception(message.syntaticError("syntaticAnalyze", token));
+                                        throw new Exception(message.syntaticError(token));
                                     }
 
                                 } else {
-                                    throw new Exception(message.syntaticError("syntaticAnalyze", token));
+                                    throw new Exception(message.syntaticError(token));
                                 }
 
                             } else {
-                                throw new Exception();
+                                lexicalError = lexicalAnalyzer.getErrorMessage();
+                                throw new Exception(lexicalError);
                             }
 
                         } else {
-                            throw new Exception(message.syntaticError("syntaticAnalyze", token));
+                            throw new Exception(message.syntaticError(token));
                         }
 
                     } else {
-                        throw new Exception();
+                        lexicalError = lexicalAnalyzer.getErrorMessage();
+                        throw new Exception(lexicalError);
                     }
 
                 } else {
-                    throw new Exception(message.syntaticError("syntaticAnalyze", token));
+                    throw new Exception(message.syntaticError(token));
                 }
 
             } else {
-                throw new Exception();
+                lexicalError = lexicalAnalyzer.getErrorMessage();
+                throw new Exception(lexicalError);
             }
 
         } catch (Exception e) {
@@ -122,6 +127,7 @@ public class SyntacticAnalyzer {
         }
 
         symbolProgram = null;
+        return false;
     }
 
     private void analyzeBlock(String scope) throws Exception {
@@ -133,7 +139,8 @@ public class SyntacticAnalyzer {
             analyzeSubRoutineDeclaration(scope);
             analyzeCommands();
         } else {
-            throw new Exception();
+            lexicalError = lexicalAnalyzer.getErrorMessage();
+            throw new Exception(lexicalError);
         }
     }
 
@@ -153,19 +160,21 @@ public class SyntacticAnalyzer {
                             token = lexicalAnalyzer.lexicalAnalyze(path);
 
                             if (isEmpty(token)) {
-                                throw new Exception();
+                                lexicalError = lexicalAnalyzer.getErrorMessage();
+                                throw new Exception(lexicalError);
                             }
 
                         } else {
-                            throw new Exception(message.syntaticError("analyzeVariablesDeclaration", token));
+                            throw new Exception(message.syntaticError(token));
                         }
                     }
 
                 } else {
-                    throw new Exception(message.syntaticError("analyzeVariablesDeclaration", token));
+                    throw new Exception(message.syntaticError(token));
                 }
             } else {
-                throw new Exception();
+                lexicalError = lexicalAnalyzer.getErrorMessage();
+                throw new Exception(lexicalError);
             }
         }
     }
@@ -189,17 +198,19 @@ public class SyntacticAnalyzer {
 
                                 if (!isEmpty(token)) {
                                     if (token.getSymbol().equals("sdoispontos")) {
-                                        throw new Exception(message.syntaticError("analyzeVariables", token));
+                                        throw new Exception(message.syntaticError(token));
                                     }
 
                                 } else {
-                                    throw new Exception();
+                                    lexicalError = lexicalAnalyzer.getErrorMessage();
+                                    throw new Exception(lexicalError);
                                 }
                             }
                         }
 
                     } else {
-                        throw new Exception();
+                        lexicalError = lexicalAnalyzer.getErrorMessage();
+                        throw new Exception(lexicalError);
                     }
                 } else {
                     throw new Exception(message.duplicateError("analyzeVariables", "Variable", token));
@@ -214,7 +225,8 @@ public class SyntacticAnalyzer {
         if (!isEmpty(token)) {
             analyzeType();
         } else {
-            throw new Exception();
+            lexicalError = lexicalAnalyzer.getErrorMessage();
+            throw new Exception(lexicalError);
         }
     }
 
@@ -242,11 +254,12 @@ public class SyntacticAnalyzer {
                 token = lexicalAnalyzer.lexicalAnalyze(path);
 
                 if (isEmpty(token)) {
-                    throw new Exception();
+                    lexicalError = lexicalAnalyzer.getErrorMessage();
+                    throw new Exception(lexicalError);
                 }
 
             } else {
-                throw new Exception(message.syntaticError("analyzeSubRoutineDeclaration", token));
+                throw new Exception(message.syntaticError(token));
             }
         }
 
@@ -281,22 +294,24 @@ public class SyntacticAnalyzer {
                             analyzeBlock(scopeProcedure);
                             codeGenerator.createCode("", "RETURN", "", "");
                         } else {
-                            throw new Exception(message.syntaticError("analyzeProcedureDeclaration", token));
+                            throw new Exception(message.syntaticError(token));
                         }
 
                     } else {
-                        throw new Exception();
+                        lexicalError = lexicalAnalyzer.getErrorMessage();
+                        throw new Exception(lexicalError);
                     }
                 } else {
                     throw new Exception(message.duplicateError("analyzeProcedureDeclaration", "Procedure", token));
                 }
 
             } else {
-                throw new Exception(message.syntaticError("analyzeProcedureDeclaration", token));
+                throw new Exception(message.syntaticError(token));
             }
 
         } else {
-            throw new Exception();
+            lexicalError = lexicalAnalyzer.getErrorMessage();
+            throw new Exception(lexicalError);
         }
 
         semanticAnalyzer.unstackSymbols(scopeProcedure);
@@ -319,7 +334,6 @@ public class SyntacticAnalyzer {
     private void analyzeFunctionDeclaration(String scope) throws Exception {
         String scopeFunction;
         int auxlabel = label;
-
         Function symbolFunction = new Function();
 
         token = lexicalAnalyzer.lexicalAnalyze(path);
@@ -357,27 +371,30 @@ public class SyntacticAnalyzer {
                                             analyzeBlock(scopeFunction);
                                             codeGenerator.createCode("", "RETURNF", "", "");
                                         } else {
-                                            throw new Exception(message.syntaticError("analyzeFunctionDeclaration", token));
+                                            throw new Exception(message.syntaticError(token));
                                         }
 
                                     } else {
-                                        throw new Exception();
+                                        lexicalError = lexicalAnalyzer.getErrorMessage();
+                                        throw new Exception(lexicalError);
                                     }
 
                                 } else {
-                                    throw new Exception(message.syntaticError("analyzeFunctionDeclaration", token));
+                                    throw new Exception(message.syntaticError(token));
                                 }
 
                             } else {
-                                throw new Exception();
+                                lexicalError = lexicalAnalyzer.getErrorMessage();
+                                throw new Exception(lexicalError);
                             }
 
                         } else {
-                            throw new Exception(message.syntaticError("analyzeFunctionDeclaration", token));
+                            throw new Exception(message.syntaticError(token));
                         }
 
                     } else {
-                        throw new Exception();
+                        lexicalError = lexicalAnalyzer.getErrorMessage();
+                        throw new Exception(lexicalError);
                     }
 
                 } else {
@@ -385,11 +402,12 @@ public class SyntacticAnalyzer {
                 }
 
             } else {
-                throw new Exception(message.syntaticError("analyzeFunctionDeclaration", token));
+                throw new Exception(message.syntaticError(token));
             }
 
         } else {
-            throw new Exception();
+            lexicalError = lexicalAnalyzer.getErrorMessage();
+            throw new Exception(lexicalError);
         }
 
         semanticAnalyzer.unstackSymbols(scopeFunction);
@@ -425,22 +443,29 @@ public class SyntacticAnalyzer {
                             }
 
                         } else {
-                            throw new Exception();
+                            lexicalError = lexicalAnalyzer.getErrorMessage();
+                            throw new Exception(lexicalError);
                         }
 
                     } else {
-                        throw new Exception(message.syntaticError("analyzeCommands", token));
+                        throw new Exception(message.syntaticError(token));
                     }
                 }
 
                 token = lexicalAnalyzer.lexicalAnalyze(path);
 
+                if (isEmpty(token)) {
+                    lexicalError = lexicalAnalyzer.getErrorMessage();
+                    throw new Exception(lexicalError);
+                }
+
             } else {
-                throw new Exception();
+                lexicalError = lexicalAnalyzer.getErrorMessage();
+                throw new Exception(lexicalError);
             }
 
         } else {
-            throw new Exception(message.syntaticError("analyzeCommands", token));
+            throw new Exception(message.syntaticError(token));
         }
     }
 
@@ -473,7 +498,8 @@ public class SyntacticAnalyzer {
                     analyzeProcedureCall();
                 }
             } else {
-                throw new Exception();
+                lexicalError = lexicalAnalyzer.getErrorMessage();
+                throw new Exception(lexicalError);
             }
         } else {
             throw new Exception(message.identifierUsageError("analyzeAttrProcedure", buffer));
@@ -501,14 +527,16 @@ public class SyntacticAnalyzer {
                                     token = lexicalAnalyzer.lexicalAnalyze(path);
 
                                     if (isEmpty(token)) {
-                                        throw new Exception();
+                                        lexicalError = lexicalAnalyzer.getErrorMessage();
+                                        throw new Exception(lexicalError);
+
                                     } else {
                                         codeGenerator.createCode("", "RD", "", "");
                                         codeGenerator.createCode("", "STR ", "", "");
                                     }
 
                                 } else {
-                                    throw new Exception(message.syntaticError("analyzeRead", token));
+                                    throw new Exception(message.syntaticError(token));
                                 }
                             }
                         } else {
@@ -516,19 +544,21 @@ public class SyntacticAnalyzer {
                         }
 
                     } else {
-                        throw new Exception(message.syntaticError("analyzeRead", token));
+                        throw new Exception(message.syntaticError(token));
                     }
 
                 } else {
-                    throw new Exception();
+                    lexicalError = lexicalAnalyzer.getErrorMessage();
+                    throw new Exception(lexicalError);
                 }
 
             } else {
-                throw new Exception(message.syntaticError("analyzeRead", token));
+                throw new Exception(message.syntaticError(token));
             }
 
         } else {
-            throw new Exception();
+            lexicalError = lexicalAnalyzer.getErrorMessage();
+            throw new Exception(lexicalError);
         }
     }
 
@@ -538,47 +568,55 @@ public class SyntacticAnalyzer {
 
         token = lexicalAnalyzer.lexicalAnalyze(path);
 
-        if (token.getSymbol().equals("sabre_parênteses")) {
-            token = lexicalAnalyzer.lexicalAnalyze(path);
+        if (!isEmpty(token)) {
 
-            if (token.getSymbol().equals("sidentificador")) {
-                buffer = token;
+            if (token.getSymbol().equals("sabre_parênteses")) {
+                token = lexicalAnalyzer.lexicalAnalyze(path);
 
-                if (semanticAnalyzer.identifierUsage(buffer.getLexeme())) {
-                    position = semanticAnalyzer.searchSymbolPos(buffer.getLexeme());
-                    typeSymbol = semanticAnalyzer.instanceofSymbol(buffer.getLexeme());
-                    auxLabel = ((Function) table.getSymbol(position)).getLabel();
+                if (token.getSymbol().equals("sidentificador")) {
+                    buffer = token;
 
-                    token = lexicalAnalyzer.lexicalAnalyze(path);
+                    if (semanticAnalyzer.identifierUsage(buffer.getLexeme())) {
+                        position = semanticAnalyzer.searchSymbolPos(buffer.getLexeme());
+                        typeSymbol = semanticAnalyzer.instanceofSymbol(buffer.getLexeme());
+                        auxLabel = ((Function) table.getSymbol(position)).getLabel();
 
-                    if (token.getSymbol().equals("sfecha_parênteses")) {
                         token = lexicalAnalyzer.lexicalAnalyze(path);
 
-                        if (isEmpty(token)) {
-                            throw new Exception();
-                        } else {
-                            if (typeSymbol.equals("variable")) {
-                                codeGenerator.createCode("", "LDV ", "", "");
+                        if (token.getSymbol().equals("sfecha_parênteses")) {
+                            token = lexicalAnalyzer.lexicalAnalyze(path);
+
+                            if (isEmpty(token)) {
+                                lexicalError = lexicalAnalyzer.getErrorMessage();
+                                throw new Exception(lexicalError);
+                                
                             } else {
-                                codeGenerator.createCode("", "CALL ", "L" + auxLabel, table);
+                                if (typeSymbol.equals("variable")) {
+                                    codeGenerator.createCode("", "LDV ", "", "");
+                                } else {
+                                    codeGenerator.createCode("", "CALL ", "L" + auxLabel, table);
+                                }
+
+                                codeGenerator.createCode("", "PRN", "", "");
                             }
 
-                            codeGenerator.createCode("", "PRN", "", "");
+                        } else {
+                            throw new Exception(message.syntaticError(token));
                         }
-
                     } else {
-                        throw new Exception(message.syntaticError("analyzeWrite", token));
+                        throw new Exception(message.identifierUsageError("analyzeWrite", token));
                     }
+
                 } else {
-                    throw new Exception(message.identifierUsageError("analyzeWrite", token));
+                    throw new Exception(message.syntaticError(token));
                 }
 
             } else {
-                throw new Exception(message.syntaticError("analyzeWrite", token));
+                throw new Exception(message.syntaticError(token));
             }
-
         } else {
-            throw new Exception(message.syntaticError("analyzeWrite", token));
+            lexicalError = lexicalAnalyzer.getErrorMessage();
+            throw new Exception(lexicalError);
         }
     }
 
@@ -609,18 +647,20 @@ public class SyntacticAnalyzer {
                         codeGenerator.createCode("", "JMP ", "L" + auxlabel1, "");
                         codeGenerator.createCode("L" + auxlabel2 + " ", "NULL", "", "");
                     } else {
-                        throw new Exception();
+                        lexicalError = lexicalAnalyzer.getErrorMessage();
+                        throw new Exception(lexicalError);
                     }
 
                 } else {
-                    throw new Exception(message.syntaticError("analyzeWhile", token));
+                    throw new Exception(message.syntaticError(token));
                 }
             } else {
                 throw new Exception();
             }
 
         } else {
-            throw new Exception();
+            lexicalError = lexicalAnalyzer.getErrorMessage();
+            throw new Exception(lexicalError);
         }
     }
 
@@ -647,23 +687,26 @@ public class SyntacticAnalyzer {
                             if (!isEmpty(token)) {
                                 analyzeCommand();
                             } else {
-                                throw new Exception();
+                                lexicalError = lexicalAnalyzer.getErrorMessage();
+                                throw new Exception(lexicalError);
                             }
                         }
 
                     } else {
-                        throw new Exception();
+                        lexicalError = lexicalAnalyzer.getErrorMessage();
+                        throw new Exception(lexicalError);
                     }
 
                 } else {
-                    throw new Exception(message.syntaticError("analyzeIf", token));
+                    throw new Exception(message.syntaticError(token));
                 }
             } else {
                 throw new Exception();
             }
 
         } else {
-            throw new Exception();
+            lexicalError = lexicalAnalyzer.getErrorMessage();
+            throw new Exception(lexicalError);
         }
     }
 
@@ -685,7 +728,8 @@ public class SyntacticAnalyzer {
                 }
 
             } else {
-                throw new Exception();
+                lexicalError = lexicalAnalyzer.getErrorMessage();
+                throw new Exception(lexicalError);
             }
         } else {
             throw new Exception(message.wrongUsageSymbol("analyzeAttribution", buffer));
@@ -699,13 +743,14 @@ public class SyntacticAnalyzer {
         if (token.getSymbol().equals("sinteiro") || token.getSymbol().equals("sbooleano")) {
             semanticAnalyzer.setTypeVariable(token.getLexeme());
         } else {
-            throw new Exception(message.syntaticError("analyzeType", token));
+            throw new Exception(message.syntaticError(token));
         }
 
         token = lexicalAnalyzer.lexicalAnalyze(path);
 
         if (isEmpty(token)) {
-            throw new Exception();
+            lexicalError = lexicalAnalyzer.getErrorMessage();
+            throw new Exception(lexicalError);
         }
     }
 
@@ -721,7 +766,8 @@ public class SyntacticAnalyzer {
             if (!isEmpty(token)) {
                 analyzeExpression();
             } else {
-                throw new Exception();
+                lexicalError = lexicalAnalyzer.getErrorMessage();
+                throw new Exception(lexicalError);
             }
         }
 
@@ -737,7 +783,8 @@ public class SyntacticAnalyzer {
             token = lexicalAnalyzer.lexicalAnalyze(path);
 
             if (isEmpty(token)) {
-                throw new Exception();
+                lexicalError = lexicalAnalyzer.getErrorMessage();
+                throw new Exception(lexicalError);
             }
         }
         analyzeTerm();
@@ -782,7 +829,8 @@ public class SyntacticAnalyzer {
             if (!isEmpty(token)) {
                 analyzeFactor();
             } else {
-                throw new Exception();
+                lexicalError = lexicalAnalyzer.getErrorMessage();
+                throw new Exception(lexicalError);
             }
         }
     }
@@ -797,6 +845,11 @@ public class SyntacticAnalyzer {
                     analyzeFunctionCall();
                 } else {
                     token = lexicalAnalyzer.lexicalAnalyze(path);
+
+                    if (isEmpty(token)) {
+                        lexicalError = lexicalAnalyzer.getErrorMessage();
+                        throw new Exception(lexicalError);
+                    }
                 }
             } else {
                 throw new Exception(message.identifierUsageError("analyzeFactor", token));
@@ -808,7 +861,8 @@ public class SyntacticAnalyzer {
             token = lexicalAnalyzer.lexicalAnalyze(path);
 
             if (isEmpty(token)) {
-                throw new Exception();
+                lexicalError = lexicalAnalyzer.getErrorMessage();
+                throw new Exception(lexicalError);
             }
 
         } else if (token.getSymbol().equals("snao")) {
@@ -820,7 +874,8 @@ public class SyntacticAnalyzer {
             if (!isEmpty(token)) {
                 analyzeFactor();
             } else {
-                throw new Exception();
+                lexicalError = lexicalAnalyzer.getErrorMessage();
+                throw new Exception(lexicalError);
             }
 
         } else if (token.getSymbol().equals("sabre_parênteses")) {
@@ -839,14 +894,16 @@ public class SyntacticAnalyzer {
                     token = lexicalAnalyzer.lexicalAnalyze(path);
 
                     if (isEmpty(token)) {
-                        throw new Exception();
+                        lexicalError = lexicalAnalyzer.getErrorMessage();
+                        throw new Exception(lexicalError);
                     }
 
                 } else {
-                    throw new Exception(message.syntaticError("analyzeFactor", token));
+                    throw new Exception(message.syntaticError(token));
                 }
             } else {
-                throw new Exception();
+                lexicalError = lexicalAnalyzer.getErrorMessage();
+                throw new Exception(lexicalError);
             }
 
         } else if (token.getSymbol().equals("sverdadeiro") || token.getSymbol().equals("sfalso")) {
@@ -855,11 +912,12 @@ public class SyntacticAnalyzer {
             token = lexicalAnalyzer.lexicalAnalyze(path);
 
             if (isEmpty(token)) {
-                throw new Exception();
+                lexicalError = lexicalAnalyzer.getErrorMessage();
+                throw new Exception(lexicalError);
             }
 
         } else {
-            throw new Exception(message.syntaticError("analyzeFactor", token));
+            throw new Exception(message.syntaticError(token));
         }
     }
 }

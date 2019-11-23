@@ -15,16 +15,16 @@ public class ErrorMessages {
     /*
      *  mensagem de erro associada ao analisador lexico
      */
-    public String lexicalError(String method, String line, String character) {
-        messageError = "[" + method + "] Line: " + line + " Input Received: " + character + " | Invalid Character or Format";
+    public String lexicalError(String line, String character) {
+        messageError = "[ Lexical Error ] | Line: " + line + " Input Received: " + character + " | Invalid Character or Format";
         return messageError;
     }
 
     /*
      *  mensagem de erro associada ao analisador sintatico
      */
-    public String syntaticError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol not expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
+    public String syntaticError(Token wrongToken) {
+        messageError = "[ Syntatic Error ] | Symbol not expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 

@@ -19,6 +19,7 @@ public class LexicalAnalyzer {
     private int charRead;
     private char currentChar;
     private final ErrorMessages message = ErrorMessages.getInstance();
+    private String error;
 
     public static LexicalAnalyzer getInstance() {
         if (instance == null) {
@@ -93,6 +94,14 @@ public class LexicalAnalyzer {
             return false;
         }
     }
+    
+    private void setErrorMessage(String errorMessage) {
+        this.error = errorMessage;
+    }
+    
+    public String getErrorMessage() {
+        return error;
+    }
 
     public Token lexicalAnalyze(String path) throws IOException {
         Token createToken;
@@ -150,11 +159,10 @@ public class LexicalAnalyzer {
 
         } catch (Exception e) {
             if (e.getMessage() != null) {
-                System.out.println(e.getMessage());
+                setErrorMessage(e.getMessage());
+            } else {
+                setErrorMessage("[ Lexical Error ] | Something unexpected happened");
             }
-
-            System.out.println("[lexicalAnalyze] | Error has ocurred");
-            System.out.println("[lexicalAnalyze] | Ending compilation process");
         }
         return null;
     }
@@ -181,7 +189,7 @@ public class LexicalAnalyzer {
             newToken = this.isPunctuation(currentChar, indexFile);
 
         } else {
-            throw new Exception(message.lexicalError("getToken", Integer.toString(indexFile), Character.toString(currentChar)));
+            throw new Exception(message.lexicalError(Integer.toString(indexFile), Character.toString(currentChar)));
         }
 
         return newToken;
@@ -393,7 +401,7 @@ public class LexicalAnalyzer {
                 currentChar = (char) charRead;
 
             } else {
-                throw new Exception(message.lexicalError("isRelational", Integer.toString(lineIndex), operation));
+                throw new Exception(message.lexicalError(Integer.toString(lineIndex), operation));
             }
         }
 
