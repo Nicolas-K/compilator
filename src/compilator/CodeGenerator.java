@@ -115,7 +115,7 @@ public class CodeGenerator {
             } else if (semantic.searchSymbolPos(postfix.get(i)) != -1) {
                 positionFunction = semantic.searchSymbolPos(postfix.get(i));
                 createCALL("L" + ((Function) table.getSymbol(positionFunction)).getLabel());
- 
+
             } else {
                 createLDC(postfix.get(i));
             }

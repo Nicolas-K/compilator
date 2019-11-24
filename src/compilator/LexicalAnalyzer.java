@@ -94,11 +94,11 @@ public class LexicalAnalyzer {
             return false;
         }
     }
-    
+
     private void setErrorMessage(String errorMessage) {
         this.error = errorMessage;
     }
-    
+
     public String getErrorMessage() {
         return error;
     }
@@ -169,7 +169,7 @@ public class LexicalAnalyzer {
 
     private Token getToken(int indexFile) throws Exception {
         Token newToken = new Token();
-        
+
         if (Character.isDigit(currentChar)) {
             newToken = this.isDigit(currentChar, indexFile);
 
@@ -301,7 +301,7 @@ public class LexicalAnalyzer {
                 letter.setSymbol("sidentificador");
                 break;
         }
-       
+
         letter.setLexeme(word);
         return letter;
     }
