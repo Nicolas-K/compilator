@@ -193,11 +193,14 @@ public class SemanticAnalyzer {
                 if (aux instanceof Function) {
                     instance = "function";
                     return instance;
+                } else if (aux instanceof Variable) {
+                    instance = "variable";
+                    return instance;
                 }
             }
         }
 
-        instance = "variable";
+        instance = "procedure";
         return instance;
     }
 
