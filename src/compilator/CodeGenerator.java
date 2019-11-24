@@ -5,9 +5,11 @@ import java.util.ArrayList;
 public class CodeGenerator {
 
     private static CodeGenerator instance = null;
-    private String codeText = new String();
-    private int variableCount = 0;
-    private int variablePosition = 0;
+    private String codeText;
+    private int variableCount;
+    private int variablePosition;
+
+    private SymbolTable table;
 
     public static CodeGenerator getInstance() {
         if (instance == null) {
@@ -16,7 +18,14 @@ public class CodeGenerator {
         return instance;
     }
 
-    public void createCode(Object label, String command, Object target1, Object target2) {
+    private CodeGenerator() {
+        this.codeText = new String();
+        this.variableCount = 0;
+        this.variablePosition = 0;
+        this.table = SymbolTable.getInstance();
+    }
+
+    private void createCode(Object label, String command, Object target1, Object target2) {
         codeText = codeText + label + command + target1 + target2 + '\n';
     }
 
@@ -53,65 +62,203 @@ public class CodeGenerator {
         int positionVariable, positionFunction, i = 0;
 
         while (i < postfix.size()) {
-            positionVariable = variablePosition - 1;
-            //positionFunction = 
-                    
+            positionVariable = getVariablePosition() - semantic.countVariable(postfix.get(i));
+
             if (semantic.searchSymbolPos(postfix.get(i)) != -1) {
-                createCode("", "LDV ", positionVariable, "");
+                createLDV(positionVariable);
 
             } else if (postfix.get(i).equals("+")) {
-                createCode("", "ADD", "", "");
+                createADD();
 
             } else if (postfix.get(i).equals("*")) {
-                createCode("", "MULT", "", "");
+                createMULT();
 
             } else if (postfix.get(i).equals("div")) {
-                createCode("", "DIVI", "", "");
+                createDIVI();
 
             } else if (postfix.get(i).equals("-")) {
-                createCode("", "SUB", "", "");
+                createSUB();
 
-            } else if (postfix.get(i).equals("!")) {
-                createCode("", "INV", "", "");
+            } else if (postfix.get(i).equals("nao")) {
+                createINV();
 
             } else if (postfix.get(i).equals("e")) {
-                createCode("", "AND", "", "");
+                createAND();
 
             } else if (postfix.get(i).equals("ou")) {
-                createCode("", "OR", "", "");
+                createOR();
 
             } else if (postfix.get(i).equals("<")) {
-                createCode("", "CME", "", "");
+                createCME();
 
             } else if (postfix.get(i).equals(">")) {
-                createCode("", "CMA", "", "");
+                createCMA();
 
             } else if (postfix.get(i).equals("=")) {
-                createCode("", "CEQ", "", "");
+                createCEQ();
 
             } else if (postfix.get(i).equals("!=")) {
-                createCode("", "CDIF", "", "");
+                createCDIF();
 
             } else if (postfix.get(i).equals("<=")) {
-                createCode("", "CMEQ", "", "");
+                createCMEQ();
 
             } else if (postfix.get(i).equals(">=")) {
-                createCode("", "CMAQ", "", "");
+                createCMAQ();
 
             } else if (postfix.get(i).equals("verdadeiro")) {
-                createCode("", "LDC ", 1, "");
+                createLDC(1);
 
             } else if (postfix.get(i).equals("falso")) {
-                createCode("", "LDC ", 0, "");
+                createLDC(0);
 
-            } /*else if (positionFunction != -1) {
-                // CreateCode("", "CALL ", "L" + ((Function) semantic.symbolsTable.get(positionFunction)).rotulo, "");
-
-            }*/ else {
-                createCode("", "LDC ", postfix.get(i), "");
+            } else if (semantic.searchSymbolPos(postfix.get(i)) != -1) {
+                positionFunction = semantic.searchSymbolPos(postfix.get(i));
+                createCALL("L" + ((Function) table.getSymbol(positionFunction)).getLabel());
+ 
+            } else {
+                createLDC(postfix.get(i));
             }
 
             i++;
         }
+    }
+
+    /*
+     *  Instrução de Memoria
+     */
+    public void createStart() {
+        createCode("", "START", "", "");
+    }
+
+    public void createHLT() {
+        createCode("", "HLT", "", "");
+    }
+
+    public void createALLOC(Object m, Object n) {
+        createCode("", "ALLOC ", m, n);
+    }
+
+    public void createDALLOC(Object m, Object n) {
+        createCode("", "DALLOC ", m, n);
+    }
+
+    public void createLDC(Object k) {
+        createCode("", "LDC ", k, "");
+    }
+
+    public void createLDV(Object v) {
+        createCode("", "LDV ", v, "");
+    }
+
+    public void createSTR(Object position) {
+        createCode("", "STR ", position, "");
+    }
+
+    /*
+     *  Instruções de Salto
+     */
+    public void createJMP(Object label) {
+        createCode("", "JMP ", label, "");
+    }
+
+    public void createJMPF(Object label) {
+        createCode("", "JMPF ", label, "");
+    }
+
+    public void createNULL(Object label) {
+        createCode(label, "NULL", "", "");
+    }
+
+    public void createCALL(Object label) {
+        createCode("", "CALL ", label, "");
+    }
+
+    public void createRETURN() {
+        createCode("", "RETURN", "", "");
+    }
+
+    public void createRETURNF() {
+        createCode("", "RETURNF", "", "");
+    }
+
+    public void createRETURNF_DALLOC(Object m, Object n) {
+        createCode("", "RETURNF ", m, n);
+    }
+
+    /*
+     *  Instrução de Comparação
+     */
+    public void createCMEQ() {
+        createCode("", "CMEQ", "", "");
+    }
+
+    public void createCMAQ() {
+        createCode("", "CMAQ", "", "");
+    }
+
+    public void createCMA() {
+        createCode("", "CMA", "", "");
+    }
+
+    public void createCME() {
+        createCode("", "CME", "", "");
+    }
+
+    public void createCEQ() {
+        createCode("", "CEQ", "", "");
+    }
+
+    public void createCDIF() {
+        createCode("", "CDIF", "", "");
+    }
+
+    /*
+     *  Instruções Aritmeticas 
+     */
+    public void createADD() {
+        createCode("", "ADD", "", "");
+    }
+
+    public void createSUB() {
+        createCode("", "SUB", "", "");
+    }
+
+    public void createMULT() {
+        createCode("", "MULT", "", "");
+    }
+
+    public void createDIVI() {
+        createCode("", "DIVI", "", "");
+    }
+
+    public void createINV() {
+        createCode("", "INV", "", "");
+    }
+
+    /*
+     *  Instruções Logicas
+     */
+    public void createAND() {
+        createCode("", "AND", "", "");
+    }
+
+    public void createOR() {
+        createCode("", "OR", "", "");
+    }
+
+    public void createNEG() {
+        createCode("", "NEG", "", "");
+    }
+
+    /*
+     *  Instruções de Leitura e Escrita   
+     */
+    public void createPRN() {
+        createCode("", "PRN", "", "");
+    }
+
+    public void createRD() {
+        createCode("", "RD", "", "");
     }
 }

@@ -17,7 +17,7 @@ public class SemanticAnalyzer {
         return instance;
     }
 
-    public SemanticAnalyzer() {
+    private SemanticAnalyzer() {
         table = SymbolTable.getInstance();
         postfix = new ArrayList<>();
         stack = new ArrayList<>();
