@@ -216,13 +216,13 @@ public class SemanticAnalyzer {
     }
 
     public void clearPostfix() {
-        for (String posfixText : postfix) {
-            postfix.remove(posfixText);
-        }
+        ArrayList<String> toRemove = new ArrayList<String>();
 
-        for (Operator operator : stack) {
-            stack.remove(operator);
+        for (String posfixText : postfix) {
+            toRemove.add(posfixText);
         }
+        
+        postfix.removeAll(toRemove);        
     }
 
     public ArrayList getPostfix() {

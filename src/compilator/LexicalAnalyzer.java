@@ -1,8 +1,9 @@
 package compilator;
 
-import java.io.BufferedReader;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.io.IOException;
 
@@ -145,8 +146,6 @@ public class LexicalAnalyzer {
                 }
 
                 if (!hasFileEnd()) {
-                    System.out.printf("[lexicalAnalyze] | Line: %d\n", indexFileLine);
-                    System.out.printf("[lexicalAnalyze] | Character: %c\n", currentChar);
                     return this.getToken(indexFileLine);
 
                 } else {
@@ -209,7 +208,6 @@ public class LexicalAnalyzer {
             currentChar = (char) charRead;
         }
 
-        System.out.printf("[isDigit] | Digit: %s\n", number);
         digit.setLine(Integer.toString(lineIndex));
         digit.setSymbol("snumero");
         digit.setLexeme(number);
@@ -230,7 +228,6 @@ public class LexicalAnalyzer {
             currentChar = (char) charRead;
         }
 
-        System.out.printf("[isLetter] | Word: %s\n", word);
         letter.setLine(Integer.toString(lineIndex));
 
         switch (word) {
@@ -325,7 +322,6 @@ public class LexicalAnalyzer {
             attribution.setSymbol("sdoispontos");
         }
 
-        System.out.printf("[isAttribution] | Attribution: %s\n", attr);
         attribution.setLexeme(attr);
         return attribution;
     }
@@ -333,7 +329,6 @@ public class LexicalAnalyzer {
     private Token isAritmetic(char character, int lineIndex) throws Exception {
         Token aritmetic = new Token();
 
-        System.out.printf("[isAritmetic] | Aritmetic: %c\n", character);
         aritmetic.setLine(Integer.toString(lineIndex));
 
         if (character == '+') {
@@ -413,7 +408,6 @@ public class LexicalAnalyzer {
     private Token isPunctuation(char character, int lineIndex) throws Exception {
         Token punctuation = new Token();
 
-        System.out.printf("[isPunctuation] | Punctuation: %c\n", character);
         punctuation.setLine(Integer.toString(lineIndex));
 
         if (character == ';') {

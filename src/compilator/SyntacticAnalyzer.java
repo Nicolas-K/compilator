@@ -80,6 +80,7 @@ public class SyntacticAnalyzer {
                         if (token.getSymbol().equals("sidentificador")) {
                             symbolProgram.setLexemeName(token.getLexeme());
                             symbolProgram.setScope("");
+                            symbolProgram.setLabel(label);
                             table.insertSymbol(symbolProgram);
 
                             scopeProgram = token.getLexeme();
@@ -159,7 +160,7 @@ public class SyntacticAnalyzer {
 
             codeGenerator.setVariablePostion(varDeclarationCount);
             analyzeSubRoutineDeclaration(scope);
-            analyzeCommands();
+            analyzeCommands(scope);
 
         } else {
             lexicalError = lexicalAnalyzer.getErrorMessage();
@@ -466,24 +467,15 @@ public class SyntacticAnalyzer {
         symbolFunction = null;
     }
 
-    private void analyzeFunctionCall() throws Exception {
-        Symbol auxFunction;
-        int auxlabel;
-
-        auxFunction = table.getSymbol(semanticAnalyzer.searchSymbolPos(buffer.getLexeme()));
-        auxlabel = ((Function) auxFunction).getLabel();
-        codeGenerator.createCALL("L" + auxlabel);
-    }
-
     /*
      *  Analisa de Comandos
      */
-    private void analyzeCommands() throws Exception {
+    private void analyzeCommands(String scopeLevel) throws Exception {
         if (token.getSymbol().equals("sinício")) {
             token = lexicalAnalyzer.lexicalAnalyze(path);
 
             if (!isEmpty(token)) {
-                analyzeCommand();
+                analyzeCommand(scopeLevel);
 
                 while (!token.getSymbol().equals("sfim")) {
                     if (token.getSymbol().equals("sponto_vírgula")) {
@@ -491,7 +483,7 @@ public class SyntacticAnalyzer {
 
                         if (!isEmpty(token)) {
                             if (!token.getSymbol().equals("sfim")) {
-                                analyzeCommand();
+                                analyzeCommand(scopeLevel);
                             }
 
                         } else {
@@ -521,19 +513,27 @@ public class SyntacticAnalyzer {
         }
     }
 
-    private void analyzeCommand() throws Exception {
+    private void analyzeCommand(String scopeLevel) throws Exception {
+        int functionPos;
+
+        functionPos = semanticAnalyzer.searchSymbolPos(scopeLevel);
+
+        if (functionPos != -1 && semanticAnalyzer.instanceofSymbol(scopeLevel).equals("function")) {
+            ((Function) table.getSymbol(functionPos)).setReturnFunction(false);
+        }
+
         if (token.getSymbol().equals("sidentificador")) {
             analyzeAttrProcedure();
         } else if (token.getSymbol().equals("sse")) {
-            analyzeIf();
+            analyzeIf(scopeLevel);
         } else if (token.getSymbol().equals("senquanto")) {
-            analyzeWhile();
+            analyzeWhile(scopeLevel);
         } else if (token.getSymbol().equals("sleia")) {
             analyzeRead();
         } else if (token.getSymbol().equals("sescreva")) {
             analyzeWrite();
         } else {
-            analyzeCommands();
+            analyzeCommands(scopeLevel);
         }
     }
 
@@ -582,7 +582,7 @@ public class SyntacticAnalyzer {
 
                                     } else {
                                         codeGenerator.createRD();
-                                        codeGenerator.createSTR(codeGenerator.getVariablePosition() - semanticAnalyzer.countVariable(buffer.getLexeme()));
+                                        codeGenerator.createSTR(codeGenerator.getVariablePosition() - semanticAnalyzer.countVariable(buffer.getLexeme()) - 1);
                                     }
 
                                 } else {
@@ -642,7 +642,7 @@ public class SyntacticAnalyzer {
 
                             } else {
                                 if (typeSymbol.equals("variable")) {
-                                    codeGenerator.createLDV(codeGenerator.getVariablePosition() - semanticAnalyzer.countVariable(buffer.getLexeme()));
+                                    codeGenerator.createLDV(codeGenerator.getVariablePosition() - semanticAnalyzer.countVariable(buffer.getLexeme()) - 1);
                                 } else {
                                     codeGenerator.createCALL("L" + auxLabel);
                                 }
@@ -670,7 +670,7 @@ public class SyntacticAnalyzer {
         }
     }
 
-    private void analyzeWhile() throws Exception {
+    private void analyzeWhile(String scopeLevel) throws Exception {
         int auxlabel1 = 0, auxlabel2 = 0;
         String typeExpression;
 
@@ -693,7 +693,7 @@ public class SyntacticAnalyzer {
                     token = lexicalAnalyzer.lexicalAnalyze(path);
 
                     if (!isEmpty(token)) {
-                        analyzeCommand();
+                        analyzeCommand(scopeLevel);
                         codeGenerator.createJMP("L" + auxlabel1);
                         codeGenerator.createNULL("L" + auxlabel2 + " ");
 
@@ -715,7 +715,7 @@ public class SyntacticAnalyzer {
         }
     }
 
-    private void analyzeIf() throws Exception {
+    private void analyzeIf(String scopeLevel) throws Exception {
         String typeExpression;
         token = lexicalAnalyzer.lexicalAnalyze(path);
 
@@ -730,13 +730,13 @@ public class SyntacticAnalyzer {
                     token = lexicalAnalyzer.lexicalAnalyze(path);
 
                     if (!isEmpty(token)) {
-                        analyzeCommand();
+                        analyzeCommand(scopeLevel);
 
                         if (token.getSymbol().equals("ssenao")) {
                             token = lexicalAnalyzer.lexicalAnalyze(path);
 
                             if (!isEmpty(token)) {
-                                analyzeCommand();
+                                analyzeCommand(scopeLevel);
                             } else {
                                 lexicalError = lexicalAnalyzer.getErrorMessage();
                                 throw new Exception(lexicalError);
@@ -764,17 +764,17 @@ public class SyntacticAnalyzer {
     private void analyzeAttribution() throws Exception {
         String typeExpression, typeAttr, symbolLexeme;
         int positionSymbol;
-        
+
         symbolLexeme = buffer.getLexeme();
         positionSymbol = semanticAnalyzer.searchSymbolPos(symbolLexeme);
 
         if (semanticAnalyzer.instanceofSymbol(symbolLexeme).equals("variable")
                 || semanticAnalyzer.instanceofSymbol(symbolLexeme).equals("function")) {
-            
-            if(semanticAnalyzer.instanceofSymbol(symbolLexeme).equals("function")) {
+
+            if (semanticAnalyzer.instanceofSymbol(symbolLexeme).equals("function")) {
                 ((Function) table.getSymbol(positionSymbol)).setReturnFunction(true);
             }
-            
+
             typeAttr = table.getSymbolType(semanticAnalyzer.searchSymbolPos(buffer.getLexeme()));
             token = lexicalAnalyzer.lexicalAnalyze(path);
 
@@ -833,6 +833,7 @@ public class SyntacticAnalyzer {
         }
 
         semanticAnalyzer.postfixStackHandler(-2);
+        semanticAnalyzer.printPostfix();
         return semanticAnalyzer.postfixTypeHandler();
     }
 
@@ -904,17 +905,13 @@ public class SyntacticAnalyzer {
             if (semanticAnalyzer.identifierUsage(token.getLexeme())) {
                 buffer = token;
                 semanticAnalyzer.addToPostfix(buffer.getLexeme());
+                token = lexicalAnalyzer.lexicalAnalyze(path);
 
-                if (semanticAnalyzer.instanceofSymbol(token.getLexeme()).equals("function")) {
-                    analyzeFunctionCall();
-                } else {
-                    token = lexicalAnalyzer.lexicalAnalyze(path);
-
-                    if (isEmpty(token)) {
-                        lexicalError = lexicalAnalyzer.getErrorMessage();
-                        throw new Exception(lexicalError);
-                    }
+                if (isEmpty(token)) {
+                    lexicalError = lexicalAnalyzer.getErrorMessage();
+                    throw new Exception(lexicalError);
                 }
+
             } else {
                 throw new Exception(message.identifierUsageError(token));
             }

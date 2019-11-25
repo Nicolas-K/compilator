@@ -62,9 +62,10 @@ public class CodeGenerator {
         int positionVariable, positionFunction, i = 0;
 
         while (i < postfix.size()) {
-            positionVariable = getVariablePosition() - semantic.countVariable(postfix.get(i));
+            positionVariable = getVariablePosition() - semantic.countVariable(postfix.get(i)) - 1;
 
-            if (semantic.searchSymbolPos(postfix.get(i)) != -1) {
+            if (semantic.searchSymbolPos(postfix.get(i)) != -1
+                    && semantic.instanceofSymbol(postfix.get(i)).equals("variable")) {
                 createLDV(positionVariable);
 
             } else if (postfix.get(i).equals("+")) {
