@@ -81,7 +81,7 @@ public class CodeGenerator {
                 createSUB();
 
             } else if (postfix.get(i).equals("nao")) {
-                createINV();
+                createNEG();
 
             } else if (postfix.get(i).equals("e")) {
                 createAND();

@@ -221,8 +221,8 @@ public class SemanticAnalyzer {
         for (String posfixText : postfix) {
             toRemove.add(posfixText);
         }
-        
-        postfix.removeAll(toRemove);        
+
+        postfix.removeAll(toRemove);
     }
 
     public ArrayList getPostfix() {
@@ -266,9 +266,13 @@ public class SemanticAnalyzer {
                 break;
 
             } else if (priority != 0) {
-                if (priority <= stack.get(i).getPriority()) {
-                    addToPostfix(stack.get(i).getOperator().getLexeme());
-                    stack.remove(i);
+                if (stack.get(i).getPriority() != 0) {
+                    if (priority <= stack.get(i).getPriority()) {
+                        addToPostfix(stack.get(i).getOperator().getLexeme());
+                        stack.remove(i);
+                    }
+                } else {
+                    break;
                 }
             } else {
                 break;
@@ -279,18 +283,23 @@ public class SemanticAnalyzer {
     public String postfixTypeHandler() {
         int symbolPosition = -1;
 
-        if (postfix.get(postfix.size() - 1) == ">"
-                || postfix.get(postfix.size() - 1) == ">="
-                || postfix.get(postfix.size() - 1) == "<"
-                || postfix.get(postfix.size() - 1) == "<="
-                || postfix.get(postfix.size() - 1) == "="
-                || postfix.get(postfix.size() - 1) == "!=") {
+        if (postfix.get(postfix.size() - 1).equals(">")
+                || postfix.get(postfix.size() - 1).equals(">=")
+                || postfix.get(postfix.size() - 1).equals("<")
+                || postfix.get(postfix.size() - 1).equals("<=")
+                || postfix.get(postfix.size() - 1).equals("=")
+                || postfix.get(postfix.size() - 1).equals("!=") 
+                || postfix.get(postfix.size() - 1).equals("verdadeiro")
+                || postfix.get(postfix.size() - 1).equals("falso")
+                || postfix.get(postfix.size() - 1).equals("e")
+                || postfix.get(postfix.size() - 1).equals("ou")
+                || postfix.get(postfix.size() - 1).equals("nao")) {
             return "booleano";
 
-        } else if (postfix.get(postfix.size() - 1) == "+"
-                || postfix.get(postfix.size() - 1) == "-"
-                || postfix.get(postfix.size() - 1) == "*"
-                || postfix.get(postfix.size() - 1) == "div") {
+        } else if (postfix.get(postfix.size() - 1).equals("+")
+                || postfix.get(postfix.size() - 1).equals("-")
+                || postfix.get(postfix.size() - 1).equals("*")
+                || postfix.get(postfix.size() - 1).equals("div")) {
             return "inteiro";
 
         } else {
