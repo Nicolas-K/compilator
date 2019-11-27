@@ -22,47 +22,27 @@ public class SymbolTable {
         symbols.add(newSymbol);
     }
 
-    public synchronized Symbol getSymbolData(String lexeme) {
-        for (Symbol aux : this.symbols) {
-            if (aux.getLexemeName().equals(lexeme)) {
-                return aux;
-            }
-        }
-
-        return null;
-    }
-
-    public synchronized void setTypeSymbols(String type) {
-        for (int i = symbols.size() - 1; i >= 0; i--) {
-            if (this.symbols.get(i) instanceof Variable) {
-                if (((Variable) this.symbols.get(i)).getType() == null) {
-                    ((Variable) this.symbols.get(i)).setType(type);
-                }
-            } else if (this.symbols.get(i) instanceof Function) {
-                if (((Function) this.symbols.get(i)).getType() == null) {
-                    ((Function) this.symbols.get(i)).setType(type);
-                }
-            }
-        }
-    }
-
-    public synchronized void setSymbols(ArrayList<Symbol> symbols) {
+    public synchronized void updateSymbols(ArrayList<Symbol> symbols) {
         this.symbols = symbols;
     }
 
     public synchronized ArrayList<Symbol> requestSymbols() {
         return this.symbols;
     }
-
-    public synchronized void printTable() {
-        for (Symbol aux : this.symbols) {
-            if (aux instanceof Variable) {
-                ((Variable) aux).printVariable();
-            } else if (aux instanceof ProcedureProgram) {
-                ((ProcedureProgram) aux).printProcedureProgram();
-            } else if (aux instanceof Function) {
-                ((Function) aux).printFunction();
-            }
+    
+    public synchronized Symbol getSymbol(int index) {
+        return this.symbols.get(index);
+    }
+    
+    public synchronized String getSymbolType(int index) {
+        Symbol aux;
+        
+        aux = getSymbol(index);
+        
+        if (aux instanceof Variable) {
+            return ((Variable) aux).getType();
+        } else {
+            return ((Function) aux).getType();
         }
     }
 }

@@ -13,108 +13,46 @@ public class ErrorMessages {
     }
 
     /*
-     *  Error messages associate to Lexical Analyzer 
+     *  mensagem de erro associada ao analisador lexico
      */
-    public String digitError(String line, char character) {
-        messageError = "[DigitError] Line: " + line + " Character: " + character + " | Invalid Digit Format";
-        return messageError;
-    }
-
-    public String letterError(String line, char character) {
-        messageError = "[LetterError] Line: " + line + " Character: " + character + " | Invalid Word Format";
-        return messageError;
-    }
-
-    public String attributionError(String line, char character) {
-        messageError = "[AttributionError] Line: " + line + " Character: " + character + " | Invalid Attribution Format";
-        return messageError;
-    }
-
-    public String aritmeticError(String line, char character) {
-        messageError = "[AritmeticError] Line: " + line + " Character: " + character + " | Invalid Aritmetic Format";
-        return messageError;
-    }
-
-    public String relationalError(String line, String character) {
-        messageError = "[RelationalError] Line: " + line + " Character: " + character + " | Invalid Relational Format";
-        return messageError;
-    }
-
-    public String punctuationError(String line, char character) {
-        messageError = "[PunctuationError] Line: " + line + " Character: " + character + " | Invalid Punctuation Format";
-        return messageError;
-    }
-
-    public String characterInvalid(String line, char character) {
-        messageError = "[CharacterError] Line: " + line + " Character: " + character + " | Invalid Character";
+    public String lexicalError(String line, String character) {
+        messageError = "[ Lexical Error ] | Line: " + line + " Input Received: " + character + " | Invalid Character or Format";
         return messageError;
     }
 
     /*
-     *  Error messages associate to Syntactic Analyzer   
+     *  mensagem de erro associada ao analisador sintatico
      */
-    public String programError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sprograma expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
+    public String syntaticError(Token wrongToken) {
+        messageError = "[ Syntatic Error ] | Symbol not expected, symbol received: " + wrongToken.getSymbol() + "\n| Line: " + wrongToken.getLine();
         return messageError;
     }
 
-    public String identifierError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sidentificador expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
+    /*
+     *  mensagens de erro associadas ao analisador semantico
+     */
+    public String duplicateError(String type, Token errorToken) {
+        messageError = "[ Semantic Error ] | " + type + "Identifier " + errorToken.getLexeme() + " already declared\n| Line: " + errorToken.getLine();
         return messageError;
     }
 
-    public String semicolonError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sponto_virgula expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
+    public String identifierUsageError(Token identifier) {
+        messageError = "[ Semantic Error ] | Identifier " + identifier.getLexeme() + " not declared before\n| Line: " + identifier.getLine();
         return messageError;
     }
 
-    public String dotError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sponto expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
+    public String wrongUsageSymbol(Token wrong) {
+        messageError = "[ Semantic Error ] | Wrong use of the Symbol " + wrong.getLexeme() + "\n| Line " + wrong.getLine();
         return messageError;
     }
 
-    public String colonError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol received not expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
+    public String typeExpressionError(String typeExpected) {
+        messageError = "[ Semantic Error ] | Expression has different type than expected\n| Type Expected: " + typeExpected;
         return messageError;
     }
 
-    public String typeError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sinteiro or sbooleano expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
-        return messageError;
-    }
-
-    public String beginError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | symbol sinicio expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
-        return messageError;
-    }
-
-    public String booleanError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sverdadeiro or sfalso expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
-        return messageError;
-    }
-
-    public String openparenthesesError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sabre_parenteses expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
-        return messageError;
-    }
-
-    public String closeparenthesesError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sfecha_parenteses expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
-        return messageError;
-    }
-
-    public String doError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sfaca expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
-        return messageError;
-    }
-
-    public String thenError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | Symbol sentao expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
-        return messageError;
-    }
-
-    public String endoffileError(String method, Token wrongToken) {
-        messageError = "[" + method + "] | End of file expected, symbol received: " + wrongToken.getSymbol()+ "\n| Line: " + wrongToken.getLine();
+    public String noReturnfError(String scopeFunction) {
+        messageError = "[ SemanticError ] | Function " + scopeFunction + " has no return";
         return messageError;
     }
 }
