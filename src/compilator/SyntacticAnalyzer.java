@@ -1,4 +1,4 @@
-package compilator;
+﻿package compilator;
 
 public class SyntacticAnalyzer {
 
@@ -413,8 +413,8 @@ public class SyntacticAnalyzer {
 
                                             if (((Function) table.getSymbol(semanticAnalyzer.searchSymbolPos(scopeFunction))).getReturnFunction()) {
                                                 if (functionVarCount > 0) {
-                                                    codeGenerator.createRETURNF_DALLOC(codeGenerator.getVariablePosition() + " ", functionVarCount);
                                                     codeGenerator.resetVariablePosition(functionVarCount);
+                                                    codeGenerator.createRETURNF_DALLOC(codeGenerator.getVariablePosition() + " ", functionVarCount);
                                                 } else {
                                                     codeGenerator.createRETURNF();
                                                 }
@@ -775,6 +775,7 @@ public class SyntacticAnalyzer {
     private void analyzeAttribution() throws Exception {
         String typeExpression, typeAttr, symbolLexeme;
         int positionSymbol;
+        boolean isFunction = false;
 
         symbolLexeme = buffer.getLexeme();
         positionSymbol = semanticAnalyzer.searchSymbolPos(symbolLexeme);
@@ -783,6 +784,7 @@ public class SyntacticAnalyzer {
                 || semanticAnalyzer.instanceofSymbol(symbolLexeme).equals("function")) {
 
             if (semanticAnalyzer.instanceofSymbol(symbolLexeme).equals("function")) {
+                isFunction = true;
                 ((Function) table.getSymbol(positionSymbol)).setReturnFunction(true);
             }
 
@@ -797,7 +799,10 @@ public class SyntacticAnalyzer {
                 } else {
                     codeGenerator.postfixCreation(semanticAnalyzer.getPostfix(), semanticAnalyzer);
                     semanticAnalyzer.clearPostfix();
-                    codeGenerator.createSTR(codeGenerator.getVariablePosition() - semanticAnalyzer.countVariable(symbolLexeme) - 1);       
+                    
+                    if(isFunction != true){
+                        codeGenerator.createSTR(codeGenerator.getVariablePosition() - semanticAnalyzer.countVariable(symbolLexeme) - 1);       
+                    } 
                 }
 
             } else {
