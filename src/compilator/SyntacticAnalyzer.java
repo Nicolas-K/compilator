@@ -1,4 +1,4 @@
-﻿package compilator;
+package compilator;
 
 public class SyntacticAnalyzer {
 
