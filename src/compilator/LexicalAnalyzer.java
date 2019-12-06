@@ -400,7 +400,6 @@ public class LexicalAnalyzer {
             }
         }
 
-        System.out.printf("[isRelational] | Relational: %s\n", operation);
         relational.setLexeme(operation);
         return relational;
     }

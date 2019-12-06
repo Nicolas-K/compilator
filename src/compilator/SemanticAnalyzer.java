@@ -3,20 +3,20 @@ package compilator;
 import java.util.ArrayList;
 
 public class SemanticAnalyzer {
-
+    
     private static SemanticAnalyzer instance = null;
     private SymbolTable table;
-
+    
     private ArrayList<String> postfix;
     private ArrayList<Operator> stack;
-
+    
     public static SemanticAnalyzer getInstance() {
         if (instance == null) {
             instance = new SemanticAnalyzer();
         }
         return instance;
     }
-
+    
     private SemanticAnalyzer() {
         table = SymbolTable.getInstance();
         postfix = new ArrayList<>();
@@ -28,7 +28,7 @@ public class SemanticAnalyzer {
      */
     public boolean searchVariableDuplicate(String lexeme, String scope) throws Exception {
         ArrayList<Symbol> symbols = table.requestSymbols();
-
+        
         for (Symbol aux : symbols) {
             if (aux instanceof Variable) {
                 if (aux.getLexemeName().equals(lexeme)) {
@@ -44,14 +44,14 @@ public class SemanticAnalyzer {
                 }
             }
         }
-
+        
         symbols = null;
         return false;
     }
-
+    
     public boolean searchProcedureDuplicate(String lexeme) throws Exception {
         ArrayList<Symbol> symbols = table.requestSymbols();
-
+        
         for (Symbol aux : symbols) {
             if (aux instanceof ProcedureProgram) {
                 if (aux.getLexemeName().equals(lexeme)) {
@@ -59,14 +59,14 @@ public class SemanticAnalyzer {
                 }
             }
         }
-
+        
         symbols = null;
         return false;
     }
-
+    
     public boolean searchFunctionDuplicate(String lexeme) throws Exception {
         ArrayList<Symbol> symbols = table.requestSymbols();
-
+        
         for (Symbol aux : symbols) {
             if (aux instanceof Function) {
                 if (aux.getLexemeName().equals(lexeme)) {
@@ -74,7 +74,7 @@ public class SemanticAnalyzer {
                 }
             }
         }
-
+        
         symbols = null;
         return false;
     }
@@ -84,7 +84,7 @@ public class SemanticAnalyzer {
      */
     public void setTypeVariable(String type) throws Exception {
         ArrayList<Symbol> symbols = table.requestSymbols();
-
+        
         for (int i = symbols.size() - 1; i >= 0; i--) {
             if (symbols.get(i) instanceof Variable) {
                 if (((Variable) symbols.get(i)).getType() == null) {
@@ -92,14 +92,14 @@ public class SemanticAnalyzer {
                 }
             }
         }
-
+        
         table.updateSymbols(symbols);
         symbols = null;
     }
-
+    
     public void setTypeFunction(String type) throws Exception {
         ArrayList<Symbol> symbols = table.requestSymbols();
-
+        
         for (int i = symbols.size() - 1; i >= 0; i--) {
             if (symbols.get(i) instanceof Function) {
                 if (((Function) symbols.get(i)).getType() == null) {
@@ -107,7 +107,7 @@ public class SemanticAnalyzer {
                 }
             }
         }
-
+        
         table.updateSymbols(symbols);
         symbols = null;
     }
@@ -118,7 +118,7 @@ public class SemanticAnalyzer {
      */
     public void unstackSymbols(String scope) {
         ArrayList<Symbol> symbols = table.requestSymbols();
-
+        
         for (int i = symbols.size() - 1; i >= 0; i--) {
             if (symbols.get(i).getScope().equals(scope)) {
                 symbols.remove(i);
@@ -126,7 +126,7 @@ public class SemanticAnalyzer {
                 break;
             }
         }
-
+        
         table.updateSymbols(symbols);
         symbols = null;
     }
@@ -136,21 +136,21 @@ public class SemanticAnalyzer {
      */
     public boolean identifierUsage(String identifier) {
         ArrayList<Symbol> symbols = table.requestSymbols();
-
+        
         for (Symbol aux : symbols) {
             if (aux.getLexemeName().equals(identifier)) {
                 return true;
             }
         }
-
+        
         symbols = null;
         return false;
     }
-
+    
     public int searchSymbolPos(String lexeme) {
         ArrayList<Symbol> symbols = table.requestSymbols();
         int i = 0;
-
+        
         for (Symbol search : symbols) {
             if (!search.getLexemeName().equals(lexeme)) {
                 i++;
@@ -158,14 +158,14 @@ public class SemanticAnalyzer {
                 return i;
             }
         }
-
+        
         return -1;
     }
-
+    
     public int countVariable(String lexeme) {
         int count = -1;
         ArrayList<Symbol> symbols = table.requestSymbols();
-
+        
         for (int i = symbols.size() - 1; i >= 0; i--) {
             if (symbols.get(i).getLexemeName().equals(lexeme) && (symbols.get(i) instanceof Variable)) {
                 count++;
@@ -176,7 +176,7 @@ public class SemanticAnalyzer {
                 }
             }
         }
-
+        
         return -1;
     }
 
@@ -185,9 +185,9 @@ public class SemanticAnalyzer {
      */
     public String instanceofSymbol(String identifier) {
         String instance;
-
+        
         ArrayList<Symbol> symbols = table.requestSymbols();
-
+        
         for (Symbol aux : symbols) {
             if (aux.getLexemeName().equals(identifier)) {
                 if (aux instanceof Function) {
@@ -199,7 +199,7 @@ public class SemanticAnalyzer {
                 }
             }
         }
-
+        
         instance = "procedure";
         return instance;
     }
@@ -210,28 +210,30 @@ public class SemanticAnalyzer {
     public void addToPostfix(String postfixString) {
         postfix.add(postfixString);
     }
-
+    
     public void addToStack(Operator operator) {
         stack.add(operator);
     }
-
+    
     public void clearPostfix() {
         ArrayList<String> toRemove = new ArrayList<String>();
-
+        
         for (String posfixText : postfix) {
             toRemove.add(posfixText);
         }
-
+        
         postfix.removeAll(toRemove);
     }
-
+    
     public ArrayList getPostfix() {
         return postfix;
     }
-
+    
     public void printPostfix() {
+        System.out.println("Posfixa gerada: ");
+        
         for (String postFix : postfix) {
-            System.out.print(postFix);
+            System.out.print(postFix + " ");
         }
         System.out.println();
     }
@@ -249,22 +251,22 @@ public class SemanticAnalyzer {
      */
     public void postfixStackHandler(int priority) { // ==> Validar Depois <== \\
         int i, j;
-
+        
         for (i = stack.size() - 1; i >= 0; i--) {
             if (priority == -1) {
                 stack.remove(i);
                 j = i - 1;
-
+                
                 while (stack.get(j).getPriority() != 0) {
                     addToPostfix(stack.get(j).getOperator().getLexeme());
                     stack.remove(j);
                     j--;
                 }
-
+                
                 stack.remove(j);
                 i = j;
                 break;
-
+                
             } else if (priority != 0) {
                 if (stack.get(i).getPriority() != 0) {
                     if (priority <= stack.get(i).getPriority()) {
@@ -279,32 +281,34 @@ public class SemanticAnalyzer {
             }
         }
     }
-
+    
     public String postfixTypeHandler() {
         int symbolPosition = -1;
-
+        
         if (postfix.get(postfix.size() - 1).equals(">")
                 || postfix.get(postfix.size() - 1).equals(">=")
                 || postfix.get(postfix.size() - 1).equals("<")
                 || postfix.get(postfix.size() - 1).equals("<=")
                 || postfix.get(postfix.size() - 1).equals("=")
-                || postfix.get(postfix.size() - 1).equals("!=") 
+                || postfix.get(postfix.size() - 1).equals("!=")
                 || postfix.get(postfix.size() - 1).equals("verdadeiro")
                 || postfix.get(postfix.size() - 1).equals("falso")
                 || postfix.get(postfix.size() - 1).equals("e")
                 || postfix.get(postfix.size() - 1).equals("ou")
                 || postfix.get(postfix.size() - 1).equals("nao")) {
             return "booleano";
-
+            
         } else if (postfix.get(postfix.size() - 1).equals("+")
                 || postfix.get(postfix.size() - 1).equals("-")
                 || postfix.get(postfix.size() - 1).equals("*")
-                || postfix.get(postfix.size() - 1).equals("div")) {
+                || postfix.get(postfix.size() - 1).equals("div")
+                || postfix.get(postfix.size() - 1).equals("unario_menos")
+                || postfix.get(postfix.size() - 1).equals("unario_mais")) {
             return "inteiro";
-
+            
         } else {
             symbolPosition = searchSymbolPos(postfix.get(postfix.size() - 1));
-
+            
             if (symbolPosition != -1) {
                 return table.getSymbolType(symbolPosition);
             } else {

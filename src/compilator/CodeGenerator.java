@@ -83,6 +83,12 @@ public class CodeGenerator {
             } else if (postfix.get(i).equals("nao")) {
                 createNEG();
 
+            } else if (postfix.get(i).equals("unario_menos")) {
+                createINV();
+
+            } else if (postfix.get(i).equals("unario_mais")) {
+                // SEM GERAÇÃO DE CÓDIGO PARA UNÁRIO MAIS
+
             } else if (postfix.get(i).equals("e")) {
                 createAND();
 

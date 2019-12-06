@@ -628,7 +628,7 @@ public class SyntacticAnalyzer {
                     if (semanticAnalyzer.identifierUsage(buffer.getLexeme())) {
                         position = semanticAnalyzer.searchSymbolPos(buffer.getLexeme());
                         typeSymbol = semanticAnalyzer.instanceofSymbol(buffer.getLexeme());
-                        
+
                         token = lexicalAnalyzer.lexicalAnalyze(path);
 
                         if (token.getSymbol().equals("sfecha_parênteses")) {
@@ -748,7 +748,7 @@ public class SyntacticAnalyzer {
                                 lexicalError = lexicalAnalyzer.getErrorMessage();
                                 throw new Exception(lexicalError);
                             }
-                            
+
                             codeGenerator.createNULL("L" + auxLabel2 + " ");
                         } else {
                             codeGenerator.createNULL("L" + auxLabel1 + " ");
@@ -799,10 +799,10 @@ public class SyntacticAnalyzer {
                 } else {
                     codeGenerator.postfixCreation(semanticAnalyzer.getPostfix(), semanticAnalyzer);
                     semanticAnalyzer.clearPostfix();
-                    
-                    if(isFunction != true){
-                        codeGenerator.createSTR(codeGenerator.getVariablePosition() - semanticAnalyzer.countVariable(symbolLexeme) - 1);       
-                    } 
+
+                    if (isFunction != true) {
+                        codeGenerator.createSTR(codeGenerator.getVariablePosition() - semanticAnalyzer.countVariable(symbolLexeme) - 1);
+                    }
                 }
 
             } else {
@@ -857,6 +857,14 @@ public class SyntacticAnalyzer {
     private void analyzeExpression() throws Exception {
         if (token.getSymbol().equals("smais") || token.getSymbol().equals("smenos")) {
             buffer = token;
+
+            if (buffer.getSymbol().equals("smais")) {
+                buffer.setLexeme("unario_mais");
+
+            } else if (buffer.getSymbol().equals("smenos")) {
+                buffer.setLexeme("unario_menos");
+            }
+
             semanticAnalyzer.postfixStackHandler(6);
             semanticAnalyzer.addToStack(new Operator(buffer, 6));
             token = lexicalAnalyzer.lexicalAnalyze(path);

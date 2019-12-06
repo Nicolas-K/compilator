@@ -182,10 +182,10 @@ public class editor extends JFrame implements ActionListener {
                     try {
                         BufferedWriter codeWriter = new BufferedWriter(new FileWriter("Codigo_Gerado"));
                         codeWriter.write(generator.getCodeText());
-
                         codeWriter.close();
-                        System.out.println("Fechou arquivo");
+                        System.out.println("[ Compilator ] | Compilation process is successful");
                     } catch (IOException exception) {
+                        System.out.println("[ Compilator ] | Error on generate compiled file");
                     }
                 }
             } catch (Exception evt) {
